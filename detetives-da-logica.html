@@ -168,18 +168,18 @@ const ATIVIDADES = [
 
 /* === VERDADE E MENTIRA === */
 {
-  tipo:"Verdade ou mentira", cena:"🏝️ 😇/🤥",
-  historia:"Numa ilha, cada pessoa SEMPRE fala a verdade ou SEMPRE mente. Você encontra Tom e Ema.<br>Tom diz: \"Nós dois mentimos.\"",
-  pergunta:"O que dá para concluir?",
-  opcoes:[{t:"Tom mente e Ema fala a verdade",ok:true},{t:"Os dois mentem"},{t:"Os dois falam a verdade"},{t:"Tom fala a verdade"}],
-  explica:"Se Tom falasse a verdade, ele estaria dizendo que ele mesmo mente — impossível. Então Tom mente. Como ele mentiu ao dizer \"nós dois mentimos\", não é verdade que os dois mentem — logo Ema fala a verdade. Resposta: <b>Tom mente e Ema fala a verdade</b>."
+  tipo:"Sequência", cena:"🔢 2 · 4 · 6 · 8 · ?",
+  historia:"Observe a sequência de números: 2, 4, 6, 8, ...<br>Cada número é maior que o anterior, sempre seguindo a mesma regra.",
+  pergunta:"Qual número vem depois do 8?",
+  opcoes:[{t:"9"},{t:"10",ok:true},{t:"12"},{t:"16"}],
+  explica:"De um número para o outro, sempre soma-se 2: 2→4→6→8. Depois do 8 vem 8 + 2 = <b>10</b>. (São os números pares em ordem.)"
 },
 {
-  tipo:"Verdade ou mentira", cena:"🚪🚪 2 portas",
-  historia:"Há duas portas: uma leva ao tesouro, a outra não. Cada guarda sempre mente ou sempre fala a verdade. O guarda sincero sempre aponta a porta do tesouro.<br>Um guarda que SEMPRE diz a verdade aponta a porta da esquerda.",
-  pergunta:"Onde está o tesouro?",
-  opcoes:[{t:"Na porta da esquerda",ok:true},{t:"Na porta da direita"},{t:"Não dá para saber"}],
-  explica:"Quem sempre fala a verdade aponta a porta certa. Como ele apontou a esquerda, o tesouro está na <b>porta da esquerda</b>."
+  tipo:"Charada", cena:"🥚 ⏰",
+  historia:"Uma fazendeira tem uma galinha que põe 1 ovo por dia. Hoje de manhã ela já tinha 3 ovos guardados. Durante o dia, a galinha pôs mais 1 ovo e a fazendeira usou 2 ovos para fazer um bolo.",
+  pergunta:"Com quantos ovos ela terminou o dia?",
+  opcoes:[{t:"1 ovo"},{t:"2 ovos",ok:true},{t:"3 ovos"},{t:"4 ovos"}],
+  explica:"Ela começou com 3 ovos, ganhou mais 1 (ficou com 4) e usou 2 no bolo: 4 − 2 = <b>2 ovos</b>. É preciso fazer as contas na ordem em que as coisas acontecem."
 },
 {
   tipo:"Verdade ou mentira", cena:"🍰 3 amigos",
@@ -228,15 +228,93 @@ const ATIVIDADES = [
 
 ];
 
-let indice=0, pontos=0, respondida=false;
+const RECUPERACAO = [
+{
+  tipo:"Sequência", cena:"🔢 3 · 6 · 9 · 12 · ?",
+  historia:"Veja a sequência: 3, 6, 9, 12, ...",
+  pergunta:"Qual número vem agora?",
+  opcoes:[{t:"13"},{t:"14"},{t:"15",ok:true},{t:"18"}],
+  explica:"Sempre soma 3: 3→6→9→12. Depois vem 12 + 3 = <b>15</b>."
+},
+{
+  tipo:"Sequência", cena:"🔢 1 · 2 · 4 · 8 · ?",
+  historia:"Veja a sequência: 1, 2, 4, 8, ...",
+  pergunta:"Qual número vem agora?",
+  opcoes:[{t:"10"},{t:"12"},{t:"16",ok:true},{t:"32"}],
+  explica:"Cada número é o dobro do anterior: 1→2→4→8. Depois vem 8 × 2 = <b>16</b>."
+},
+{
+  tipo:"Charada", cena:"🍬 amigos",
+  historia:"João tinha 8 balas. Deu 3 para a irmã e depois ganhou mais 5 da avó.",
+  pergunta:"Com quantas balas João ficou?",
+  opcoes:[{t:"9"},{t:"10",ok:true},{t:"11"},{t:"13"}],
+  explica:"8 − 3 = 5, e 5 + 5 = <b>10</b> balas."
+},
+{
+  tipo:"Fila", cena:"🎬 fila do cinema",
+  historia:"Na fila do cinema: Tina está na frente de Léo; Léo na frente de Bia; e Gui é o último, atrás de Bia.",
+  pergunta:"Quem é o PRIMEIRO da fila?",
+  opcoes:[{t:"Tina",ok:true},{t:"Léo"},{t:"Bia"},{t:"Gui"}],
+  explica:"A ordem é Tina, Léo, Bia, Gui. O primeiro é a <b>Tina</b>."
+},
+{
+  tipo:"Charada", cena:"🦆 🐑 patas",
+  historia:"Num quintal há 2 patos e 3 ovelhas. Cada pato tem 2 patas e cada ovelha tem 4 patas.",
+  pergunta:"Quantas patas há ao todo?",
+  opcoes:[{t:"14"},{t:"16",ok:true},{t:"18"},{t:"20"}],
+  explica:"Patos: 2 × 2 = 4. Ovelhas: 3 × 4 = 12. Total: 4 + 12 = <b>16</b> patas."
+},
+{
+  tipo:"Código", cena:"🔒 cadeado",
+  historia:"Um cadeado tem um número de 2 algarismos.<br>• 12 → nenhum algarismo certo.<br>• 34 → o 3 está certo e no lugar certo (1ª casa); o 4 não serve.<br>• o outro algarismo é o 6, na 2ª casa.",
+  pergunta:"Qual é o número do cadeado?",
+  opcoes:[{t:"63"},{t:"36",ok:true},{t:"16"},{t:"30"}],
+  explica:"O 3 fica na 1ª casa e o 6 na 2ª casa. Nada de 1, 2 ou 4. O número é <b>36</b>."
+},
+{
+  tipo:"Sequência", cena:"🔢 20 · 17 · 14 · ?",
+  historia:"Veja a sequência: 20, 17, 14, ...",
+  pergunta:"Qual número vem agora?",
+  opcoes:[{t:"13"},{t:"12"},{t:"11",ok:true},{t:"10"}],
+  explica:"Dessa vez os números DIMINUEM de 3 em 3: 20→17→14. Depois vem 14 − 3 = <b>11</b>."
+},
+{
+  tipo:"Cores", cena:"🐾 🎨",
+  historia:"Três bichinhos têm cores diferentes: azul, verde e vermelho.<br>• O gato NÃO é azul nem verde.<br>• O pato NÃO é vermelho.",
+  pergunta:"Qual é a cor do GATO?",
+  opcoes:[{t:"Azul"},{t:"Verde"},{t:"Vermelho",ok:true},{t:"Não dá para saber"}],
+  explica:"Se o gato não é azul nem verde, só sobra o <b>vermelho</b> para ele."
+},
+{
+  tipo:"Charada", cena:"🕐 relógio",
+  historia:"Agora são 3 horas da tarde. Uma viagem de carro vai durar 2 horas.",
+  pergunta:"A que horas a viagem termina?",
+  opcoes:[{t:"4 horas"},{t:"5 horas",ok:true},{t:"6 horas"},{t:"7 horas"}],
+  explica:"3 horas + 2 horas = <b>5 horas</b> da tarde."
+},
+{
+  tipo:"Silogismo", cena:"🐶 ➡️ 🐾",
+  historia:"São verdadeiras: \"Todo cachorro é um animal\" e \"Rex é um cachorro\".",
+  pergunta:"Então é certo que:",
+  opcoes:[{t:"Rex é um animal",ok:true},{t:"Todo animal é cachorro"},{t:"Rex não é animal"},{t:"Só cachorros são animais"}],
+  explica:"Se todo cachorro é animal e Rex é cachorro, então Rex é animal. Resposta: <b>Rex é um animal</b>."
+}
+];
+
+let indice=0, pontos=0, respondida=false, emRecuperacao=false, fonte=null;
 const tela=document.getElementById("tela");
 const cores=["#7F77DD","#1D9E75","#D85A30","#378ADD","#EF9F27"];
 
+function fonteAtual(){ return emRecuperacao ? RECUPERACAO : ATIVIDADES; }
+
 function render(){
   respondida=false;
-  const a=ATIVIDADES[indice];
-  document.getElementById("num").textContent=indice+1;
-  document.getElementById("prog").style.width=(indice/ATIVIDADES.length*100)+"%";
+  const lista=fonteAtual();
+  const a=lista[indice];
+  const total=lista.length;
+  const rotulo=emRecuperacao ? "Recuperação" : "Desafio";
+  document.querySelector(".barra .nivel").innerHTML = rotulo+" <span id=\"num\">"+(indice+1)+"</span>/"+total;
+  document.getElementById("prog").style.width=(indice/total*100)+"%";
   const cor=cores[indice%cores.length];
   let html=`<div class="cartao">
     <span class="faixa" style="background:${cor}22;color:${cor}">${a.tipo}</span>
@@ -263,7 +341,7 @@ function render(){
 function responder(i,btn){
   if(respondida)return;
   respondida=true;
-  const a=ATIVIDADES[indice];
+  const a=fonteAtual()[indice];
   const acertou=!!a.opcoes[i].ok;
   document.querySelectorAll(".opt").forEach((b,j)=>{
     b.classList.add("desabilitado");
@@ -282,17 +360,54 @@ function responder(i,btn){
     fb.innerHTML=`<div class="titulo">🤔 Não foi dessa vez. Vamos entender:</div><div>${a.explica}</div><div class="gab">✅ Gabarito: alternativa ${letraCerta}.</div>`;
   }
   document.getElementById("prox").style.display="block";
-  document.getElementById("prox").textContent = indice<ATIVIDADES.length-1 ? "Próximo →" : "Ver resultado 🏆";
+  const ultimo = indice >= fonteAtual().length-1;
+  document.getElementById("prox").textContent = ultimo ? (emRecuperacao ? "Ver nota final 🏆" : "Ver resultado 🏆") : "Próximo →";
 }
 
-function avancar(){ indice++; if(indice>=ATIVIDADES.length){fim();return;} render(); }
+// Cada acerto na fase principal vale 5 pontos (20 x 5 = 100).
+// Cada acerto na recuperacao vale 5 pontos e SOMA a nota original.
+const VALOR=5, META=60;
 
-function fim(){
+function avancar(){
+  indice++;
+  const lista=fonteAtual();
+  if(indice>=lista.length){
+    if(emRecuperacao) fimRecuperacao(); else fimPrincipal();
+    return;
+  }
+  // Durante a recuperacao, para assim que atingir a meta de 60.
+  if(emRecuperacao && nota()>=META){ fimRecuperacao(); return; }
+  render();
+}
+
+function nota(){ return pontos*VALOR; }
+
+function fimPrincipal(){
   document.getElementById("prog").style.width="100%";
-  const msg = pontos>=16 ? "Você é um Detetive Mestre da Lógica!" : pontos>=10 ? "Muito bem! Raciocínio afiado!" : "Bom começo! Tente de novo e melhore.";
-  tela.innerHTML=`<div class="cartao fim"><div class="trofeu">🏆</div><h2>Investigação concluída!</h2><div class="placar">⭐ ${pontos} de ${ATIVIDADES.length}</div><p>${msg}</p><button onclick="reiniciar()">Jogar de novo 🔄</button></div>`;
+  const n=nota();
+  if(n>=META){
+    const msg = n>=85 ? "Você é um Detetive Mestre da Lógica!" : "Muito bem! Você foi aprovado!";
+    tela.innerHTML=`<div class="cartao fim"><div class="trofeu">🏆</div><h2>Aprovado!</h2><div class="placar">📋 Nota: ${n} de 100</div><p>${msg}</p><button onclick="reiniciar()">Jogar de novo 🔄</button></div>`;
+  } else {
+    tela.innerHTML=`<div class="cartao fim"><div class="trofeu">💪</div><h2>Quase lá!</h2><div class="placar">📋 Nota: ${n} de 100</div><p>Você precisa de <b>60 pontos</b> para passar. Vamos para a <b>recuperação</b>! Cada acerto vale mais 5 pontos. O exame termina assim que você chegar a 60.</p><button onclick="iniciarRecuperacao()">Começar recuperação →</button></div>`;
+  }
 }
-function reiniciar(){ indice=0; pontos=0; document.getElementById("placar").textContent=0; render(); }
+
+function iniciarRecuperacao(){
+  emRecuperacao=true; indice=0; render();
+}
+
+function fimRecuperacao(){
+  document.getElementById("prog").style.width="100%";
+  const n=nota();
+  if(n>=META){
+    tela.innerHTML=`<div class="cartao fim"><div class="trofeu">🎉</div><h2>Recuperado!</h2><div class="placar">📋 Nota final: ${n} de 100</div><p>Você alcançou os 60 pontos na recuperação. Parabéns, exame concluído!</p><button onclick="reiniciar()">Jogar de novo 🔄</button></div>`;
+  } else {
+    tela.innerHTML=`<div class="cartao fim"><div class="trofeu">📚</div><h2>Exame encerrado</h2><div class="placar">📋 Nota final: ${n} de 100</div><p>As questões de recuperação acabaram. Vale a pena revisar os desafios e tentar de novo — você consegue!</p><button onclick="reiniciar()">Tentar de novo 🔄</button></div>`;
+  }
+}
+
+function reiniciar(){ indice=0; pontos=0; emRecuperacao=false; document.getElementById("placar").textContent=0; render(); }
 
 
 render();
