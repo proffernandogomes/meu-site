@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Detetives da Lógica — 20 Desafios</title>
+<style>
+  :root{
+    --verde:#1D9E75; --verde-claro:#E1F5EE; --verde-escuro:#0F6E56;
+    --roxo:#7F77DD; --coral:#D85A30; --azul:#378ADD; --amarelo:#EF9F27;
+    --vermelho:#E24B4A; --vermelho-claro:#FCEBEB; --vermelho-escuro:#A32D2D;
+    --fundo:#F4F6FB; --cartao:#FFFFFF; --texto:#1F2430; --suave:#5F6470;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--fundo);color:var(--texto);min-height:100vh;display:flex;justify-content:center;padding:16px;}
+  #app{width:100%;max-width:500px;}
+  header{text-align:center;margin-bottom:14px;}
+  header h1{font-size:24px;color:var(--azul);font-weight:700;}
+  header p{font-size:14px;color:var(--suave);margin-top:2px;}
+  .barra{display:flex;justify-content:space-between;align-items:center;background:var(--cartao);border-radius:14px;padding:10px 16px;margin-bottom:12px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+  .barra .nivel{font-size:13px;color:var(--suave);font-weight:600;}
+  .estrelas{color:var(--amarelo);font-size:16px;}
+  .progresso{height:8px;background:#DDE3EF;border-radius:8px;overflow:hidden;margin-bottom:16px;}
+  .progresso div{height:100%;background:var(--azul);width:0;transition:width .4s ease;}
+  .cartao{background:var(--cartao);border-radius:20px;padding:22px 18px 26px;box-shadow:0 4px 16px rgba(0,0,0,.06);text-align:center;}
+  .faixa{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:12px;}
+  .cena{font-size:46px;line-height:1.2;margin-bottom:10px;word-break:break-word;}
+  .historia{font-size:16px;color:var(--texto);line-height:1.65;margin-bottom:6px;text-align:left;background:#F2F5FB;border-radius:12px;padding:14px 16px;}
+  .historia b{color:var(--azul);}
+  .pergunta{font-size:19px;font-weight:700;margin:16px 4px 18px;line-height:1.4;}
+  .opcoes{display:grid;gap:10px;}
+  .opt{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:600;padding:14px 16px;background:#fff;border:3px solid #DDE3EF;border-radius:16px;cursor:pointer;text-align:left;transition:transform .08s,border-color .15s,background .15s;color:var(--texto);width:100%;}
+  .opt .letra{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#EEF2FA;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--suave);}
+  .opt:hover{border-color:var(--azul);}
+  .opt:active{transform:scale(.97);}
+  .opt.certo{border-color:var(--verde);background:var(--verde-claro);}
+  .opt.certo .letra{background:var(--verde);color:#fff;}
+  .opt.errado{border-color:var(--vermelho);background:var(--vermelho-claro);}
+  .opt.errado .letra{background:var(--vermelho);color:#fff;}
+  .opt.desabilitado{cursor:default;}
+  .feedback{margin-top:18px;border-radius:16px;padding:16px;text-align:left;font-size:15px;line-height:1.6;display:none;}
+  .feedback.ok{background:var(--verde-claro);border:2px solid var(--verde);}
+  .feedback.nao{background:var(--vermelho-claro);border:2px solid var(--vermelho);}
+  .feedback .titulo{font-size:17px;font-weight:700;margin-bottom:6px;}
+  .feedback.ok .titulo{color:var(--verde-escuro);}
+  .feedback.nao .titulo{color:var(--vermelho-escuro);}
+  .feedback b{color:inherit;}
+  .feedback .gab{margin-top:10px;font-weight:700;}
+  .acoes{display:flex;gap:10px;margin-top:18px;}
+  button.nav{flex:1;font-family:inherit;font-size:16px;font-weight:700;padding:14px;border:none;border-radius:14px;cursor:pointer;transition:transform .08s;}
+  button.nav:active{transform:scale(.97);}
+  .btn-ouvir{background:#EEF2FA;color:var(--suave);}
+  .btn-prox{background:var(--verde);color:#fff;display:none;}
+  .fim{text-align:center;padding:30px 18px;}
+  .fim .trofeu{font-size:80px;}
+  .fim h2{font-size:26px;color:var(--azul);margin:12px 0 6px;}
+  .fim .placar{font-size:20px;color:var(--amarelo);font-weight:700;margin-bottom:8px;}
+  .fim p{color:var(--suave);font-size:15px;margin-bottom:20px;}
+  .fim button{font-family:inherit;font-size:17px;font-weight:700;padding:14px 30px;background:var(--azul);color:#fff;border:none;border-radius:14px;cursor:pointer;}
+  .dica{font-size:12px;color:var(--suave);text-align:center;margin-top:10px;}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>🔎 Detetives da Lógica</h1>
+    <p>20 desafios de raciocínio — para 9 a 12 anos</p>
+  </header>
+  <div class="barra">
+    <span class="nivel">Desafio <span id="num">1</span>/20</span>
+    <span class="estrelas">⭐ <span id="placar">0</span></span>
+  </div>
+  <div class="progresso"><div id="prog"></div></div>
+  <div id="tela"></div>
+  <p class="dica">💡 Passe o mouse (ou encoste o dedo) numa opção para ouvi-la.</p>
+</div>
+
+<script>
+const ATIVIDADES = [
+
+/* === ORDENAÇÃO / RANKING (estilo "corrida com 5") === */
+{
+  tipo:"Corrida", cena:"🏁 🏃‍♀️🏃‍♂️🏃‍♀️🏃‍♂️🏃‍♀️",
+  historia:"Numa corrida da escola correram Bia, Caio, Duda, Téo e Lia.<br>1) Bia chegou logo antes de Téo.<br>2) Lia não foi a última.<br>3) Caio chegou entre Bia e Duda.",
+  pergunta:"Quem chegou em ÚLTIMO?",
+  opcoes:[{t:"Bia"},{t:"Lia"},{t:"Téo",ok:true},{t:"Duda"},{t:"Caio"}],
+  explica:"\"Bia logo antes de Téo\" e \"Caio entre Bia e Duda\" formam o bloco Duda–Caio–Bia–Téo. Como Lia não é a última, ela vai na frente: Lia, Duda, Caio, Bia, Téo. O último é o <b>Téo</b>."
+},
+{
+  tipo:"Ranking", cena:"🏆 A B C D E",
+  historia:"Cinco times (A, B, C, D, E) num torneio:<br>• A ficou na frente de C;<br>• C ficou logo na frente de E;<br>• B não ficou entre os 3 últimos;<br>• D ficou melhor que A.",
+  pergunta:"Quais foram os DOIS primeiros?",
+  opcoes:[{t:"A e B"},{t:"A e C"},{t:"B e D",ok:true},{t:"B e E"},{t:"C e D"}],
+  explica:"D > A > C, e C logo antes de E, formam D, A, C, E. B não pode estar nos 3 últimos, então fica no topo. Ordem: B, D, A, C, E (ou D, B, A, C, E). Os dois primeiros são <b>B e D</b>."
+},
+{
+  tipo:"Chegada", cena:"🏫 Ana Caio Lia Bia Téo",
+  historia:"Cinco amigos chegaram à escola:<br>• Ana chegou antes de Bia e de Téo;<br>• Bia chegou antes de Caio;<br>• Lia chegou logo depois de Ana;<br>• Caio não foi o último.",
+  pergunta:"Quem foi o TERCEIRO a chegar?",
+  opcoes:[{t:"Ana"},{t:"Lia"},{t:"Caio"},{t:"Téo"},{t:"Bia",ok:true}],
+  explica:"Caio não é o último, então Téo é o último. Lia chega logo depois de Ana, e Bia vem antes de Caio. A ordem que respeita tudo é Ana, Lia, Bia, Caio, Téo. O terceiro é a <b>Bia</b>."
+},
+{
+  tipo:"Altura", cena:"📏 5 crianças",
+  historia:"Em altura: Pedro é mais alto que Rui. Rui é mais alto que Sara. Sara é mais alta que Ana. Téo é mais alto que Pedro.",
+  pergunta:"Quem é o MAIS ALTO de todos?",
+  opcoes:[{t:"Pedro"},{t:"Rui"},{t:"Téo",ok:true},{t:"Sara"},{t:"Ana"}],
+  explica:"Téo > Pedro > Rui > Sara > Ana. Como Téo está acima de Pedro, que já é maior que os outros, o mais alto é o <b>Téo</b>."
+},
+{
+  tipo:"Idade", cena:"🎂 3 irmãos",
+  historia:"Três irmãos: João é mais velho que Lia. Lia é mais velha que Beto.",
+  pergunta:"Quem é o do MEIO (nem o mais velho, nem o mais novo)?",
+  opcoes:[{t:"João"},{t:"Lia",ok:true},{t:"Beto"},{t:"Não dá para saber"}],
+  explica:"João > Lia > Beto. O mais velho é João, o mais novo é Beto. No meio fica a <b>Lia</b>."
+},
+
+/* === ELEVADOR / ARITMÉTICA DE ANDARES (números pequenos) === */
+{
+  tipo:"Elevador", cena:"🛗 ⬆️⬇️",
+  historia:"Um robô entrou no elevador. Ele subiu 4 andares, depois desceu 6, subiu 5 e parou no 5º andar.",
+  pergunta:"Em que andar o robô ENTROU?",
+  opcoes:[{t:"1º"},{t:"2º",ok:true},{t:"3º"},{t:"4º"}],
+  explica:"Chamando o andar de entrada de x: x + 4 − 6 + 5 = 5. Isso dá x + 3 = 5, então x = 2. O robô entrou no <b>2º</b> andar. (Conferindo: 2 + 4 = 6, 6 − 6 = 0, 0 + 5 = 5. ✔)"
+},
+{
+  tipo:"Elevador", cena:"🛗 🐱",
+  historia:"Uma gata entrou no elevador no térreo (andar 0). Subiu 6, desceu 2, subiu 3 e desceu 1.",
+  pergunta:"Em que andar a gata parou?",
+  opcoes:[{t:"4º"},{t:"5º"},{t:"6º",ok:true},{t:"7º"}],
+  explica:"Começando em 0: 0 + 6 = 6, 6 − 2 = 4, 4 + 3 = 7, 7 − 1 = 6. Ela parou no <b>6º</b> andar."
+},
+{
+  tipo:"Elevador", cena:"🛗 🏢 topo?",
+  historia:"Um menino entrou no 3º andar. Subiu 5 (e nesse ponto tocou o ÚLTIMO andar do prédio), depois desceu 6 e parou no 2º.",
+  pergunta:"Qual é o ÚLTIMO andar do prédio?",
+  opcoes:[{t:"7º"},{t:"8º",ok:true},{t:"9º"},{t:"10º"}],
+  explica:"Ele entrou no 3º e subiu 5: 3 + 5 = 8. Esse foi o ponto mais alto, onde tocou o topo. (Conferindo o resto: 8 − 6 = 2, certo.) O último andar é o <b>8º</b>."
+},
+{
+  tipo:"Elevador", cena:"🛗 ⬆️",
+  historia:"Um cachorro entrou no 10º andar. Desceu 4, desceu 3, subiu 2 e parou.",
+  pergunta:"Em que andar ele parou?",
+  opcoes:[{t:"3º"},{t:"4º"},{t:"5º",ok:true},{t:"6º"}],
+  explica:"10 − 4 = 6, 6 − 3 = 3, 3 + 2 = 5. Ele parou no <b>5º</b> andar."
+},
+
+/* === DEDUÇÃO DE CÓDIGO / SIGLAS === */
+{
+  tipo:"Código", cena:"🔢 cofre",
+  historia:"O cofre tem um número secreto de 3 algarismos.<br>• 140 → nenhum algarismo está certo.<br>• 758 → o 7 e o 5 estão certos e nos lugares certos (1ª e 2ª casas); o 8 não serve.<br>• 152 → o 5 e o 2 estão certos e nos lugares certos (2ª e 3ª casas).",
+  pergunta:"Qual é o número do cofre?",
+  opcoes:[{t:"572"},{t:"725"},{t:"752",ok:true},{t:"257"}],
+  explica:"De 758, o 7 fica na 1ª casa e o 5 na 2ª. De 152, o 2 fica na 3ª casa (e confirma o 5 na 2ª). De 140, nada de 1, 4 ou 0. Montando: 7 (1ª), 5 (2ª), 2 (3ª) = <b>752</b>."
+},
+{
+  tipo:"Sigla", cena:"🔤 ❓❓❓",
+  historia:"Uma senha de 3 letras. Comparando:<br>• SOL → nenhuma letra em comum.<br>• CIA → tem 2 letras certas e nos lugares certos (a 2ª e a 3ª); o C não serve.<br>• LAB → tem o A e o B, mas os dois em lugares errados.",
+  pergunta:"Qual é a senha?",
+  opcoes:[{t:"FIA"},{t:"VIA"},{t:"DIA"},{t:"BIA",ok:true}],
+  explica:"De CIA, as 2ª e 3ª letras são I e A. De LAB, o B está na senha mas fora do lugar — então o B só pode ir na 1ª casa. De SOL, nada de S, O ou L. Montando: B (1ª), I (2ª), A (3ª) = <b>BIA</b>."
+},
+{
+  tipo:"Cor", cena:"🎨 sequência secreta",
+  historia:"Uma fila secreta de 3 cores entre vermelho, azul e verde.<br>• A 1ª cor NÃO é vermelho.<br>• A 3ª cor é verde.<br>• Não há cores repetidas.",
+  pergunta:"Qual é a 1ª cor da fila?",
+  opcoes:[{t:"Vermelho"},{t:"Azul",ok:true},{t:"Verde"},{t:"Não dá para saber"}],
+  explica:"A 3ª é verde. A 1ª não é vermelho nem pode ser verde (já usado), então a 1ª é azul. (E o vermelho fica no meio.) Resposta: <b>azul</b>."
+},
+
+/* === VERDADE E MENTIRA === */
+{
+  tipo:"Verdade ou mentira", cena:"🏝️ 😇/🤥",
+  historia:"Numa ilha, cada pessoa SEMPRE fala a verdade ou SEMPRE mente. Você encontra Tom e Ema.<br>Tom diz: \"Nós dois mentimos.\"",
+  pergunta:"O que dá para concluir?",
+  opcoes:[{t:"Tom mente e Ema fala a verdade",ok:true},{t:"Os dois mentem"},{t:"Os dois falam a verdade"},{t:"Tom fala a verdade"}],
+  explica:"Se Tom falasse a verdade, ele estaria dizendo que ele mesmo mente — impossível. Então Tom mente. Como ele mentiu ao dizer \"nós dois mentimos\", não é verdade que os dois mentem — logo Ema fala a verdade. Resposta: <b>Tom mente e Ema fala a verdade</b>."
+},
+{
+  tipo:"Verdade ou mentira", cena:"🚪🚪 2 portas",
+  historia:"Há duas portas: uma leva ao tesouro, a outra não. Cada guarda sempre mente ou sempre fala a verdade. O guarda sincero sempre aponta a porta do tesouro.<br>Um guarda que SEMPRE diz a verdade aponta a porta da esquerda.",
+  pergunta:"Onde está o tesouro?",
+  opcoes:[{t:"Na porta da esquerda",ok:true},{t:"Na porta da direita"},{t:"Não dá para saber"}],
+  explica:"Quem sempre fala a verdade aponta a porta certa. Como ele apontou a esquerda, o tesouro está na <b>porta da esquerda</b>."
+},
+{
+  tipo:"Verdade ou mentira", cena:"🍰 3 amigos",
+  historia:"Alguém comeu o bolo. Cada um falou uma frase, e sabe-se que <b>só UMA</b> dessas frases é verdadeira:<br>• Ana: \"Não fui eu.\"<br>• Bia: \"Não fui eu.\"<br>• Cau: \"Foi a Ana.\"",
+  pergunta:"Quem comeu o bolo?",
+  opcoes:[{t:"Ana"},{t:"Bia",ok:true},{t:"Cau"},{t:"Não dá para saber"}],
+  explica:"Testando cada um: se a culpada for a Bia, então \"não fui eu\" da Ana é verdade, mas a da Bia é mentira, e a de Cau (\"foi a Ana\") também é mentira — fica exatamente UMA frase verdadeira, como o enunciado pede. Com Ana ou Cau dariam duas frases verdadeiras. Logo, foi a <b>Bia</b>."
+},
+
+/* === SILOGISMOS (todo / algum / nenhum) === */
+{
+  tipo:"Silogismo", cena:"🐱 ➡️ 🐾",
+  historia:"São verdadeiras: \"Todo gato é um animal\" e \"Existem animais que dormem de dia\".",
+  pergunta:"O que é COM CERTEZA verdade?",
+  opcoes:[{t:"Se existe um gato, ele é um animal",ok:true},{t:"Todo gato dorme de dia"},{t:"Algum animal que dorme de dia é gato"},{t:"Todo animal é gato"}],
+  explica:"\"Todo gato é animal\" garante que qualquer gato é animal. As outras afirmam coisas que as frases não provam (nem todo gato dorme de dia; nem todo animal é gato). Resposta: <b>se existe um gato, ele é um animal</b>."
+},
+{
+  tipo:"Silogismo", cena:"🌹 ➡️ 🌿",
+  historia:"São verdadeiras: \"Toda rosa é uma flor\" e \"Nenhuma flor é um animal\".",
+  pergunta:"Então é certo que:",
+  opcoes:[{t:"Nenhuma rosa é animal",ok:true},{t:"Toda flor é rosa"},{t:"Alguma rosa é animal"},{t:"Todo animal é flor"}],
+  explica:"Se toda rosa é flor e nenhuma flor é animal, então nenhuma rosa pode ser animal. Resposta: <b>nenhuma rosa é animal</b>."
+},
+{
+  tipo:"Silogismo", cena:"⚽ ➡️ 🏃",
+  historia:"São verdadeiras: \"Todos os jogadores correm\" e \"Pedro é um jogador\".",
+  pergunta:"Logo, é certo que:",
+  opcoes:[{t:"Pedro corre",ok:true},{t:"Todo mundo que corre é jogador"},{t:"Pedro não corre"},{t:"Só jogadores correm"}],
+  explica:"Se todos os jogadores correm e Pedro é jogador, então Pedro corre. As outras tentam inverter a regra, o que não é garantido. Resposta: <b>Pedro corre</b>."
+},
+{
+  tipo:"Silogismo", cena:"🍎 ➡️ 🌳",
+  historia:"São verdadeiras: \"Algumas frutas são doces\" e \"Toda maçã é uma fruta\".",
+  pergunta:"O que NÃO podemos garantir?",
+  opcoes:[{t:"Que toda maçã é doce",ok:true},{t:"Que a maçã é uma fruta"},{t:"Que existem frutas doces"},{t:"Que a maçã pode ser uma fruta"}],
+  explica:"Sabemos que ALGUMAS frutas são doces — não TODAS. Então não dá para garantir que toda maçã seja doce. As outras três são certas. A que NÃO podemos garantir é <b>que toda maçã é doce</b>."
+},
+{
+  tipo:"Notas", cena:"📝 A B C D E",
+  historia:"Cinco alunos (A, B, C, D, E) e suas notas na prova:<br>• A tirou nota maior que C;<br>• C tirou nota maior que D;<br>• B foi o melhor de todos;<br>• E não ficou em último.",
+  pergunta:"Quem tirou a MENOR nota?",
+  opcoes:[{t:"A"},{t:"B"},{t:"C"},{t:"D",ok:true},{t:"E"}],
+  explica:"B é o melhor (1º). A > C > D coloca D bem no fim. Como E não é o último, o último só pode ser o <b>D</b>. (Uma ordem possível: B, A, C, E, D.)"
+}
+
+];
+
+let indice=0, pontos=0, respondida=false;
+const tela=document.getElementById("tela");
+const cores=["#7F77DD","#1D9E75","#D85A30","#378ADD","#EF9F27"];
+
+function render(){
+  respondida=false;
+  const a=ATIVIDADES[indice];
+  document.getElementById("num").textContent=indice+1;
+  document.getElementById("prog").style.width=(indice/ATIVIDADES.length*100)+"%";
+  const cor=cores[indice%cores.length];
+  let html=`<div class="cartao">
+    <span class="faixa" style="background:${cor}22;color:${cor}">${a.tipo}</span>
+    <div class="cena">${a.cena}</div>
+    <div class="historia">${a.historia}</div>
+    <div class="pergunta">${a.pergunta}</div>
+    <div class="opcoes" id="opcoes">`;
+  a.opcoes.forEach((o,i)=>{
+    const letra=String.fromCharCode(65+i);
+    html+=`<button class="opt" data-i="${i}"><span class="letra">${letra}</span><span>${o.t}</span></button>`;
+  });
+  html+=`</div>
+    <div class="feedback" id="feedback"></div>
+    <div class="acoes">
+      <button class="nav btn-ouvir" id="ouvir">🔊 Ouvir o desafio</button>
+      <button class="nav btn-prox" id="prox">Próximo →</button>
+    </div></div>`;
+  tela.innerHTML=html;
+  document.querySelectorAll(".opt").forEach(b=>{
+    b.onclick=()=>responder(parseInt(b.dataset.i),b);
+    const ler=()=>falarTexto(a.opcoes[parseInt(b.dataset.i)].t);
+    b.addEventListener("mouseenter",ler);
+    b.addEventListener("touchstart",ler,{passive:true});
+  });
+  document.getElementById("ouvir").onclick=()=>falar(a);
+  document.getElementById("prox").onclick=avancar;
+}
+
+function responder(i,btn){
+  if(respondida)return;
+  respondida=true;
+  const a=ATIVIDADES[indice];
+  const acertou=!!a.opcoes[i].ok;
+  document.querySelectorAll(".opt").forEach((b,j)=>{
+    b.classList.add("desabilitado");
+    if(a.opcoes[j].ok)b.classList.add("certo");
+  });
+  if(!acertou)btn.classList.add("errado");
+  const letraCerta=String.fromCharCode(65+a.opcoes.findIndex(o=>o.ok));
+  const fb=document.getElementById("feedback");
+  fb.style.display="block";
+  if(acertou){
+    pontos++; document.getElementById("placar").textContent=pontos;
+    fb.className="feedback ok";
+    fb.innerHTML=`<div class="titulo">🎉 Parabéns, você acertou!</div><div>${a.explica}</div><div class="gab">✅ Gabarito: alternativa ${letraCerta}.</div>`;
+  }else{
+    fb.className="feedback nao";
+    fb.innerHTML=`<div class="titulo">🤔 Não foi dessa vez. Vamos entender:</div><div>${a.explica}</div><div class="gab">✅ Gabarito: alternativa ${letraCerta}.</div>`;
+  }
+  falar(a,acertou);
+  document.getElementById("prox").style.display="block";
+  document.getElementById("prox").textContent = indice<ATIVIDADES.length-1 ? "Próximo →" : "Ver resultado 🏆";
+}
+
+function avancar(){ indice++; if(indice>=ATIVIDADES.length){fim();return;} render(); }
+
+function fim(){
+  document.getElementById("prog").style.width="100%";
+  const msg = pontos>=16 ? "Você é um Detetive Mestre da Lógica!" : pontos>=10 ? "Muito bem! Raciocínio afiado!" : "Bom começo! Tente de novo e melhore.";
+  tela.innerHTML=`<div class="cartao fim"><div class="trofeu">🏆</div><h2>Investigação concluída!</h2><div class="placar">⭐ ${pontos} de ${ATIVIDADES.length}</div><p>${msg}</p><button onclick="reiniciar()">Jogar de novo 🔄</button></div>`;
+}
+function reiniciar(){ indice=0; pontos=0; document.getElementById("placar").textContent=0; render(); }
+
+function falar(a,acertou){
+  if(!('speechSynthesis' in window))return;
+  speechSynthesis.cancel();
+  let txt = acertou===undefined ? limpar(a.historia)+". "+a.pergunta : (acertou?"Parabéns, você acertou! ":"Não foi dessa vez. ")+limpar(a.explica);
+  const u=new SpeechSynthesisUtterance(txt); u.lang="pt-BR"; u.rate=0.95; speechSynthesis.speak(u);
+}
+function falarTexto(t){
+  if(!('speechSynthesis' in window))return;
+  const limpo=t.replace(/^[a-eA-E]\)\s*/,"").replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,"").replace(/\s+/g," ").trim();
+  if(!limpo)return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(limpo); u.lang="pt-BR"; u.rate=0.95; speechSynthesis.speak(u);
+}
+function limpar(s){ return s.replace(/<[^>]+>/g," ").replace(/&[a-z]+;/g," ").replace(/\s+/g," ").trim(); }
+
+render();
+</script>
+</body>
+</html>
