@@ -49,7 +49,6 @@
   .acoes{display:flex;gap:10px;margin-top:18px;}
   button.nav{flex:1;font-family:inherit;font-size:16px;font-weight:700;padding:14px;border:none;border-radius:14px;cursor:pointer;transition:transform .08s;}
   button.nav:active{transform:scale(.97);}
-  .btn-ouvir{background:#EEF2FA;color:var(--suave);}
   .btn-prox{background:var(--verde);color:#fff;display:none;}
   .fim{text-align:center;padding:30px 18px;}
   .fim .trofeu{font-size:80px;}
@@ -72,7 +71,6 @@
   </div>
   <div class="progresso"><div id="prog"></div></div>
   <div id="tela"></div>
-  <p class="dica">💡 Passe o mouse (ou encoste o dedo) numa opção para ouvi-la.</p>
 </div>
 
 <script>
@@ -253,17 +251,12 @@ function render(){
   html+=`</div>
     <div class="feedback" id="feedback"></div>
     <div class="acoes">
-      <button class="nav btn-ouvir" id="ouvir">🔊 Ouvir o desafio</button>
       <button class="nav btn-prox" id="prox">Próximo →</button>
     </div></div>`;
   tela.innerHTML=html;
   document.querySelectorAll(".opt").forEach(b=>{
     b.onclick=()=>responder(parseInt(b.dataset.i),b);
-    const ler=()=>falarTexto(a.opcoes[parseInt(b.dataset.i)].t);
-    b.addEventListener("mouseenter",ler);
-    b.addEventListener("touchstart",ler,{passive:true});
   });
-  document.getElementById("ouvir").onclick=()=>falar(a);
   document.getElementById("prox").onclick=avancar;
 }
 
@@ -288,7 +281,6 @@ function responder(i,btn){
     fb.className="feedback nao";
     fb.innerHTML=`<div class="titulo">🤔 Não foi dessa vez. Vamos entender:</div><div>${a.explica}</div><div class="gab">✅ Gabarito: alternativa ${letraCerta}.</div>`;
   }
-  falar(a,acertou);
   document.getElementById("prox").style.display="block";
   document.getElementById("prox").textContent = indice<ATIVIDADES.length-1 ? "Próximo →" : "Ver resultado 🏆";
 }
@@ -302,20 +294,6 @@ function fim(){
 }
 function reiniciar(){ indice=0; pontos=0; document.getElementById("placar").textContent=0; render(); }
 
-function falar(a,acertou){
-  if(!('speechSynthesis' in window))return;
-  speechSynthesis.cancel();
-  let txt = acertou===undefined ? limpar(a.historia)+". "+a.pergunta : (acertou?"Parabéns, você acertou! ":"Não foi dessa vez. ")+limpar(a.explica);
-  const u=new SpeechSynthesisUtterance(txt); u.lang="pt-BR"; u.rate=0.95; speechSynthesis.speak(u);
-}
-function falarTexto(t){
-  if(!('speechSynthesis' in window))return;
-  const limpo=t.replace(/^[a-eA-E]\)\s*/,"").replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]/gu,"").replace(/\s+/g," ").trim();
-  if(!limpo)return;
-  speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(limpo); u.lang="pt-BR"; u.rate=0.95; speechSynthesis.speak(u);
-}
-function limpar(s){ return s.replace(/<[^>]+>/g," ").replace(/&[a-z]+;/g," ").replace(/\s+/g," ").trim(); }
 
 render();
 </script>
