@@ -57,6 +57,24 @@
   .fim p{color:var(--suave);font-size:15px;margin-bottom:20px;}
   .fim button{font-family:inherit;font-size:17px;font-weight:700;padding:14px 30px;background:var(--azul);color:#fff;border:none;border-radius:14px;cursor:pointer;}
   .dica{font-size:12px;color:var(--suave);text-align:center;margin-top:10px;}
+  /* Tela inicial de nome */
+  .inicio{text-align:center;padding:30px 20px;}
+  .inicio .emoji{font-size:70px;}
+  .inicio h2{font-size:23px;color:var(--azul);margin:10px 0 6px;}
+  .inicio p{color:var(--suave);font-size:15px;margin-bottom:18px;}
+  .inicio input{width:100%;font-family:inherit;font-size:18px;padding:14px 16px;border:3px solid #DDE3EF;border-radius:14px;text-align:center;margin-bottom:8px;}
+  .inicio input:focus{outline:none;border-color:var(--azul);}
+  .inicio .aviso{font-size:13px;color:var(--vermelho);min-height:18px;margin-bottom:8px;}
+  .inicio button{font-family:inherit;font-size:18px;font-weight:700;padding:14px 30px;background:var(--verde);color:#fff;border:none;border-radius:14px;cursor:pointer;width:100%;}
+  /* Boletim final para fotografar */
+  .boletim{border:3px solid var(--azul);}
+  .boletim .nome-aluno{font-size:24px;font-weight:700;color:var(--texto);margin:4px 0 2px;}
+  .boletim .data-hora{font-size:15px;color:var(--suave);margin-bottom:14px;}
+  .boletim .nota-grande{font-size:54px;font-weight:800;line-height:1;margin:6px 0;}
+  .boletim .nota-grande.aprov{color:var(--verde);}
+  .boletim .nota-grande.reprov{color:var(--coral);}
+  .boletim .selo{font-size:16px;font-weight:700;margin-top:6px;}
+  .boletim .foto-aviso{font-size:13px;color:var(--suave);margin-top:16px;border-top:1px dashed #DDE3EF;padding-top:12px;}
 </style>
 </head>
 <body>
@@ -65,11 +83,11 @@
     <h1>🔎 Detetives da Lógica</h1>
     <p>20 desafios de raciocínio — para 9 a 12 anos</p>
   </header>
-  <div class="barra">
+  <div class="barra" id="barra" style="display:none;">
     <span class="nivel">Desafio <span id="num">1</span>/20</span>
     <span class="estrelas">⭐ <span id="placar">0</span></span>
   </div>
-  <div class="progresso"><div id="prog"></div></div>
+  <div class="progresso" id="progressoWrap" style="display:none;"><div id="prog"></div></div>
   <div id="tela"></div>
 </div>
 
@@ -301,7 +319,7 @@ const RECUPERACAO = [
 }
 ];
 
-let indice=0, pontos=0, respondida=false, emRecuperacao=false, fonte=null;
+let indice=0, pontos=0, respondida=false, emRecuperacao=false, fonte=null, nomeAluno="";
 const tela=document.getElementById("tela");
 const cores=["#7F77DD","#1D9E75","#D85A30","#378ADD","#EF9F27"];
 
@@ -382,12 +400,35 @@ function avancar(){
 
 function nota(){ return pontos*VALOR; }
 
+function dataHora(){
+  const d=new Date();
+  const p=n=>String(n).padStart(2,"0");
+  return `${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()} às ${p(d.getHours())}:${p(d.getMinutes())}`;
+}
+
+// Boletim final para o professor fotografar: nome, nota e data/hora.
+function boletim(titulo, emoji, n, aprovado){
+  const classe = aprovado ? "aprov" : "reprov";
+  const selo = aprovado
+    ? '<div class="selo" style="color:var(--verde)">✅ APROVADO</div>'
+    : '<div class="selo" style="color:var(--coral)">📚 NÃO ATINGIU 60</div>';
+  return `<div class="cartao fim boletim">
+    <div class="trofeu">${emoji}</div>
+    <h2>${titulo}</h2>
+    <div class="nome-aluno">${nomeAluno}</div>
+    <div class="data-hora">${dataHora()}</div>
+    <div class="nota-grande ${classe}">${n}<span style="font-size:24px;color:var(--suave)"> / 100</span></div>
+    ${selo}
+    <div class="foto-aviso">📸 Professor(a): este é o resultado final. Tire a foto desta tela para registrar a nota.</div>
+  </div>`;
+}
+
 function fimPrincipal(){
   document.getElementById("prog").style.width="100%";
   const n=nota();
   if(n>=META){
-    const msg = n>=85 ? "Você é um Detetive Mestre da Lógica!" : "Muito bem! Você foi aprovado!";
-    tela.innerHTML=`<div class="cartao fim"><div class="trofeu">🏆</div><h2>Aprovado!</h2><div class="placar">📋 Nota: ${n} de 100</div><p>${msg}</p><button onclick="reiniciar()">Jogar de novo 🔄</button></div>`;
+    const titulo = n>=85 ? "Detetive Mestre!" : "Aprovado!";
+    tela.innerHTML=boletim(titulo, n>=85?"🏆":"🎉", n, true);
   } else {
     tela.innerHTML=`<div class="cartao fim"><div class="trofeu">💪</div><h2>Quase lá!</h2><div class="placar">📋 Nota: ${n} de 100</div><p>Você precisa de <b>60 pontos</b> para passar. Vamos para a <b>recuperação</b>! Cada acerto vale mais 5 pontos. O exame termina assim que você chegar a 60.</p><button onclick="iniciarRecuperacao()">Começar recuperação →</button></div>`;
   }
@@ -401,16 +442,38 @@ function fimRecuperacao(){
   document.getElementById("prog").style.width="100%";
   const n=nota();
   if(n>=META){
-    tela.innerHTML=`<div class="cartao fim"><div class="trofeu">🎉</div><h2>Recuperado!</h2><div class="placar">📋 Nota final: ${n} de 100</div><p>Você alcançou os 60 pontos na recuperação. Parabéns, exame concluído!</p><button onclick="reiniciar()">Jogar de novo 🔄</button></div>`;
+    tela.innerHTML=boletim("Recuperado!", "🎉", n, true);
   } else {
-    tela.innerHTML=`<div class="cartao fim"><div class="trofeu">📚</div><h2>Exame encerrado</h2><div class="placar">📋 Nota final: ${n} de 100</div><p>As questões de recuperação acabaram. Vale a pena revisar os desafios e tentar de novo — você consegue!</p><button onclick="reiniciar()">Tentar de novo 🔄</button></div>`;
+    tela.innerHTML=boletim("Exame encerrado", "📚", n, false);
   }
 }
 
-function reiniciar(){ indice=0; pontos=0; emRecuperacao=false; document.getElementById("placar").textContent=0; render(); }
 
 
-render();
+function telaInicio(){
+  tela.innerHTML=`<div class="cartao inicio">
+    <div class="emoji">🔎</div>
+    <h2>Detetives da Lógica</h2>
+    <p>Antes de começar, escreva seu nome completo:</p>
+    <input id="campoNome" type="text" placeholder="Seu nome aqui" autocomplete="off" maxlength="40">
+    <div class="aviso" id="avisoNome"></div>
+    <button id="btnComecar">Começar o exame →</button>
+  </div>`;
+  const campo=document.getElementById("campoNome");
+  campo.focus();
+  function comecar(){
+    const v=campo.value.trim();
+    if(v.length<2){ document.getElementById("avisoNome").textContent="Por favor, escreva seu nome para continuar."; campo.focus(); return; }
+    nomeAluno=v.replace(/[<>&]/g,"");
+    document.getElementById("barra").style.display="flex";
+    document.getElementById("progressoWrap").style.display="block";
+    render();
+  }
+  document.getElementById("btnComecar").onclick=comecar;
+  campo.addEventListener("keydown",e=>{ if(e.key==="Enter") comecar(); });
+}
+
+telaInicio();
 </script>
 </body>
 </html>
