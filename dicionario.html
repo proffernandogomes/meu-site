@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Escola de A a Z</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: 'Comic Sans MS', 'Trebuchet MS', sans-serif;
+    background: #fdf6e3 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='2' fill='%23f0e0b0'/%3E%3C/svg%3E");
+    display:flex; min-height:100vh; overflow-x:hidden;
+  }
+
+  /* ===== LIVRO ===== */
+  #livro {
+    flex:1; min-width:0; display:flex; flex-direction:column;
+    padding:20px; max-width:100%;
+  }
+
+  header {
+    text-align:center; margin-bottom:14px;
+  }
+  header h1 {
+    font-size:clamp(22px,4.6vw,44px);
+    letter-spacing:2px;
+    display:inline-block;
+  }
+  header h1 span {
+    display:inline-block;
+    color:#fff; padding:2px 10px; margin:2px;
+    border-radius:6px; transform:rotate(var(--r));
+    box-shadow:2px 2px 0 rgba(0,0,0,.2);
+  }
+  header p { color:#8a6d3b; font-size:15px; margin-top:8px; }
+
+  /* ===== ÁREA DE CONTEÚDO ===== */
+  #painel {
+    background:#fff; border-radius:20px;
+    box-shadow:0 8px 0 rgba(0,0,0,.12), 0 0 0 6px #fff inset;
+    padding:22px; flex:1; overflow-y:auto;
+    border:5px solid #333;
+  }
+
+  #letraGrande {
+    font-size:64px; font-weight:bold; text-align:center;
+    color:#fff; width:100px; height:100px; line-height:100px;
+    margin:0 auto 20px; border-radius:24px;
+    box-shadow:4px 4px 0 rgba(0,0,0,.2);
+  }
+
+  #cards { display:flex; justify-content:center; }
+
+  .palavra-card {
+    background:#fffdf6; border-radius:22px; padding:26px;
+    max-width:640px; width:100%; text-align:center;
+    border:4px solid #333;
+    box-shadow:0 6px 0 rgba(0,0,0,.15);
+  }
+  .palavra-emoji { font-size:60px; display:block; margin-bottom:4px; }
+
+  .palavra-inteira {
+    display:inline-block; padding:8px 22px; margin-bottom:14px;
+    border-radius:10px; color:#fff;
+    font-size:40px; font-weight:900; letter-spacing:1px; cursor:pointer;
+    user-select:none; box-shadow:3px 3px 0 rgba(0,0,0,.2);
+    transform:rotate(var(--r));
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .palavra-inteira.ativa {
+    transform:scale(1.12) rotate(0deg); box-shadow:0 7px 0 rgba(0,0,0,.3);
+  }
+
+  .palavra-titulo { margin:8px 0 6px; }
+  .silaba {
+    display:inline-block; padding:6px 12px; margin:4px;
+    border-radius:8px; color:#fff;
+    font-size:30px; font-weight:800; cursor:pointer; user-select:none;
+    box-shadow:2px 2px 0 rgba(0,0,0,.2);
+    transform:rotate(var(--r));
+    transition:transform .15s ease, box-shadow .15s ease;
+  }
+  .silaba.ativa {
+    transform:scale(1.35) rotate(0deg);
+    box-shadow:0 6px 0 rgba(0,0,0,.28);
+    position:relative; z-index:2;
+  }
+  .separador { display:inline-block; padding:0 2px; font-size:30px; font-weight:800; color:#ccc; }
+
+  .silabas-guia {
+    font-size:14px; color:#999; font-style:italic; margin-bottom:16px;
+  }
+
+  .definicao {
+    font-size:17px; line-height:1.65; text-align:left;
+    background:#f7f3e4; border-radius:14px; padding:16px 18px;
+    color:#3a2f1c;
+  }
+
+  .btn-ouvir {
+    margin-top:18px; font-family:inherit; font-size:16px; font-weight:bold;
+    padding:10px 24px; border:none; border-radius:14px; color:#fff;
+    cursor:pointer; box-shadow:0 4px 0 rgba(0,0,0,.25);
+  }
+  .btn-ouvir:active { transform:translateY(3px); box-shadow:0 1px 0 rgba(0,0,0,.25); }
+
+  /* ===== GUIAS LATERAIS ===== */
+  #guias {
+    width:78px; flex-shrink:0; background:#e9d8a6;
+    display:flex; flex-direction:column;
+    padding:10px 0; gap:3px; overflow-y:auto;
+    border-left:4px solid #333;
+  }
+  #guias::-webkit-scrollbar { width:6px; }
+  #guias::-webkit-scrollbar-thumb { background:#bfa76a; border-radius:3px; }
+
+  .guia {
+    font-size:24px; font-weight:bold; color:#fff;
+    border:none; cursor:pointer;
+    padding:9px 0; margin-left:14px;
+    border-radius:12px 0 0 12px;
+    box-shadow:-3px 3px 0 rgba(0,0,0,.2);
+    transition:margin-left .15s, transform .15s;
+    font-family:inherit;
+  }
+  .guia:hover { margin-left:4px; }
+  .guia.ativa { margin-left:0; transform:scale(1.08); box-shadow:-5px 4px 0 rgba(0,0,0,.3); }
+
+  @media(max-width:600px){
+    #guias{width:56px}
+    .guia{font-size:19px;padding:7px 0}
+    .silaba{font-size:22px}
+    .separador{font-size:22px}
+    .palavra-inteira{font-size:28px; padding:6px 16px}
+  }
+</style>
+</head>
+<body>
+
+<div id="livro">
+  <header>
+    <h1 id="titulo"></h1>
+    <p>Passe o mouse pelas sílabas para ouvir e clique nas guias para trocar de letra! ✨</p>
+  </header>
+  <div id="painel">
+    <div id="letraGrande">A</div>
+    <div id="cards"></div>
+  </div>
+</div>
+
+<nav id="guias"></nav>
+
+<script>
+const cores = ["#e63946","#f4a261","#e9c46a","#2a9d8f","#457b9d","#9d4edd","#ff6392","#06d6a0","#118ab2","#ef476f"];
+
+const dic = {
+A:{emoji:"📚", palavra:"AULA", silabas:["AU","LA"],
+   definicao:"AULA É ONDE TEM ATIVIDADES PARA A GENTE FICAR MAIS INTELIGENTE. A AULA É LEGAL, PORQUE A GENTE APRENDE COISAS NOVAS E FICA MAIS CONTENTE."},
+B:{emoji:"🧸", palavra:"BRINQUEDO", silabas:["BRIN","QUE","DO"],
+   definicao:"BRINQUEDO É ALGO QUE AJUDA AS CRIANÇAS A SE SENTIREM ALEGRES, SE DIVERTIREM E NÃO FICAREM NA TELA O DIA INTEIRO. É UMA COISA QUE A GENTE PENSA E DEPOIS FAZ."},
+C:{emoji:"🤝", palavra:"COLEGA", silabas:["CO","LE","GA"],
+   definicao:"É ALGUÉM QUE AJUDA A GENTE QUANDO NÃO SABEMOS DE ALGUMA COISA OU QUANDO PRECISAMOS DE ALGO. É UMA PESSOA PEQUENA, UM AMIGO PARA BRINCAR E FAZER GRUPO PARA ESTUDAR."},
+D:{emoji:"📖", palavra:"DICIONÁRIO", silabas:["DI","CIO","NÁ","RIO"],
+   definicao:"É UM LIVRO COM MUITAS PALAVRAS E ELAS ESTÃO EM ORDEM ALFABÉTICA. O DICIONÁRIO SERVE PARA LER E SABER O SIGNIFICADO DAS COISAS. ELE TAMBÉM FOI FEITO PARA A GENTE DESCOBRIR PALAVRAS QUE NUNCA VIU E SABER COM QUE LETRAS SE ESCREVE UMA PALAVRA QUANDO TEMOS DÚVIDAS."},
+E:{emoji:"🏫", palavra:"ESCOLA", silabas:["ES","CO","LA"],
+   definicao:"ESCOLA É UM LUGAR PARA APRENDER, BRINCAR NA PRAÇA, FAZER AMIGOS E RETIRAR LIVROS NA BIBLIOTECA. É ONDE A GENTE CONHECE PESSOAS NOVAS, ESTUDA, APRENDE A LER E ESCREVER."},
+F:{emoji:"🌸", palavra:"FLOR", silabas:["FLOR"],
+   definicao:"FLOR É UMA PLANTA BONITA E CHEIROSA, QUE ENFEITA O JARDIM E TAMBÉM O CABELO."},
+G:{emoji:"🌀", palavra:"GIRA-GIRA", silabas:["GIRA","-","GIRA"],
+   definicao:"GIRA-GIRA É UM BRINQUEDO QUE NÃO FOI FEITO PARA FICAR PARADO. SERVE PARA BRINCAR GIRANDO, GIRANDO, MAS NÃO PODE SER USADO DEPOIS DO ALMOÇO, PORQUE A GENTE PODE PASSAR MAL."},
+H:{emoji:"📜", palavra:"HISTÓRIA", silabas:["HIS","TÓ","RIA"],
+   definicao:"HISTÓRIA É O NOME DE UMA AULA QUE ENSINA COISAS DO PASSADO. TAMBÉM É UM CONTO QUE AS PESSOAS INVENTAM, COMO OS CONTOS DE FADAS."},
+I:{emoji:"💡", palavra:"IDEIA", silabas:["I","DEI","A"],
+   definicao:"IDEIA É QUANDO VEM ALGO NA CABEÇA QUE A GENTE PODE INVENTAR. É QUANDO, POR EXEMPLO, A GENTE ENCONTRA UMA GARRAFA, ENTÃO PENSA E TEM A IDEIA DO QUE PODE FAZER COM ELA."},
+J:{emoji:"🎲", palavra:"JOGO", silabas:["JO","GO"],
+   definicao:"JOGO É ALGO PARA A GENTE BRINCAR E FICAR FELIZ. TEM REGRAS, COMEÇO, MEIO E FIM. PODE TER RODADAS, CARTELAS, LETRAS E NÚMEROS. SEMPRE TEM UM VENCEDOR E UM PERDEDOR E, TAMBÉM, DÁ PARA CONVIDAR AMIGOS PARA JOGAR."},
+K:{emoji:"🔤", palavra:"K", silabas:["CÁ"],
+   definicao:"K É UMA LETRA QUE TEM O MESMO SOM DA LETRA /Q/ E DA LETRA /C/, QUANDO ELA VEM JUNTO DAS VOGAIS /A/, /O/ E /U/. ELA APARECE EM NOMES COMO KEVYN."},
+L:{emoji:"✏️", palavra:"LÁPIS", silabas:["LÁ","PIS"],
+   definicao:"O LÁPIS SERVE PARA FAZER ATIVIDADES NA ESCOLA, ANOTAR E LEMBRAR DAS COISAS. ELE É FEITO DE MADEIRA E A PARTE DE DENTRO É PARECIDA COM CINZAS E SUJEIRAS DAS CAVERNAS."},
+M:{emoji:"🎵", palavra:"MÚSICA", silabas:["MÚ","SI","CA"],
+   definicao:"MÚSICA É UM SOM PARA ESCUTAR, TOCAR E CANTAR. TEM RITMOS, BATIDAS E INSTRUMENTOS. ELA SERVE PARA RELAXAR E TAMBÉM PARA ANIMAR."},
+N:{emoji:"🌿", palavra:"NATUREZA", silabas:["NA","TU","RE","ZA"],
+   definicao:"NATUREZA É TUDO ISSO: ÁRVORES, FLORES, GRAMA, AR, CÉU, PESSOAS, BICHOS, TERRA, PLANTAS, RIOS E MARES. NA NATUREZA TEM MUITA BELEZA E ELA PRECISA SER CUIDADA COM DELICADEZA. SEM A NATUREZA, NÃO EXISTIRIA A BORBOLETA COR VIOLETA."},
+O:{emoji:"🚌", palavra:"ÔNIBUS", silabas:["Ô","NI","BUS"],
+   definicao:"ÔNIBUS É UM CARRO GRANDE QUE LEVA AS PESSOAS PARA LÁ E PARA CÁ. TEM MOTOR, RODAS E JANELAS. É UM TRANSPORTE QUE LEVA AS CRIANÇAS PARA A ESCOLA E PARA CASA, PARA NÃO ANDAREM SOZINHAS A PÉ, PORQUE AINDA NÃO TÊM IDADE. ELE TAMBÉM SERVE PARA VIAJAR."},
+P:{emoji:"👩‍🏫", palavra:"PROFESSORA", silabas:["PRO","FES","SO","RA"],
+   definicao:"A PROFESSORA AJUDA AS CRIANÇAS A APRENDER, DÁ AULA E CARINHO. A PROFESSORA É TUDO. DÁ AULA, ENSINA, DEIXA A GENTE COMER NO LANCHE E IR NO PARQUINHO PARA BRINCAR. ELA PRESTA MUITA ATENÇÃO NOS PERÍODOS, PORQUE, SENÃO, COMO A GENTE IA FAZER ATIVIDADES, BRINCAR, LANCHAR, IR EMBORA E FAZER TUDO?"},
+Q:{emoji:"🖍️", palavra:"QUADRO", silabas:["QUA","DRO"],
+   definicao:"QUADRO É COMO UMA FOLHA GIGANTE E É USADO PARA DESENHAR E ESCREVER COM O GIZ E APAGAR COM O APAGADOR. ELE É RETANGULAR, VERDE, TEM BORDAS E É FEITO DE MADEIRA. A PROFESSORA ESCREVE NELE PARA ENSINAR OS ALUNOS, PARA ELES APRENDEREM MAIS. SERVE TAMBÉM PARA COPIAR NO CADERNO O QUE ESTÁ ESCRITO NELE (SEM ELE NÃO TEM COMO COPIAR NO CADERNO). NO QUADRO VAI DATA E AS COISAS QUE A GENTE VAI FAZER NA AULA."},
+R:{emoji:"⚽", palavra:"RECREIO", silabas:["RE","CREI","O"],
+   definicao:"O RECREIO É UM TEMPO EM QUE OS PROFESSORES LANCHAM E AS CRIANÇAS SE DIVERTEM. O RECREIO SERVE PARA BRINCAR, TOMAR ÁGUA, IR NO BANHEIRO E DESCANSAR. QUANDO O RECREIO CHEGA NA ESCOLA, AS CRIANÇAS COMEÇAM A BRINCAR. É UM MOMENTO DEPOIS DO LANCHE EM QUE AS CRIANÇAS BRINCAM. O RECREIO FOI FEITO PARA JOGAR FUTEBOL, OUTROS JOGOS E BRINCAR NA PRAÇA. O RECREIO DEIXA TODO MUNDO FELIZ. O RECREIO É BRINCAR E SE DIVERTIR COM OS AMIGOS."},
+S:{emoji:"⛪", palavra:"SÃO FRANCISCO", silabas:["SÃO"," ","FRAN","CIS","CO"],
+   definicao:"SÃO FRANCISCO FOI MUITO IMPORTANTE, PORQUE ELE CUIDAVA DOS ANIMAIS COM MUITO AMOR E CARINHO. ELE TAMBÉM ERA O PROTETOR DA NATUREZA. A HISTÓRIA DA ESCOLA SÃO FRANCISCO COMEÇA COM AS IRMÃS FRANCISCANAS E FORAM ELAS QUE DERAM O NOME DA NOSSA ESCOLA."},
+T:{emoji:"✂️", palavra:"TESOURA", silabas:["TE","SOU","RA"],
+   definicao:"A TESOURA CORTA PAPEL, PAPELÃO, TECIDO, CABELO E GRAMA. TESOURA É UM MATERIAL QUE ABRE E FECHA E CORTA TUDO. A GENTE SEGURA COM OS DEDOS NUMA PONTA E A OUTRA PARTE CORTA. ELA É DE FERRO E PODE SER DE VÁRIAS CORES. A TESOURA PODE SER PERIGOSA, PORQUE CORTA O DEDO. ELA SE PARECE COM UMA ESTRELA, TEM 2 BRAÇOS E 2 PERNAS. TAMBÉM QUANDO ABRIMOS A TESOURA ELA FORMA UM X. A TESOURA DO ESTOJO É MORADORA."},
+U:{emoji:"👕", palavra:"UNIFORME", silabas:["U","NI","FOR","ME"],
+   definicao:"UNIFORME É UMA CAMISETA, CALÇA, MOLETOM OU CASACO. É UMA ROUPA OBRIGATÓRIA PARA SER USADA NA ESCOLA. PRECISAMOS USAR UNIFORME, PORQUE SE A GENTE DESCE DO ÔNIBUS NA PARADA ERRADA, AS PESSOAS VÃO NOS RECONHECER E SABER QUE SOMOS DA SÃO FRANCISCO. O UNIFORME É IMPORTANTE PARA A NOSSA SEGURANÇA."},
+V:{emoji:"🧹", palavra:"VASSOURA", silabas:["VAS","SOU","RA"],
+   definicao:"A VASSOURA SERVE PARA LIMPAR SUJEIRA E PARA PEGAR COISAS QUE ESTÃO NO ALTO. ELA É UM CABO QUE NUMA PONTA TEM UM CABELO E ESSA PARTE É USADA PARA VARRER. A PESSOA SEGURA O CABO, VAI DANDO TAPA NO VENTO E O CHÃO FICA LIMPO."},
+W:{emoji:"🔤", palavra:"W", silabas:["DÁ","BLIO"],
+   definicao:"W É UMA LETRA QUE PODE TER O SOM DO /U/ E DO /V/. ELE APARECE EM NOMES COMO WANDINHA E WILLIAM."},
+X:{emoji:"🖨️", palavra:"XEROX", silabas:["XE","ROX"],
+   definicao:"XEROX É UMA MÁQUINA PROGRAMADA QUE FAZ CÓPIAS DE OUTRAS FOLHAS. ELA TEM FOLHAS EM BRANCO E BOTÕES QUE A GENTE APERTA PARA ESCOLHER QUANTAS CÓPIAS QUER FAZER. DEPOIS, A MÁQUINA COPIA A FOLHA QUE ESTÁ EM CIMA, TANTAS VEZES QUE A GENTE QUER."},
+Y:{emoji:"▶️", palavra:"YOUTUBE", silabas:["YOU","TU","BE"],
+   definicao:"YOUTUBE TEM NA TV E SERVE PARA ASSISTIR FILMES, DESENHOS, JOGOS, MÚSICA E VÍDEOS SOBRE QUALQUER COISA. SE POR EXEMPLO, A GENTE TEM UM BICHO E QUER SABER COMO CUIDAR DELE, É SÓ PESQUISAR NO YOUTUBE E ASSISTIR VÍDEOS QUE ENSINAM A CUIDAR DELE. NO YOUTUBE TAMBÉM PODEMOS APRENDER COMO FAZER RECEITAS."},
+Z:{emoji:"0️⃣", palavra:"ZERO", silabas:["ZE","RO"],
+   definicao:"É UM NÚMERO CIRCULAR, REDONDO COMO O OVO E A BOLA. É UM NÚMERO QUE NÃO VALE NADA QUANDO A GENTE FAZ A CONTA ZERO MAIS DEZ, PORQUE CONTINUA SENDO DEZ. ELE TAMBÉM É UM AJUDANTE DE MUITOS NÚMEROS COMO O 10, 20, 30, 40, POR EXEMPLO."}
+};
+
+const letras = Object.keys(dic);
+
+// título colorido
+const tituloTexto = "A ESCOLA DE A A Z";
+document.getElementById("titulo").innerHTML =
+  [...tituloTexto].map((c,i)=>
+    c===" " ? " " : `<span style="background:${cores[i%cores.length]};--r:${(i%2?2:-2)}deg">${c}</span>`).join("");
+
+// guias
+const nav = document.getElementById("guias");
+letras.forEach((L,i)=>{
+  const b=document.createElement("button");
+  b.className="guia"; b.textContent=L;
+  b.style.background=cores[i%cores.length];
+  b.onclick=()=>abrirLetra(L,b);
+  nav.appendChild(b);
+});
+
+function falar(texto){
+  if(!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(texto);
+  u.lang="pt-BR"; u.rate=.85;
+  speechSynthesis.speak(u);
+}
+
+function abrirLetra(L,btn){
+  document.querySelectorAll(".guia").forEach(g=>g.classList.remove("ativa"));
+  btn.classList.add("ativa");
+  const cor = btn.style.background;
+  const lg = document.getElementById("letraGrande");
+  lg.textContent=L; lg.style.background=cor;
+
+  const dados = dic[L];
+  const box = document.getElementById("cards");
+  box.innerHTML = "";
+
+  const card = document.createElement("div");
+  card.className = "palavra-card";
+
+  const emojiEl = document.createElement("span");
+  emojiEl.className = "palavra-emoji";
+  emojiEl.textContent = dados.emoji;
+
+  const indiceLetra = letras.indexOf(L);
+  const palavraInteira = document.createElement("div");
+  palavraInteira.className = "palavra-inteira";
+  palavraInteira.textContent = dados.palavra;
+  palavraInteira.style.background = cor;
+  palavraInteira.style.setProperty("--r", (indiceLetra%2 ? "2deg" : "-2deg"));
+  const ativarPalavra = ()=>{ palavraInteira.classList.add("ativa"); falar(dados.palavra); };
+  const desativarPalavra = ()=>{ palavraInteira.classList.remove("ativa"); };
+  palavraInteira.addEventListener("pointerenter", ativarPalavra);
+  palavraInteira.addEventListener("pointerleave", desativarPalavra);
+  palavraInteira.addEventListener("click", ()=>{ ativarPalavra(); setTimeout(desativarPalavra,700); });
+
+  const tituloEl = document.createElement("div");
+  tituloEl.className = "palavra-titulo";
+  let indiceSilaba = 0;
+  dados.silabas.forEach(sil=>{
+    if(sil===" " || sil==="-"){
+      const sep=document.createElement("span");
+      sep.className="separador";
+      sep.textContent = sil==="-" ? "-" : " ";
+      tituloEl.appendChild(sep);
+    } else {
+      const s=document.createElement("span");
+      s.className="silaba";
+      s.textContent=sil;
+      s.style.background = cores[indiceSilaba % cores.length];
+      s.style.setProperty("--r", (indiceSilaba%2 ? "2deg" : "-2deg"));
+      indiceSilaba++;
+      const ativar=()=>{ s.classList.add("ativa"); falar(sil); };
+      const desativar=()=>{ s.classList.remove("ativa"); };
+      s.addEventListener("pointerenter", ativar);
+      s.addEventListener("pointerleave", desativar);
+      s.addEventListener("click", ()=>{ ativar(); setTimeout(desativar,700); });
+      tituloEl.appendChild(s);
+    }
+  });
+
+  const guiaEl = document.createElement("div");
+  guiaEl.className = "silabas-guia";
+  guiaEl.textContent = dados.silabas.filter(s=>s!==" "&&s!=="-").join("-").toLowerCase();
+
+  const defEl = document.createElement("p");
+  defEl.className = "definicao";
+  defEl.textContent = dados.definicao;
+
+  const btnOuvir = document.createElement("button");
+  btnOuvir.className = "btn-ouvir";
+  btnOuvir.style.background = cor;
+  btnOuvir.textContent = "🔊 Ouvir tudo";
+  btnOuvir.onclick = ()=>falar(dados.palavra+". "+dados.definicao);
+
+  card.append(emojiEl, palavraInteira, tituloEl, guiaEl, defEl, btnOuvir);
+  box.appendChild(card);
+}
+
+abrirLetra("A", nav.children[0]);
+</script>
+</body>
+</html>
