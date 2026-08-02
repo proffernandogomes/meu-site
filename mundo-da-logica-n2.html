@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mundo da Lógica — Pré e 1º ano (Nível 2)</title>
+<style>
+  :root{
+    --rosa:#D4537E; --roxo:#7F77DD; --azul:#378ADD; --verde:#1D9E75;
+    --amarelo:#EF9F27; --coral:#D85A30; --fundo:#FFF7EC; --cartao:#FFFFFF;
+    --texto:#3A3A38;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;user-select:none;}
+  body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--fundo);color:var(--texto);min-height:100vh;display:flex;justify-content:center;align-items:center;padding:14px;}
+  #app{width:100%;max-width:560px;}
+  .topo{display:flex;justify-content:center;gap:5px;margin-bottom:14px;min-height:36px;flex-wrap:wrap;}
+  .estrela{font-size:26px;filter:grayscale(1) opacity(.35);transition:transform .3s,filter .3s;}
+  .estrela.on{filter:none;transform:scale(1.15);}
+  .cartao{background:var(--cartao);border-radius:28px;padding:22px 18px 26px;box-shadow:0 8px 24px rgba(0,0,0,.08);text-align:center;}
+  .mascote{font-size:58px;line-height:1;margin-bottom:4px;transition:transform .2s;}
+  .ordem{display:inline-flex;align-items:center;gap:8px;background:#FFF1D6;color:#8A5A12;font-size:18px;font-weight:700;padding:10px 18px;border-radius:18px;margin-bottom:18px;cursor:pointer;border:3px solid #F6D79A;line-height:1.3;}
+  .ordem .alto{font-size:22px;}
+  .grade{display:grid;gap:12px;justify-content:center;}
+  .grade.g2{grid-template-columns:repeat(2,1fr);}
+  .grade.g3{grid-template-columns:repeat(3,1fr);}
+  .grade.g4{grid-template-columns:repeat(2,1fr);}
+  .fig{font-size:48px;background:#F7F6F2;border:4px solid #E7E5DD;border-radius:22px;padding:16px 8px;cursor:pointer;transition:transform .1s,border-color .15s,background .15s;display:flex;align-items:center;justify-content:center;min-height:90px;flex-wrap:wrap;line-height:1.1;word-break:break-word;}
+  .fig.menor{font-size:34px;}
+  .fig:active{transform:scale(.93);}
+  .fig.certo{border-color:var(--verde);background:#E1F5EE;animation:pulo .5s;}
+  .fig.errado{border-color:#E24B4A;background:#FCEBEB;animation:treme .4s;}
+  .seq{display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:18px;}
+  .seq .item{font-size:38px;}
+  .seq .vaga{font-size:40px;min-width:60px;height:60px;border:4px dashed #C9C7BE;border-radius:16px;display:flex;align-items:center;justify-content:center;color:#C9C7BE;padding:0 6px;}
+  @keyframes pulo{0%,100%{transform:scale(1);}50%{transform:scale(1.18);}}
+  @keyframes treme{0%,100%{transform:translateX(0);}25%{transform:translateX(-7px);}75%{transform:translateX(7px);}}
+  .festa{font-size:28px;min-height:38px;margin-top:16px;font-weight:700;color:var(--verde);}
+  .fim .grande{font-size:88px;}
+  .fim h2{font-size:30px;color:var(--rosa);margin:10px 0;}
+  .fim .estrelas-fim{font-size:34px;margin:10px 0;line-height:1.4;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="topo" id="topo"></div>
+  <div id="tela"></div>
+</div>
+
+<script>
+/* ============================================================
+   NÍVEL 2 — 4-6 anos, um pouco mais difícil. Tipos:
+   - "diferente": diferença sutil (mesma figura, atributo muda)
+   - "padrao": completar sequência de 3 elementos (ABC) ou crescente
+   - "grupo": achar o intruso pensando na CATEGORIA (pegadinha)
+   - "contar": qual grupo tem MAIS (ou MENOS)
+   As opções são embaralhadas a cada partida (a resposta certa
+   não fica sempre na mesma posição).
+   ============================================================ */
+const DESAFIOS = [
+  // padrão de 3 cores (ABC)
+  {tipo:"padrao", mascote:"🦊", ordem:"Veja as cores. O que vem agora?",
+   seq:["🔴","🟡","🔵","🔴","🟡"], opcoes:["🔵","🔴","🟡"], certoFig:"🔵"},
+  // diferente sutil: 3 felizes, 1 triste
+  {tipo:"diferente", mascote:"🐰", ordem:"Toque na carinha diferente!",
+   figs:["😀","😀","😟","😀"], certoFig:"😟"},
+  // grupo por categoria: voam x não voa
+  {tipo:"grupo", mascote:"🐦", ordem:"Três sabem voar. Toque em quem NÃO voa!",
+   figs:["🐦","🦋","🐝","🐢"], certoFig:"🐢"},
+  // padrão crescente 1,2,3 -> 4
+  {tipo:"padrao", mascote:"🐻", ordem:"Olhe quantas crescem. O que vem agora?",
+   seq:["⭐","⭐⭐","⭐⭐⭐"], opcoes:["⭐⭐⭐⭐","⭐⭐","⭐⭐⭐⭐⭐⭐"], certoFig:"⭐⭐⭐⭐", menor:true},
+  // contar e comparar: qual tem MAIS
+  {tipo:"contar", mascote:"🐼", ordem:"Toque no grupo que tem MAIS!",
+   figs:["🍎🍎","🍎🍎🍎🍎","🍎🍎🍎"], certoFig:"🍎🍎🍎🍎", menor:true},
+  // padrão de 3 animais (ABC)
+  {tipo:"padrao", mascote:"🐱", ordem:"Quem vem agora na fila?",
+   seq:["🐶","🐱","🐭","🐶","🐱"], opcoes:["🐭","🐶","🐱"], certoFig:"🐭"},
+  // diferente sutil: luas
+  {tipo:"diferente", mascote:"🦉", ordem:"Toque na lua diferente!",
+   figs:["🌕","🌑","🌕","🌕"], certoFig:"🌑"},
+  // grupo categoria: água x terra
+  {tipo:"grupo", mascote:"🐙", ordem:"Três vivem na água. Toque em quem vive na TERRA!",
+   figs:["🐟","🐠","🐙","🐈"], certoFig:"🐈"},
+  // grupo categoria: fruta x legume
+  {tipo:"grupo", mascote:"🐰", ordem:"Três são frutas. Toque no que NÃO é fruta!",
+   figs:["🍎","🍐","🍊","🥕"], certoFig:"🥕"},
+  // contar e comparar: qual tem MENOS
+  {tipo:"contar", mascote:"🐸", ordem:"Toque no grupo que tem MENOS!",
+   figs:["🌸🌸🌸","🌸","🌸🌸"], certoFig:"🌸", menor:true},
+];
+
+let indice=0, acertos=0, travado=false;
+const topo=document.getElementById("topo"), tela=document.getElementById("tela");
+
+function embaralha(arr){
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function montaEstrelas(){
+  topo.innerHTML="";
+  for(let i=0;i<DESAFIOS.length;i++){
+    const e=document.createElement("span");
+    e.className="estrela"+(i<acertos?" on":"");
+    e.textContent="⭐"; topo.appendChild(e);
+  }
+}
+
+function render(){
+  travado=false;
+  const d=DESAFIOS[indice];
+  // monta a lista de opcoes (embaralhada) e guarda qual e a certa
+  const base = d.tipo==="padrao" ? d.opcoes : d.figs;
+  const lista = embaralha(base);
+  let corpo="";
+  if(d.tipo==="padrao"){
+    corpo=`<div class="seq">`;
+    d.seq.forEach(s=> corpo+=`<span class="item">${s}</span>`);
+    corpo+=`<span class="vaga">?</span></div><div class="grade g3" id="grade"></div>`;
+  } else {
+    const cls = lista.length===3 ? "g3" : "g4";
+    corpo=`<div class="grade ${cls}" id="grade"></div>`;
+  }
+  tela.innerHTML=`<div class="cartao">
+    <div class="mascote" id="masc">${d.mascote}</div>
+    <div class="ordem" id="ordem"><span class="alto">🔊</span> ${d.ordem}</div>
+    ${corpo}
+    <div class="festa" id="festa"></div>
+  </div>`;
+  const grade=document.getElementById("grade");
+  lista.forEach(f=>{
+    const b=document.createElement("div");
+    b.className="fig"+(d.menor?" menor":"");
+    b.textContent=f;
+    b.onclick=()=>responder(f,b,d.certoFig);
+    grade.appendChild(b);
+  });
+  document.getElementById("ordem").onclick=()=>falarOrdem(d.ordem);
+  montaEstrelas();
+  setTimeout(()=>falarOrdem(d.ordem),400);
+}
+
+function responder(fig,btn,certoFig){
+  if(travado) return;
+  if(fig===certoFig){
+    travado=true;
+    btn.classList.add("certo");
+    document.getElementById("masc").textContent="😄";
+    document.getElementById("festa").textContent="🎉 Muito bem!";
+    acertos++; montaEstrelas();
+    falar("Muito bem! Você acertou!");
+    setTimeout(()=>{ indice++; if(indice>=DESAFIOS.length) fim(); else render(); },1700);
+  } else {
+    btn.classList.add("errado");
+    falar("Quase! Olhe com atenção e tente de novo.");
+    setTimeout(()=>btn.classList.remove("errado"),500);
+  }
+}
+
+function fim(){
+  tela.innerHTML=`<div class="cartao fim">
+    <div class="grande">🏆</div>
+    <h2>Você conseguiu!</h2>
+    <div class="estrelas-fim">${"⭐".repeat(acertos)}</div>
+  </div>`;
+  topo.innerHTML="";
+  falar("Parabéns! Você terminou todos os desafios!");
+}
+
+function falarOrdem(t){ falar(t); pulaMascote(); }
+function falar(t){
+  if(!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(t);
+  u.lang="pt-BR"; u.rate=0.92; u.pitch=1.15;
+  speechSynthesis.speak(u);
+}
+function pulaMascote(){
+  const m=document.getElementById("masc"); if(!m) return;
+  m.style.transform="scale(1.2)"; setTimeout(()=>m.style.transform="scale(1)",250);
+}
+
+render();
+</script>
+</body>
+</html>
