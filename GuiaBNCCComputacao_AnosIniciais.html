@@ -1,0 +1,1574 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia Prático da BNCC Computação — Ensino Fundamental Anos Iniciais (1º ao 5º Ano)</title>
+<style>
+/* ── FONTS ── */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+
+/* ── RESET & BASE ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; font-size: 16px; }
+body {
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: #1e293b; line-height: 1.6; background: #f0f2f6;
+}
+
+/* ── LAYOUT ── */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+/* ── COVER ── */
+.cover {
+  background: linear-gradient(135deg, #0a1a3a 0%, #0f2a5e 50%, #162d5a 100%);
+  color: #ffffff; padding: 80px 0 60px; text-align: center; position: relative;
+  overflow: hidden;
+}
+.cover::before {
+  content: ''; position: absolute; inset: 0;
+  background:
+    radial-gradient(circle at 20% 80%, rgba(23,105,213,0.15) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(31,157,91,0.1) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(124,58,237,0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+.cover .container { position: relative; z-index: 1; }
+.cover-badge {
+  display: inline-block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 100px; padding: 6px 20px; font-size: 0.8rem; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase; margin-bottom: 24px;
+}
+.cover h1 { font-size: clamp(2.2rem, 5vw, 3.6rem); font-weight: 900; line-height: 1.1; margin-bottom: 8px; }
+.cover h1 span { color: #e8a817; }
+.cover .subtitle {
+  font-size: clamp(1rem, 2.5vw, 1.5rem); font-weight: 600; margin-bottom: 16px;
+  background: linear-gradient(90deg, #60a5fa, #34d399);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.cover .tagline { font-size: 1rem; color: rgba(255,255,255,0.7); max-width: 600px; margin: 0 auto 32px; }
+.cover-eixos { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; margin-top: 32px; }
+.cover-eixo {
+  display: flex; align-items: center; gap: 8px; padding: 10px 20px;
+  border-radius: 12px; font-weight: 700; font-size: 0.85rem; color: #ffffff;
+  border: 1px solid rgba(255,255,255,0.15); backdrop-filter: blur(8px);
+}
+.cover-eixo .ico { font-size: 1.3rem; }
+
+/* circuit decoration */
+.circuit-line {
+  position: absolute; width: 200px; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(23,105,213,0.3), transparent);
+}
+.circuit-line:nth-child(1) { top: 30%; left: 0; }
+.circuit-line:nth-child(2) { bottom: 20%; right: 0; transform: rotate(-15deg); }
+.circuit-dot {
+  position: absolute; width: 6px; height: 6px; border-radius: 50%;
+  background: rgba(23,105,213,0.4);
+}
+.circuit-dot:nth-child(3) { top: 25%; left: 10%; }
+.circuit-dot:nth-child(4) { top: 60%; right: 8%; }
+.circuit-dot:nth-child(5) { bottom: 15%; left: 30%; background: rgba(31,157,91,0.4); }
+
+/* ── TABLE OF CONTENTS ── */
+.toc {
+  background: #ffffff; border-radius: 20px; padding: 40px; margin: -40px auto 40px;
+  max-width: 900px; position: relative; z-index: 2;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+}
+.toc h2 {
+  font-size: 1.4rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 24px; color: #0a1a3a; display: flex; align-items: center; gap: 10px;
+}
+.toc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; }
+.toc-item {
+  display: flex; align-items: center; gap: 12px; padding: 12px 16px;
+  border-radius: 12px; background: #f0f2f6; text-decoration: none; color: #0a1a3a;
+  font-weight: 600; font-size: 0.9rem; transition: all 0.2s;
+}
+.toc-item:hover { background: #e2e8f0; transform: translateX(4px); }
+.toc-num {
+  width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center;
+  justify-content: center; font-weight: 800; font-size: 0.9rem; color: #ffffff; flex-shrink: 0;
+}
+
+/* ── SECTION HEADINGS ── */
+.section-hero {
+  padding: 60px 0 40px; text-align: center; position: relative; overflow: hidden;
+}
+.section-hero.navy { background: linear-gradient(135deg, #0a1a3a, #0f2a5e); color: #ffffff; }
+.section-hero h2 {
+  font-size: clamp(1.8rem, 4vw, 2.8rem); font-weight: 900; line-height: 1.15; margin-bottom: 12px;
+}
+.section-hero .lead {
+  font-size: 1.05rem; max-width: 700px; margin: 0 auto; opacity: 0.85;
+}
+
+/* ── COMPETÊNCIAS ── */
+.competencias {
+  background: #ffffff; border-radius: 20px; padding: 40px; margin: 32px auto;
+  max-width: 900px; box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+}
+.competencias h3 {
+  font-size: 1.2rem; font-weight: 800; color: #0a1a3a; margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px; text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.comp-list { counter-reset: comp; }
+.comp-item {
+  counter-increment: comp; position: relative; padding: 14px 14px 14px 52px;
+  border-radius: 12px; margin-bottom: 10px; background: #f0f2f6;
+  font-size: 0.88rem; line-height: 1.55;
+}
+.comp-item::before {
+  content: counter(comp); position: absolute; left: 12px; top: 14px;
+  width: 28px; height: 28px; border-radius: 8px; background: #0a1a3a;
+  color: #ffffff; display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: 0.8rem;
+}
+
+/* ── EIXOS OVERVIEW ── */
+.eixos-section { padding: 40px 0; }
+.eixos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; max-width: 960px; margin: 0 auto; }
+@media (max-width: 768px) { .eixos-grid { grid-template-columns: 1fr; } }
+.eixo-card {
+  border-radius: 20px; padding: 28px 24px; color: #ffffff; text-align: center;
+  position: relative; overflow: hidden;
+}
+.eixo-card::before {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, transparent 100%);
+  pointer-events: none;
+}
+.eixo-card .ico { font-size: 2.4rem; margin-bottom: 12px; }
+.eixo-card h3 { font-size: 1.1rem; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; }
+.eixo-card p { font-size: 0.85rem; opacity: 0.9; }
+
+/* ── YEAR SECTION ── */
+.year-banner {
+  padding: 50px 0 30px; text-align: center; position: relative; overflow: hidden;
+}
+.year-number {
+  font-size: clamp(4rem, 10vw, 7rem); font-weight: 900; line-height: 1;
+  -webkit-text-fill-color: transparent; -webkit-text-stroke: 2px rgba(255,255,255,0.3);
+  position: absolute; top: 10px; right: 5%; opacity: 0.3; pointer-events: none;
+}
+.year-banner h2 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 900; position: relative; z-index: 1; }
+.year-banner h2 span { color: #e8a817; }
+.year-badge {
+  display: inline-block; padding: 4px 16px; border-radius: 100px; font-size: 0.75rem;
+  font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px;
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+  margin-bottom: 12px;
+}
+.year-intro {
+  max-width: 750px; margin: 16px auto 0; font-size: 0.95rem; opacity: 0.85;
+  position: relative; z-index: 1;
+}
+
+/* summary table */
+.year-summary {
+  max-width: 960px; margin: -20px auto 32px; position: relative; z-index: 2;
+  background: #ffffff; border-radius: 16px; overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+.year-summary table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
+.year-summary thead th {
+  padding: 12px 14px; text-align: left; font-weight: 700; text-transform: uppercase;
+  font-size: 0.72rem; letter-spacing: 0.5px; color: #ffffff;
+}
+.year-summary tbody td { padding: 10px 14px; border-top: 1px solid #e2e8f0; vertical-align: top; }
+.year-summary tbody tr:hover { background: #f8fafc; }
+.code-pill {
+  display: inline-block; padding: 2px 10px; border-radius: 6px; font-weight: 700;
+  font-size: 0.78rem; color: #ffffff;
+}
+.eixo-dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px;
+  vertical-align: middle;
+}
+
+/* ── HABILIDADE CARDS ── */
+.hab-cards { max-width: 960px; margin: 0 auto 40px; padding: 0 16px; }
+.hab-card {
+  background: #ffffff; border-radius: 20px; margin-bottom: 24px; overflow: hidden;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.06); border-top: 4px solid;
+}
+.hab-header {
+  padding: 20px 24px 16px; display: flex; align-items: flex-start; gap: 16px; flex-wrap: wrap;
+}
+.hab-code {
+  font-size: 1.3rem; font-weight: 900; padding: 4px 14px; border-radius: 10px;
+  color: #ffffff; flex-shrink: 0;
+}
+.hab-meta { flex: 1; min-width: 200px; }
+.hab-eixo-label {
+  display: inline-block; font-size: 0.7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 1px; padding: 2px 10px; border-radius: 100px; margin-bottom: 6px;
+}
+.hab-text { font-size: 0.92rem; font-weight: 600; color: #0a1a3a; line-height: 1.45; }
+.hab-body { padding: 0 24px 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 700px) { .hab-body { grid-template-columns: 1fr; } }
+.hab-box {
+  border-radius: 14px; padding: 18px; position: relative;
+}
+.hab-box.sig { background: #eef4ff; }
+.hab-box.pra { background: #ecfdf5; }
+.hab-box-label {
+  font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;
+  margin-bottom: 8px; display: flex; align-items: center; gap: 6px;
+}
+.hab-box.sig .hab-box-label { color: #2563eb; }
+.hab-box.pra .hab-box-label { color: #059669; }
+.hab-box p { font-size: 0.85rem; color: #334155; line-height: 1.55; }
+
+/* ── ETAPA SYNTHESIS ── */
+.etapa-section {
+  background: linear-gradient(135deg, #0a1a3a, #122a55); color: #ffffff;
+  padding: 50px 0; margin-top: 40px;
+}
+.etapa-section h2 { text-align: center; font-size: 1.8rem; font-weight: 900; margin-bottom: 8px; }
+.etapa-section .lead { text-align: center; opacity: 0.8; margin-bottom: 32px; font-size: 0.95rem; }
+.etapa-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; max-width: 960px; margin: 0 auto; }
+.etapa-item {
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px; padding: 20px; backdrop-filter: blur(8px);
+}
+.etapa-item .code { font-weight: 800; margin-bottom: 4px; }
+.etapa-item .obj { font-size: 0.78rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.etapa-item .desc { font-size: 0.85rem; line-height: 1.5; opacity: 0.9; }
+
+/* ── FOOTER ── */
+.footer {
+  background: #0a1a3a; color: rgba(255,255,255,0.6); padding: 40px 0; text-align: center;
+  font-size: 0.82rem;
+}
+.footer strong { color: #ffffff; }
+
+/* ── NAV BAR (sticky) ── */
+.nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(10,26,58,0.95); backdrop-filter: blur(12px);
+  padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.nav .container {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;
+}
+.nav-brand { color: #ffffff; font-weight: 800; font-size: 0.9rem; text-decoration: none; }
+.nav-links { display: flex; gap: 4px; flex-wrap: wrap; }
+.nav-links a {
+  color: rgba(255,255,255,0.7); text-decoration: none; font-size: 0.75rem; font-weight: 600;
+  padding: 4px 10px; border-radius: 8px; transition: all 0.2s;
+}
+.nav-links a:hover { color: #ffffff; background: rgba(255,255,255,0.1); }
+
+/* ── PRINT ── */
+@media print {
+  .nav { display: none; }
+  .cover { padding: 40px 0; }
+  .hab-card { break-inside: avoid; }
+  body { background: white; }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container">
+    <a href="#top" class="nav-brand">📘 Guia BNCC Computação</a>
+    <div class="nav-links">
+      <a href="#competencias">Competências</a>
+      <a href="#eixos">Eixos</a>
+      <a href="#ano1">1º Ano</a>
+      <a href="#ano2">2º Ano</a>
+      <a href="#ano3">3º Ano</a>
+      <a href="#ano4">4º Ano</a>
+      <a href="#ano5">5º Ano</a>
+      <a href="#sintese">Síntese</a>
+    </div>
+  </div>
+</nav>
+
+<header class="cover" id="top">
+  <div class="circuit-line"></div><div class="circuit-line"></div>
+  <div class="circuit-dot"></div><div class="circuit-dot"></div><div class="circuit-dot"></div>
+  <div class="container">
+    <div class="cover-badge">Ensino Fundamental — Anos Iniciais</div>
+    <h1>Guia Prático da<br><span>BNCC Computação</span></h1>
+    <div class="subtitle">1º ao 5º Ano</div>
+    <p class="tagline">Habilidades explicadas, exemplos práticos para a sala de aula e orientações para professores — organizado por ano escolar e pelos três eixos da Computação.</p>
+    <div class="cover-eixos">
+      <div class="cover-eixo" style="background:rgba(255,255,255,0.07);"><span class="ico">🧩</span> Pensamento Computacional</div>
+      <div class="cover-eixo" style="background:rgba(255,255,255,0.07);"><span class="ico">🌐</span> Mundo Digital</div>
+      <div class="cover-eixo" style="background:rgba(255,255,255,0.07);"><span class="ico">👥</span> Cultura Digital</div>
+    </div>
+  </div>
+</header>
+
+<section class="toc container" id="sumario">
+  <h2>📋 Sumário</h2>
+  <div class="toc-grid">
+    <a href="#competencias" class="toc-item"><span class="toc-num" style="background:#0a1a3a;">⭐</span> Competências do Ensino Fundamental</a>
+    <a href="#eixos" class="toc-item"><span class="toc-num" style="background:#0a1a3a;">🔀</span> Os Três Eixos</a>
+    <a href="#ano1" class="toc-item"><span class="toc-num" style="background:#1769D5;">1º</span> 1º Ano — 7 habilidades</a>
+    <a href="#ano2" class="toc-item"><span class="toc-num" style="background:#1F9D5B;">2º</span> 2º Ano — 6 habilidades</a>
+    <a href="#ano3" class="toc-item"><span class="toc-num" style="background:#7C3AED;">3º</span> 3º Ano — 9 habilidades</a>
+    <a href="#ano4" class="toc-item"><span class="toc-num" style="background:#e8a817;">4º</span> 4º Ano — 8 habilidades</a>
+    <a href="#ano5" class="toc-item"><span class="toc-num" style="background:#ef4444;">5º</span> 5º Ano — 11 habilidades</a>
+    <a href="#sintese" class="toc-item"><span class="toc-num" style="background:#0a1a3a;">Σ</span> Síntese: Habilidades por Etapa (1º ao 5º)</a>
+  </div>
+</section>
+
+<section class="section-hero navy" id="competencias">
+  <div class="container">
+    <h2>A Etapa do<br>Ensino Fundamental</h2>
+    <p class="lead">Competências específicas de Computação para o Ensino Fundamental</p>
+  </div>
+</section>
+<div class="competencias">
+  <h3>⭐ Competências de Computação</h3>
+  <div class="comp-list">
+    <div class="comp-item">Compreender a Computação como uma área de conhecimento que contribui para explicar o mundo atual e ser um agente ativo e consciente de transformação capaz de analisar criticamente seus impactos sociais, ambientais, culturais, econômicos, científicos, tecnológicos, legais e éticos.</div>
+    <div class="comp-item">Reconhecer o impacto dos artefatos computacionais e os respectivos desafios para os indivíduos na sociedade, discutindo questões socioambientais, culturais, científicas, políticas e econômicas.</div>
+    <div class="comp-item">Expressar e partilhar informações, ideias, sentimentos e soluções computacionais utilizando diferentes linguagens e tecnologias da Computação de forma criativa, crítica, significativa, reflexiva e ética.</div>
+    <div class="comp-item">Aplicar os princípios e técnicas da Computação e suas tecnologias para identificar problemas e criar soluções computacionais, preferencialmente de forma cooperativa, bem como alicerçar descobertas em diversas áreas do conhecimento seguindo uma abordagem científica e inovadora, considerando os impactos sob diferentes contextos.</div>
+    <div class="comp-item">Avaliar as soluções e os processos envolvidos na resolução computacional de problemas de diversas áreas do conhecimento, sendo capaz de construir argumentações coerentes e consistentes, utilizando conhecimentos da Computação para argumentar em diferentes contextos com base em fatos e informações confiáveis com respeito à diversidade de opiniões, saberes, identidades e culturas.</div>
+    <div class="comp-item">Desenvolver projetos, baseados em problemas, desafios e oportunidades que façam sentido ao contexto ou interesse do estudante, de maneira individual e/ou cooperativa, fazendo uso da Computação e suas tecnologias, utilizando conceitos, técnicas e ferramentas computacionais que possibilitem automatizar processos em diversas áreas do conhecimento com base em princípios éticos, democráticos, sustentáveis e solidários, valorizando a diversidade de indivíduos e de grupos sociais, de maneira inclusiva.</div>
+    <div class="comp-item">Agir pessoal e coletivamente com respeito, autonomia, responsabilidade, flexibilidade, resiliência e determinação, identificando e reconhecendo seus direitos e deveres, recorrendo aos conhecimentos da Computação e suas tecnologias para tomar decisões frente às questões de diferentes naturezas.</div>
+  </div>
+</div>
+
+<section class="eixos-section container" id="eixos">
+  <div class="section-hero" style="padding:20px 0 30px;">
+    <h2 style="color:#0a1a3a;">Os Três Eixos da BNCC Computação</h2>
+    <p class="lead" style="color:#64748b;">Toda a Computação na Educação Básica se organiza em três eixos complementares</p>
+  </div>
+  <div class="eixos-grid">
+    <div class="eixo-card" style="background: linear-gradient(135deg, #1769D5, #0E4FA8);">
+      <div class="ico">🧩</div>
+      <h3>Pensamento Computacional</h3>
+      <p>Resolver problemas de forma lógica e criativa</p>
+    </div>
+    <div class="eixo-card" style="background: linear-gradient(135deg, #1F9D5B, #137A44);">
+      <div class="ico">🌐</div>
+      <h3>Mundo Digital</h3>
+      <p>Compreender como as tecnologias funcionam</p>
+    </div>
+    <div class="eixo-card" style="background: linear-gradient(135deg, #7C3AED, #5B21B6);">
+      <div class="ico">👥</div>
+      <h3>Cultura Digital</h3>
+      <p>Usar tecnologia com ética e responsabilidade</p>
+    </div>
+  </div>
+</section>
+
+<section class="year-banner" id="ano1" style="background:linear-gradient(135deg, #0c1e40, #142d5e); color:#ffffff;">
+  <div class="year-number">1º</div>
+  <div class="container">
+    <div class="year-badge">Ensino Fundamental — Anos Iniciais</div>
+    <h2>1º <span>Ano</span></h2>
+    <p class="year-intro">No 1º ano, a Computação começa pelo concreto: organizar e agrupar objetos, seguir e criar sequências de passos do dia a dia (os primeiros algoritmos), descobrir o que é informação e explorar tecnologias com segurança.</p>
+  </div>
+</section>
+
+<div class="year-summary">
+  <table>
+    <thead><tr>
+      <th style="background:#1769D5;">Código</th>
+      <th style="background:#1769D5;">Eixo</th>
+      <th style="background:#1769D5;">Objeto de Conhecimento</th>
+      <th style="background:#1769D5;">Habilidade</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="code-pill" style="background:#1769D5;">EF01CO01</span></td>
+        <td><span class="eixo-dot" style="background:#1769D5;"></span>Pensamento Computacional</td>
+        <td>Organização de objetos</td>
+        <td style="font-size:0.8rem;">Organizar objetos físicos ou digitais considerando diferentes características para esta organização, explicitando semelh…</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1769D5;">EF01CO02</span></td>
+        <td><span class="eixo-dot" style="background:#1769D5;"></span>Pensamento Computacional</td>
+        <td>Conceituação de Algoritmos</td>
+        <td style="font-size:0.8rem;">Identificar e seguir sequências de passos aplicados no dia a dia para resolver problemas.</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1769D5;">EF01CO03</span></td>
+        <td><span class="eixo-dot" style="background:#1769D5;"></span>Pensamento Computacional</td>
+        <td>Conceituação de Algoritmos</td>
+        <td style="font-size:0.8rem;">Reorganizar e criar sequências de passos em meios físicos ou digitais, relacionando essas sequências à palavra &#x27;Algoritm…</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1F9D5B;">EF01CO04</span></td>
+        <td><span class="eixo-dot" style="background:#1F9D5B;"></span>Mundo Digital</td>
+        <td>Codificação da informação</td>
+        <td style="font-size:0.8rem;">Reconhecer o que é a informação, que ela pode ser armazenada, transmitida como mensagem por diversos meios e descrita em…</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1F9D5B;">EF01CO05</span></td>
+        <td><span class="eixo-dot" style="background:#1F9D5B;"></span>Mundo Digital</td>
+        <td>Codificação da informação</td>
+        <td style="font-size:0.8rem;">Representar informação usando diferentes codificações.</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#7C3AED;">EF01CO06</span></td>
+        <td><span class="eixo-dot" style="background:#7C3AED;"></span>Cultura Digital</td>
+        <td>Uso de artefatos computacionais</td>
+        <td style="font-size:0.8rem;">Reconhecer e explorar artefatos computacionais voltados a atender necessidades pessoais ou coletivas.</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#7C3AED;">EF01CO07</span></td>
+        <td><span class="eixo-dot" style="background:#7C3AED;"></span>Cultura Digital</td>
+        <td>Segurança e responsabilidade</td>
+        <td style="font-size:0.8rem;">Conhecer as possibilidades de uso seguro das tecnologias computacionais para proteção dos dados pessoais e para garantir…</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="hab-cards">
+  <div class="hab-card" style="border-top-color:#1769D5;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1769D5;">EF01CO01</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1769D520; color:#1769D5;">🧩 Pensamento Computacional</div>
+        <div class="hab-text">Organizar objetos físicos ou digitais considerando diferentes características para esta organização, explicitando semelhanças (padrões) e diferenças.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Objetos de um mesmo conjunto podem ser organizados e agrupados de diferentes maneiras, conforme as características escolhidas. Uma boa organização facilita encontrar um objeto específico dentro do conjunto.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Pedir que os alunos organizem personagens por gênero, cor dos olhos, idade ou tamanho; ou figuras geométricas por cor, tipo e tamanho — comparando os diferentes agrupamentos possíveis.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1769D5;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1769D5;">EF01CO02</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1769D520; color:#1769D5;">🧩 Pensamento Computacional</div>
+        <div class="hab-text">Identificar e seguir sequências de passos aplicados no dia a dia para resolver problemas.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>O aluno identifica os passos que fazem parte da execução de uma tarefa e segue uma sequência de passos para realizá-la — ou seja, para resolver um problema.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Fornecer sequências de passos para construir origamis simples, seguir caminhos, executar uma receita ou montar figuras com Tangram, solicitando que os alunos as executem.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1769D5;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1769D5;">EF01CO03</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1769D520; color:#1769D5;">🧩 Pensamento Computacional</div>
+        <div class="hab-text">Reorganizar e criar sequências de passos em meios físicos ou digitais, relacionando essas sequências à palavra &#x27;Algoritmos&#x27;.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Ao explicar como realizar uma tarefa, cria-se um algoritmo. Ele pode nascer da ordenação de passos embaralhados ou ser construído do zero, usando linguagem oral, textual ou pictográfica.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Organizar imagens com os passos de montagem de um objeto com peças de encaixe (tipo Lego); ou explicar, oralmente ou por desenhos, como se joga esconde-esconde.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1F9D5B;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1F9D5B;">EF01CO04</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1F9D5B20; color:#1F9D5B;">🌐 Mundo Digital</div>
+        <div class="hab-text">Reconhecer o que é a informação, que ela pode ser armazenada, transmitida como mensagem por diversos meios e descrita em várias linguagens.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Uma mesma informação pode ser descrita de várias formas (fala, imagem, som), armazenada e transmitida. A existência de um cachorro, por exemplo, pode ser representada por uma imagem ou pelo som do latido.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Transmitir uma palavra pelo &#x27;telefone sem fio&#x27;, enviar um desenho para um colega ou gravar uma mensagem de áudio e reproduzi-la para a turma.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1F9D5B;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1F9D5B;">EF01CO05</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1F9D5B20; color:#1F9D5B;">🌐 Mundo Digital</div>
+        <div class="hab-text">Representar informação usando diferentes codificações.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Compreender representações é o primeiro passo para entender como computadores guardam informações: uma imagem pode virar uma grade de quadradinhos (pixels) com números para as cores.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Pintar as áreas de uma imagem com cores pré-definidas (codificação) para revelar a figura (informação); ou relacionar uma música com suas notas musicais.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#7C3AED;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#7C3AED;">EF01CO06</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#7C3AED20; color:#7C3AED;">👥 Cultura Digital</div>
+        <div class="hab-text">Reconhecer e explorar artefatos computacionais voltados a atender necessidades pessoais ou coletivas.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Identificar e explorar tecnologias físicas ou digitais do cotidiano — computador, tablet, brinquedos eletrônicos e até ferramentas simples como martelo, alavanca e rampa.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Utilizar um jogo educacional no computador, tablet, mesa interativa ou celular, permitindo que os alunos experimentem livremente seus recursos.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#7C3AED;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#7C3AED;">EF01CO07</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#7C3AED20; color:#7C3AED;">👥 Cultura Digital</div>
+        <div class="hab-text">Conhecer as possibilidades de uso seguro das tecnologias computacionais para proteção dos dados pessoais e para garantir a própria segurança.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Refletir sobre a importância de resguardar dados pessoais — nome, endereço, idade, onde estuda — ao usar celulares e tablets, sem compartilhar essas informações com qualquer pessoa.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Jogo com imagens de dispositivos em que os alunos contam o que as pessoas fazem com cada um; o professor destaca os cuidados necessários ao usá-los.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="year-banner" id="ano2" style="background:linear-gradient(135deg, #0e2a1a, #145a32); color:#ffffff;">
+  <div class="year-number">2º</div>
+  <div class="container">
+    <div class="year-badge">Ensino Fundamental — Anos Iniciais</div>
+    <h2>2º <span>Ano</span></h2>
+    <p class="year-intro">No 2º ano, os alunos criam modelos de objetos, constroem algoritmos com repetições simples e começam a diferenciar hardware de software, sempre observando os usos e cuidados com as tecnologias no cotidiano.</p>
+  </div>
+</section>
+
+<div class="year-summary">
+  <table>
+    <thead><tr>
+      <th style="background:#1F9D5B;">Código</th>
+      <th style="background:#1F9D5B;">Eixo</th>
+      <th style="background:#1F9D5B;">Objeto de Conhecimento</th>
+      <th style="background:#1F9D5B;">Habilidade</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="code-pill" style="background:#1769D5;">EF02CO01</span></td>
+        <td><span class="eixo-dot" style="background:#1769D5;"></span>Pensamento Computacional</td>
+        <td>Modelagem de objetos</td>
+        <td style="font-size:0.8rem;">Criar e comparar modelos (representações) de objetos, identificando padrões e atributos essenciais.</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1769D5;">EF02CO02</span></td>
+        <td><span class="eixo-dot" style="background:#1769D5;"></span>Pensamento Computacional</td>
+        <td>Algoritmos com repetições simples</td>
+        <td style="font-size:0.8rem;">Criar e simular algoritmos representados em linguagem oral, escrita ou pictográfica, construídos como sequências com rep…</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1F9D5B;">EF02CO03</span></td>
+        <td><span class="eixo-dot" style="background:#1F9D5B;"></span>Mundo Digital</td>
+        <td>Instrução de máquina</td>
+        <td style="font-size:0.8rem;">Identificar que máquinas diferentes executam conjuntos próprios de instruções e que podem ser usadas para definir algori…</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1F9D5B;">EF02CO04</span></td>
+        <td><span class="eixo-dot" style="background:#1F9D5B;"></span>Mundo Digital</td>
+        <td>Hardware e software</td>
+        <td style="font-size:0.8rem;">Diferenciar componentes físicos (hardware) e programas que fornecem as instruções (software) para o hardware.</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#7C3AED;">EF02CO05</span></td>
+        <td><span class="eixo-dot" style="background:#7C3AED;"></span>Cultura Digital</td>
+        <td>Uso de artefatos computacionais</td>
+        <td style="font-size:0.8rem;">Reconhecer as características e usos das tecnologias computacionais no cotidiano dentro e fora da escola.</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#7C3AED;">EF02CO06</span></td>
+        <td><span class="eixo-dot" style="background:#7C3AED;"></span>Cultura Digital</td>
+        <td>Segurança e responsabilidade</td>
+        <td style="font-size:0.8rem;">Reconhecer os cuidados com a segurança no uso de dispositivos computacionais.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="hab-cards">
+  <div class="hab-card" style="border-top-color:#1769D5;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1769D5;">EF02CO01</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1769D520; color:#1769D5;">🧩 Pensamento Computacional</div>
+        <div class="hab-text">Criar e comparar modelos (representações) de objetos, identificando padrões e atributos essenciais.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Um modelo é construído ao se identificar as características essenciais de objetos. Modelos ajudam a classificar, e a escolha das características define os agrupamentos.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Distribuir imagens de veículos (motos, carros, trens, aviões, barcos…) e pedir que os alunos agrupem os que voam, os que têm rodas ou motor — notando que critérios diferentes geram agrupamentos diferentes.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1769D5;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1769D5;">EF02CO02</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1769D520; color:#1769D5;">🧩 Pensamento Computacional</div>
+        <div class="hab-text">Criar e simular algoritmos representados em linguagem oral, escrita ou pictográfica, construídos como sequências com repetições simples (iterações definidas) com base em instruções preestabelecidas ou criadas, analisando como a precisão da instrução impacta na execução do algoritmo.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Descrever algoritmos com precisão para que possam ser executados por outras pessoas (ou máquinas), usando sequências de instruções que se repetem um número definido de vezes.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Com instruções como avançar, virar à direita e virar à esquerda, descrever a tarefa de andar 10 passos, virar e andar mais 5: &#x27;Ande um passo 10 vezes; vire à esquerda; ande um passo 5 vezes&#x27;.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1F9D5B;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1F9D5B;">EF02CO03</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1F9D5B20; color:#1F9D5B;">🌐 Mundo Digital</div>
+        <div class="hab-text">Identificar que máquinas diferentes executam conjuntos próprios de instruções e que podem ser usadas para definir algoritmos.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Cada máquina disponibiliza um conjunto de instruções (operações) que, realizadas em uma dada sequência (algoritmo), produzem um resultado.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Identificar conjuntos de instruções bem definidos — operações de uma calculadora, dobras de papel — que, em sequência, produzem algo: o cálculo de uma expressão simples ou um origami.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1F9D5B;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1F9D5B;">EF02CO04</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1F9D5B20; color:#1F9D5B;">🌐 Mundo Digital</div>
+        <div class="hab-text">Diferenciar componentes físicos (hardware) e programas que fornecem as instruções (software) para o hardware.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>No cotidiano existem dispositivos físicos (celulares, computadores, calculadoras) controlados por algo que segue passos lógicos — um aplicativo, uma pessoa operando.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Usar dispositivos do dia a dia dos alunos para diferenciar o dispositivo físico (hardware) daquilo que o controla (software).</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#7C3AED;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#7C3AED;">EF02CO05</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#7C3AED20; color:#7C3AED;">👥 Cultura Digital</div>
+        <div class="hab-text">Reconhecer as características e usos das tecnologias computacionais no cotidiano dentro e fora da escola.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Observar as características das tecnologias de informação e comunicação, como funcionam e seus diferentes usos no dia a dia, dentro e fora da escola.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Apresentar imagens de tecnologias (celular, tablet, computador) destacando tamanhos, tipos e usos — e montar um portfólio de tecnologias com a turma.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#7C3AED;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#7C3AED;">EF02CO06</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#7C3AED20; color:#7C3AED;">👥 Cultura Digital</div>
+        <div class="hab-text">Reconhecer os cuidados com a segurança no uso de dispositivos computacionais.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Ter um panorama dos cuidados com a segurança ao usar celulares, tablets e computadores: roubo de dados em dispositivos físicos, rastros de dados on-line ao usar jogos etc.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Criar com a turma um portfólio de cuidados importantes ao jogar em dispositivos como celulares e tablets.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="year-banner" id="ano3" style="background:linear-gradient(135deg, #1a0a30, #2d1560); color:#ffffff;">
+  <div class="year-number">3º</div>
+  <div class="container">
+    <div class="year-badge">Ensino Fundamental — Anos Iniciais</div>
+    <h2>3º <span>Ano</span></h2>
+    <p class="year-intro">No 3º ano entram a lógica (verdadeiro/falso e negação), as repetições controladas por condição e a decomposição de problemas. No Mundo Digital, dados e informação se conectam; na Cultura Digital, chegam as pesquisas na internet.</p>
+  </div>
+</section>
+
+<div class="year-summary">
+  <table>
+    <thead><tr>
+      <th style="background:#7C3AED;">Código</th>
+      <th style="background:#7C3AED;">Eixo</th>
+      <th style="background:#7C3AED;">Objeto de Conhecimento</th>
+      <th style="background:#7C3AED;">Habilidade</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="code-pill" style="background:#1769D5;">EF03CO01</span></td>
+        <td><span class="eixo-dot" style="background:#1769D5;"></span>Pensamento Computacional</td>
+        <td>Lógica computacional</td>
+        <td style="font-size:0.8rem;">Associar os valores &#x27;verdadeiro&#x27; e &#x27;falso&#x27; a sentenças lógicas que dizem respeito a situações do dia a dia, fazendo uso …</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1769D5;">EF03CO02</span></td>
+        <td><span class="eixo-dot" style="background:#1769D5;"></span>Pensamento Computacional</td>
+        <td>Algoritmos com repetições condicionais</td>
+        <td style="font-size:0.8rem;">Criar e simular algoritmos representados em linguagem oral, escrita ou pictográfica, que incluam sequências e repetições…</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1769D5;">EF03CO03</span></td>
+        <td><span class="eixo-dot" style="background:#1769D5;"></span>Pensamento Computacional</td>
+        <td>Decomposição</td>
+        <td style="font-size:0.8rem;">Aplicar a estratégia de decomposição para resolver problemas complexos, dividindo esse problema em partes menores, resol…</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1F9D5B;">EF03CO04</span></td>
+        <td><span class="eixo-dot" style="background:#1F9D5B;"></span>Mundo Digital</td>
+        <td>Codificação da informação</td>
+        <td style="font-size:0.8rem;">Relacionar o conceito de informação com o de dado.</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1F9D5B;">EF03CO05</span></td>
+        <td><span class="eixo-dot" style="background:#1F9D5B;"></span>Mundo Digital</td>
+        <td>Codificação da informação</td>
+        <td style="font-size:0.8rem;">Compreender que dados são estruturados em formatos específicos dependendo da informação armazenada.</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1F9D5B;">EF03CO06</span></td>
+        <td><span class="eixo-dot" style="background:#1F9D5B;"></span>Mundo Digital</td>
+        <td>Interface física</td>
+        <td style="font-size:0.8rem;">Reconhecer que, para um computador realizar tarefas, ele se comunica com o mundo exterior com o uso de interfaces física…</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#7C3AED;">EF03CO07</span></td>
+        <td><span class="eixo-dot" style="background:#7C3AED;"></span>Cultura Digital</td>
+        <td>Uso de tecnologias computacionais</td>
+        <td style="font-size:0.8rem;">Utilizar diferentes navegadores e ferramentas de busca para pesquisar e acessar informações.</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#7C3AED;">EF03CO08</span></td>
+        <td><span class="eixo-dot" style="background:#7C3AED;"></span>Cultura Digital</td>
+        <td>Uso de tecnologias computacionais</td>
+        <td style="font-size:0.8rem;">Usar ferramentas computacionais em situações didáticas para se expressar em diferentes formatos digitais.</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#7C3AED;">EF03CO09</span></td>
+        <td><span class="eixo-dot" style="background:#7C3AED;"></span>Cultura Digital</td>
+        <td>Segurança e responsabilidade</td>
+        <td style="font-size:0.8rem;">Reconhecer o potencial impacto do compartilhamento de informações pessoais ou de seus pares em meio digital.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="hab-cards">
+  <div class="hab-card" style="border-top-color:#1769D5;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1769D5;">EF03CO01</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1769D520; color:#1769D5;">🧩 Pensamento Computacional</div>
+        <div class="hab-text">Associar os valores &#x27;verdadeiro&#x27; e &#x27;falso&#x27; a sentenças lógicas que dizem respeito a situações do dia a dia, fazendo uso de termos que indicam negação.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Sentenças lógicas são declarações que podem ser verdadeiras ou falsas. Comparações de tamanho, peso ou cor resultam em um valor lógico, que pode ser invertido com a negação (NÃO).</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Avaliar sentenças com a turma: &#x27;Cinco é maior que seis&#x27; (falso); &#x27;Cinco NÃO é maior que seis&#x27; (verdadeiro); &#x27;A raiz é uma das partes de uma planta&#x27; (verdadeiro).</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1769D5;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1769D5;">EF03CO02</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1769D520; color:#1769D5;">🧩 Pensamento Computacional</div>
+        <div class="hab-text">Criar e simular algoritmos representados em linguagem oral, escrita ou pictográfica, que incluam sequências e repetições simples com condição (iterações indefinidas), para resolver problemas de forma independente e em colaboração.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>As instruções podem se repetir um número de vezes que não se conhece de antemão: a repetição é controlada por uma condição (sentença lógica) que decide se o ciclo continua ou para.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Andar em um tabuleiro até encontrar um obstáculo: &#x27;Enquanto a próxima posição estiver vazia, ande um passo&#x27;. A repetição depende do valor lógico da condição a cada passo.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1769D5;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1769D5;">EF03CO03</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1769D520; color:#1769D5;">🧩 Pensamento Computacional</div>
+        <div class="hab-text">Aplicar a estratégia de decomposição para resolver problemas complexos, dividindo esse problema em partes menores, resolvendo-as e combinando suas soluções.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Dividir um problema em subproblemas, resolvê-los de forma independente e combinar as soluções. Isso organiza o trabalho, facilita a colaboração e permite reutilizar soluções.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Preparar o café da manhã dividindo a tarefa em duas receitas — preparar o café e fazer um sanduíche — e depois combinar os passos: em sequência ou intercalados.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1F9D5B;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1F9D5B;">EF03CO04</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1F9D5B20; color:#1F9D5B;">🌐 Mundo Digital</div>
+        <div class="hab-text">Relacionar o conceito de informação com o de dado.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Para armazenar, transmitir ou manipular uma informação, o computador precisa representá-la como um conjunto de dados (símbolos). Dados isolados podem não significar nada; juntos, formam informação.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Mostrar que rua, CEP e município juntos formam um endereço; que dia, mês e ano formam uma data; e que as cores de cada pixel, juntas, formam uma imagem.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1F9D5B;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1F9D5B;">EF03CO05</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1F9D5B20; color:#1F9D5B;">🌐 Mundo Digital</div>
+        <div class="hab-text">Compreender que dados são estruturados em formatos específicos dependendo da informação armazenada.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Cada tipo de informação tem uma estratégia de representação: textos podem virar sequências de números (como na tabela ASCII); imagens, grades de pixels com valores de cor.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Mostrar que uma data é recuperada processando dia, mês e ano em determinada ordem, e que imagens são composições de cores em pontos específicos (pixels).</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1F9D5B;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1F9D5B;">EF03CO06</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1F9D5B20; color:#1F9D5B;">🌐 Mundo Digital</div>
+        <div class="hab-text">Reconhecer que, para um computador realizar tarefas, ele se comunica com o mundo exterior com o uso de interfaces físicas (dispositivos de entrada e saída).</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>O computador conversa com o mundo por dispositivos próprios: alguns fornecem informações a ele (entrada) e outros transmitem informações dele para fora (saída).</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Exemplificar dispositivos de entrada (teclado, mouse, microfone, sensores) e de saída (monitor, alto-falante, impressora).</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#7C3AED;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#7C3AED;">EF03CO07</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#7C3AED20; color:#7C3AED;">👥 Cultura Digital</div>
+        <div class="hab-text">Utilizar diferentes navegadores e ferramentas de busca para pesquisar e acessar informações.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Explorar navegadores e buscadores, conhecendo associação de palavras, abas e filtros — e os cuidados necessários na busca das informações desejadas.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Pesquisar um personagem de desenho animado, testando filtros e novas palavras, e comparar os diferentes resultados sobre o mesmo assunto.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#7C3AED;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#7C3AED;">EF03CO08</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#7C3AED20; color:#7C3AED;">👥 Cultura Digital</div>
+        <div class="hab-text">Usar ferramentas computacionais em situações didáticas para se expressar em diferentes formatos digitais.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Explorar ferramentas como jogos educacionais, programas de animação e editores de desenho para expressar ideias em diferentes formatos digitais.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Usar uma ferramenta de desenho para os alunos criarem uma figura que represente suas férias ou algum evento importante.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#7C3AED;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#7C3AED;">EF03CO09</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#7C3AED20; color:#7C3AED;">👥 Cultura Digital</div>
+        <div class="hab-text">Reconhecer o potencial impacto do compartilhamento de informações pessoais ou de seus pares em meio digital.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Identificar os impactos de compartilhar informações pessoais (endereço, nomes da família, onde estuda) em meio digital — dados que podem ser usados por pessoas mal-intencionadas.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Analisar um caso de dados roubados, levantando o que pode ter acontecido, e montar um painel com dispositivos e os riscos associados a cada uso.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="year-banner" id="ano4" style="background:linear-gradient(135deg, #2a1a05, #5a3810); color:#ffffff;">
+  <div class="year-number">4º</div>
+  <div class="container">
+    <div class="year-badge">Ensino Fundamental — Anos Iniciais</div>
+    <h2>4º <span>Ano</span></h2>
+    <p class="year-intro">No 4º ano surgem as primeiras estruturas de dados — matrizes e registros — e as repetições aninhadas. Os alunos descobrem o formato digital (binário, ASCII, pixels) e discutem ética e confiabilidade das fontes.</p>
+  </div>
+</section>
+
+<div class="year-summary">
+  <table>
+    <thead><tr>
+      <th style="background:#e8a817;">Código</th>
+      <th style="background:#e8a817;">Eixo</th>
+      <th style="background:#e8a817;">Objeto de Conhecimento</th>
+      <th style="background:#e8a817;">Habilidade</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="code-pill" style="background:#1769D5;">EF04CO01</span></td>
+        <td><span class="eixo-dot" style="background:#1769D5;"></span>Pensamento Computacional</td>
+        <td>Matrizes e registros</td>
+        <td style="font-size:0.8rem;">Reconhecer objetos do mundo real e/ou digital que podem ser representados através de matrizes que estabelecem uma organi…</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1769D5;">EF04CO02</span></td>
+        <td><span class="eixo-dot" style="background:#1769D5;"></span>Pensamento Computacional</td>
+        <td>Matrizes e registros</td>
+        <td style="font-size:0.8rem;">Reconhecer objetos do mundo real e/ou digital que podem ser representados através de registros que estabelecem uma organ…</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1769D5;">EF04CO03</span></td>
+        <td><span class="eixo-dot" style="background:#1769D5;"></span>Pensamento Computacional</td>
+        <td>Algoritmos com repetições aninhadas</td>
+        <td style="font-size:0.8rem;">Criar e simular algoritmos representados em linguagem oral, escrita ou pictográfica, que incluam sequências e repetições…</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1F9D5B;">EF04CO04</span></td>
+        <td><span class="eixo-dot" style="background:#1F9D5B;"></span>Mundo Digital</td>
+        <td>Codificação da informação</td>
+        <td style="font-size:0.8rem;">Entender que para guardar, manipular e transmitir dados deve-se codificá-los de alguma forma que seja compreendida pela …</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1F9D5B;">EF04CO05</span></td>
+        <td><span class="eixo-dot" style="background:#1F9D5B;"></span>Mundo Digital</td>
+        <td>Codificação da informação</td>
+        <td style="font-size:0.8rem;">Codificar diferentes informações para representação em computador (binária, ASCII, atributos de pixel, como RGB etc.).</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#7C3AED;">EF04CO06</span></td>
+        <td><span class="eixo-dot" style="background:#7C3AED;"></span>Cultura Digital</td>
+        <td>Uso de tecnologias computacionais</td>
+        <td style="font-size:0.8rem;">Usar diferentes ferramentas computacionais para criação de conteúdo (textos, apresentações, vídeos etc.).</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#7C3AED;">EF04CO07</span></td>
+        <td><span class="eixo-dot" style="background:#7C3AED;"></span>Cultura Digital</td>
+        <td>Segurança e responsabilidade</td>
+        <td style="font-size:0.8rem;">Demonstrar postura ética nas atividades de coleta, transferência, guarda e uso de dados.</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#7C3AED;">EF04CO08</span></td>
+        <td><span class="eixo-dot" style="background:#7C3AED;"></span>Cultura Digital</td>
+        <td>Segurança e responsabilidade</td>
+        <td style="font-size:0.8rem;">Reconhecer a importância de verificar a confiabilidade das fontes de informações obtidas na Internet.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="hab-cards">
+  <div class="hab-card" style="border-top-color:#1769D5;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1769D5;">EF04CO01</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1769D520; color:#1769D5;">🧩 Pensamento Computacional</div>
+        <div class="hab-text">Reconhecer objetos do mundo real e/ou digital que podem ser representados através de matrizes que estabelecem uma organização na qual cada componente está em uma posição definida por coordenadas, fazendo manipulações simples sobre estas representações.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Matrizes organizam dados em linhas e colunas, como tabelas: cada elemento é acessado por coordenadas. Tabuleiros de xadrez e batalha naval, caixas de ovos e janelas de prédio podem ser vistos como matrizes.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Construir o tabuleiro de batalha naval e jogar informando coordenadas; ou representar fachadas de prédios como matrizes e jogar um &#x27;cara a cara&#x27; de janelas.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1769D5;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1769D5;">EF04CO02</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1769D520; color:#1769D5;">🧩 Pensamento Computacional</div>
+        <div class="hab-text">Reconhecer objetos do mundo real e/ou digital que podem ser representados através de registros que estabelecem uma organização na qual cada componente é identificado por um nome, fazendo manipulações sobre estas representações.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Registros agrupam informações de tipos diferentes, cada uma acessada por um nome (identificador). Carteira de estudante, boletim e fichas de cadastro são exemplos de registros.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Explorar documentos de identidade fictícios, identificando campos (nome, filiação, naturalidade) e filtrando por ano ou cidade; ou criar formulários anônimos e descobrir quem preencheu cada um.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1769D5;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1769D5;">EF04CO03</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1769D520; color:#1769D5;">🧩 Pensamento Computacional</div>
+        <div class="hab-text">Criar e simular algoritmos representados em linguagem oral, escrita ou pictográfica, que incluam sequências e repetições simples e aninhadas (iterações definidas e indefinidas), para resolver problemas de forma independente e em colaboração.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Agora um ciclo de repetição pode conter outro (repetição aninhada), permitindo descrever tarefas mais complexas de forma compacta.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Lavar as janelas de um prédio de 10 andares com 20 janelas por andar: repetir 10 vezes a tarefa de lavar um andar — que, por sua vez, repete 20 vezes a tarefa de lavar uma janela.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1F9D5B;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1F9D5B;">EF04CO04</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1F9D5B20; color:#1F9D5B;">🌐 Mundo Digital</div>
+        <div class="hab-text">Entender que para guardar, manipular e transmitir dados deve-se codificá-los de alguma forma que seja compreendida pela máquina (formato digital).</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>O processador opera com apenas dois níveis de tensão; por isso o sistema binário (0 e 1) é a base do formato digital. Guardar, manipular e transmitir dados exige codificá-los.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Usar a tabela ASCII: a letra &#x27;A&#x27; é representada pelo número decimal 65, codificado em binário como 1000001.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1F9D5B;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1F9D5B;">EF04CO05</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1F9D5B20; color:#1F9D5B;">🌐 Mundo Digital</div>
+        <div class="hab-text">Codificar diferentes informações para representação em computador (binária, ASCII, atributos de pixel, como RGB etc.).</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Diferentes tipos de informação usam diferentes estratégias de representação digital — conhecê-las é um passo importante para criar algoritmos que trabalhem com esses dados.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Explorar a tabela ASCII e os formatos de imagem Portable BitMap e Portable GrayMap, que codificam imagens com matrizes de 0/1 (preto e branco) ou valores de 0 a 255 (tons de cinza).</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#7C3AED;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#7C3AED;">EF04CO06</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#7C3AED20; color:#7C3AED;">👥 Cultura Digital</div>
+        <div class="hab-text">Usar diferentes ferramentas computacionais para criação de conteúdo (textos, apresentações, vídeos etc.).</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Explorar editores de texto, imagem e apresentações, programas de quadrinhos e animação, para produzir conteúdo em projetos e atividades diversas.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Propor um projeto de criação de uma história digital ou vídeo de curta duração, experimentando os recursos de um editor de texto ou de vídeo.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#7C3AED;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#7C3AED;">EF04CO07</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#7C3AED20; color:#7C3AED;">👥 Cultura Digital</div>
+        <div class="hab-text">Demonstrar postura ética nas atividades de coleta, transferência, guarda e uso de dados.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Refletir sobre aspectos éticos da manipulação de dados — ao assistir, baixar ou compartilhar uma imagem, música ou vídeo.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Construir um painel, a partir de imagens de celular e computador, destacando ações importantes ao manipular dados: verificar permissões, autoria e afins.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#7C3AED;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#7C3AED;">EF04CO08</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#7C3AED20; color:#7C3AED;">👥 Cultura Digital</div>
+        <div class="hab-text">Reconhecer a importância de verificar a confiabilidade das fontes de informações obtidas na Internet.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Ao obter informações na internet, é preciso identificar as fontes, verificar se são seguras e se a informação é confiável.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Comparar páginas que tratam do mesmo tema com informações diferentes — por exemplo, versões divergentes de uma mesma biografia — e discutir qual fonte merece confiança.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="year-banner" id="ano5" style="background:linear-gradient(135deg, #1a0510, #5a1025); color:#ffffff;">
+  <div class="year-number">5º</div>
+  <div class="container">
+    <div class="year-badge">Ensino Fundamental — Anos Iniciais</div>
+    <h2>5º <span>Ano</span></h2>
+    <p class="year-intro">Fechando os anos iniciais, o 5º ano apresenta listas e grafos, operadores lógicos (E, OU, NÃO) e a seleção condicional. Os alunos conhecem a arquitetura do computador, o sistema operacional e aprofundam o olhar crítico sobre a informação.</p>
+  </div>
+</section>
+
+<div class="year-summary">
+  <table>
+    <thead><tr>
+      <th style="background:#ef4444;">Código</th>
+      <th style="background:#ef4444;">Eixo</th>
+      <th style="background:#ef4444;">Objeto de Conhecimento</th>
+      <th style="background:#ef4444;">Habilidade</th>
+    </tr></thead>
+    <tbody>
+      <tr>
+        <td><span class="code-pill" style="background:#1769D5;">EF05CO01</span></td>
+        <td><span class="eixo-dot" style="background:#1769D5;"></span>Pensamento Computacional</td>
+        <td>Listas e grafos</td>
+        <td style="font-size:0.8rem;">Reconhecer objetos do mundo real e/ou digital que podem ser representados através de listas que estabelecem uma organiza…</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1769D5;">EF05CO02</span></td>
+        <td><span class="eixo-dot" style="background:#1769D5;"></span>Pensamento Computacional</td>
+        <td>Listas e grafos</td>
+        <td style="font-size:0.8rem;">Reconhecer objetos do mundo real e digital que podem ser representados através de grafos que estabelecem uma organização…</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1769D5;">EF05CO03</span></td>
+        <td><span class="eixo-dot" style="background:#1769D5;"></span>Pensamento Computacional</td>
+        <td>Lógica computacional</td>
+        <td style="font-size:0.8rem;">Realizar operações de negação, conjunção e disjunção sobre sentenças lógicas e valores &#x27;verdadeiro&#x27; e &#x27;falso&#x27;.</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1769D5;">EF05CO04</span></td>
+        <td><span class="eixo-dot" style="background:#1769D5;"></span>Pensamento Computacional</td>
+        <td>Algoritmos com seleção condicional</td>
+        <td style="font-size:0.8rem;">Criar e simular algoritmos representados em linguagem oral, escrita ou pictográfica, que incluam sequências, repetições …</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1F9D5B;">EF05CO05</span></td>
+        <td><span class="eixo-dot" style="background:#1F9D5B;"></span>Mundo Digital</td>
+        <td>Arquitetura de computadores</td>
+        <td style="font-size:0.8rem;">Identificar os componentes principais de um computador (dispositivos de entrada/saída, processadores e armazenamento).</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1F9D5B;">EF05CO06</span></td>
+        <td><span class="eixo-dot" style="background:#1F9D5B;"></span>Mundo Digital</td>
+        <td>Armazenamento de dados</td>
+        <td style="font-size:0.8rem;">Reconhecer que os dados podem ser armazenados em um dispositivo local ou remoto.</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#1F9D5B;">EF05CO07</span></td>
+        <td><span class="eixo-dot" style="background:#1F9D5B;"></span>Mundo Digital</td>
+        <td>Sistema operacional</td>
+        <td style="font-size:0.8rem;">Reconhecer a necessidade de um sistema operacional para a execução de programas e gerenciamento do hardware.</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#7C3AED;">EF05CO08</span></td>
+        <td><span class="eixo-dot" style="background:#7C3AED;"></span>Cultura Digital</td>
+        <td>Segurança e responsabilidade</td>
+        <td style="font-size:0.8rem;">Acessar as informações na Internet de forma crítica para distinguir os conteúdos confiáveis de não confiáveis.</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#7C3AED;">EF05CO09</span></td>
+        <td><span class="eixo-dot" style="background:#7C3AED;"></span>Cultura Digital</td>
+        <td>Segurança e responsabilidade</td>
+        <td style="font-size:0.8rem;">Usar informações considerando aplicações e limites dos direitos autorais em diferentes mídias digitais.</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#7C3AED;">EF05CO10</span></td>
+        <td><span class="eixo-dot" style="background:#7C3AED;"></span>Cultura Digital</td>
+        <td>Uso de tecnologias computacionais</td>
+        <td style="font-size:0.8rem;">Expressar-se crítica e criativamente na compreensão das mudanças tecnológicas no mundo do trabalho e sobre a evolução da…</td>
+      </tr>
+      <tr>
+        <td><span class="code-pill" style="background:#7C3AED;">EF05CO11</span></td>
+        <td><span class="eixo-dot" style="background:#7C3AED;"></span>Cultura Digital</td>
+        <td>Uso de tecnologias computacionais</td>
+        <td style="font-size:0.8rem;">Identificar a adequação de diferentes tecnologias computacionais na resolução de problemas.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="hab-cards">
+  <div class="hab-card" style="border-top-color:#1769D5;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1769D5;">EF05CO01</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1769D520; color:#1769D5;">🧩 Pensamento Computacional</div>
+        <div class="hab-text">Reconhecer objetos do mundo real e/ou digital que podem ser representados através de listas que estabelecem uma organização na qual há um número variável de itens dispostos em sequência, fazendo manipulações simples sobre estas representações.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Listas agrupam itens em sequência e não têm tamanho pré-definido — o mesmo algoritmo gerencia uma fila de 5 ou de 50 pessoas. Filas, pilhas de cartas e listas de alunos são bons exemplos.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Com um baralho agrupado por naipes e ordenado, incluir novas cartas mantendo a ordem, substituir cartas por curingas, retirar cartas de um valor e buscar uma carta específica no monte.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1769D5;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1769D5;">EF05CO02</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1769D520; color:#1769D5;">🧩 Pensamento Computacional</div>
+        <div class="hab-text">Reconhecer objetos do mundo real e digital que podem ser representados através de grafos que estabelecem uma organização com uma quantidade variável de vértices conectados por arestas, fazendo manipulações simples sobre estas representações.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Grafos representam relações entre objetos: vértices (objetos) e arestas (relações). Mapas, redes sociais, árvores genealógicas e chaveamentos de campeonato podem ser descritos assim.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Traçar em mapas do bairro as ligações entre prédios marcados, contar as quadras de cada caminho e montar o grafo coletivo; ou representar amizades de perfis fictícios como grafo.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1769D5;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1769D5;">EF05CO03</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1769D520; color:#1769D5;">🧩 Pensamento Computacional</div>
+        <div class="hab-text">Realizar operações de negação, conjunção e disjunção sobre sentenças lógicas e valores &#x27;verdadeiro&#x27; e &#x27;falso&#x27;.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Valores lógicos podem ser modificados ou combinados com as operações NÃO (negação), E (conjunção) e OU (disjunção). A negação inverte o valor da sentença.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Avaliar sentenças compostas: &#x27;Cinco é maior que seis E maior que dois&#x27; (falso); &#x27;Cinco é maior que seis OU maior que dois&#x27; (verdadeiro).</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1769D5;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1769D5;">EF05CO04</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1769D520; color:#1769D5;">🧩 Pensamento Computacional</div>
+        <div class="hab-text">Criar e simular algoritmos representados em linguagem oral, escrita ou pictográfica, que incluam sequências, repetições e seleções condicionais para resolver problemas de forma independente e em colaboração.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Além de sequências e repetições, muitas vezes é preciso escolher a próxima ação com base em uma condição — como ao chegar em um semáforo, em que a ação depende da cor.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Simular o algoritmo de atravessar uma rua com semáforo: &#x27;Se o semáforo estiver vermelho OU amarelo, aguardar na calçada; caso contrário, atravessar a rua&#x27;.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1F9D5B;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1F9D5B;">EF05CO05</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1F9D5B20; color:#1F9D5B;">🌐 Mundo Digital</div>
+        <div class="hab-text">Identificar os componentes principais de um computador (dispositivos de entrada/saída, processadores e armazenamento).</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Conhecer os elementos que compõem a arquitetura de um computador: dispositivos de entrada/saída, processadores e armazenamento temporário (memória RAM) e persistente (disco rígido).</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Explicar os componentes básicos e suas funções — processador, memória — com exemplos de diferentes dispositivos de entrada e saída.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1F9D5B;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1F9D5B;">EF05CO06</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1F9D5B20; color:#1F9D5B;">🌐 Mundo Digital</div>
+        <div class="hab-text">Reconhecer que os dados podem ser armazenados em um dispositivo local ou remoto.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Os dados podem ficar em dispositivos acoplados ao computador (HD, SSD), em dispositivos removíveis (pen drives) ou em outros computadores pela internet (nuvem).</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Exemplificar os dispositivos de armazenamento, mostrar como os arquivos se organizam em cada um e classificá-los como locais ou remotos.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#1F9D5B;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#1F9D5B;">EF05CO07</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#1F9D5B20; color:#1F9D5B;">🌐 Mundo Digital</div>
+        <div class="hab-text">Reconhecer a necessidade de um sistema operacional para a execução de programas e gerenciamento do hardware.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Os dispositivos físicos não funcionam sozinhos: o Sistema Operacional gerencia os recursos do computador — memória, arquivos, dispositivos de entrada e saída.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Apresentar funções do sistema operacional e mostrar que existem vários: Windows, Linux, macOS.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#7C3AED;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#7C3AED;">EF05CO08</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#7C3AED20; color:#7C3AED;">👥 Cultura Digital</div>
+        <div class="hab-text">Acessar as informações na Internet de forma crítica para distinguir os conteúdos confiáveis de não confiáveis.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Acessar informações na internet com olhar crítico, identificando conteúdos prejudiciais, informações confiáveis e notícias falsas.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Propor um estudo comparativo entre sites de jornais oficiais e blogs, discutindo as fontes de informação e sua confiabilidade.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#7C3AED;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#7C3AED;">EF05CO09</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#7C3AED20; color:#7C3AED;">👥 Cultura Digital</div>
+        <div class="hab-text">Usar informações considerando aplicações e limites dos direitos autorais em diferentes mídias digitais.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Utilizar informações da internet reconhecendo os direitos autorais — de uma música, filme ou livro — e os cuidados no compartilhamento e uso pessoal.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Criar um portfólio com imagens de personagens de desenhos animados, citando as fontes e propondo um formato que respeite todos os direitos autorais.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#7C3AED;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#7C3AED;">EF05CO10</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#7C3AED20; color:#7C3AED;">👥 Cultura Digital</div>
+        <div class="hab-text">Expressar-se crítica e criativamente na compreensão das mudanças tecnológicas no mundo do trabalho e sobre a evolução da sociedade.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Expressar-se, por meios computacionais ou não, demonstrando compreensão das mudanças que as tecnologias trazem ao cotidiano — incluindo o mundo do trabalho.</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Criar uma animação (no computador ou no papel) sobre um impacto da tecnologia na sociedade, como o uso de mensagens de áudio no lugar de chamadas.</p>
+      </div>
+    </div>
+  </div>
+  <div class="hab-card" style="border-top-color:#7C3AED;">
+    <div class="hab-header">
+      <div class="hab-code" style="background:#7C3AED;">EF05CO11</div>
+      <div class="hab-meta">
+        <div class="hab-eixo-label" style="background:#7C3AED20; color:#7C3AED;">👥 Cultura Digital</div>
+        <div class="hab-text">Identificar a adequação de diferentes tecnologias computacionais na resolução de problemas.</div>
+      </div>
+    </div>
+    <div class="hab-body">
+      <div class="hab-box sig">
+        <div class="hab-box-label">💡 O que significa</div>
+        <p>Compreender que necessidades diferentes pedem tecnologias diferentes: por que usamos um computador para criar quadrinhos e um celular para fazer uma ligação?</p>
+      </div>
+      <div class="hab-box pra">
+        <div class="hab-box-label">🎯 Na prática</div>
+        <p>Propor um jogo com problemas que precisam de solução: individualmente ou em grupos, os alunos escolhem a melhor tecnologia considerando diferentes critérios.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="etapa-section" id="sintese">
+  <div class="container">
+    <h2>Síntese por Etapa — 1º ao 5º Ano</h2>
+    <p class="lead">Habilidades consolidadas que o aluno deve desenvolver ao longo dos anos iniciais do Ensino Fundamental</p>
+    <div class="etapa-grid">
+      <div class="etapa-item" style="border-left: 3px solid #1769D5;">
+        <div class="code" style="color:#1769D5;">🧩 EF15CO01</div>
+        <div class="obj">Organização e representação da informação</div>
+        <div class="desc">Identificar as principais formas de organizar e representar a informação de maneira estruturada (matrizes, registros, listas e grafos) ou não estruturada (números, palavras, valores verdade).</div>
+      </div>
+      <div class="etapa-item" style="border-left: 3px solid #1769D5;">
+        <div class="code" style="color:#1769D5;">🧩 EF15CO02</div>
+        <div class="obj">Algoritmos</div>
+        <div class="desc">Construir e simular algoritmos, de forma independente ou em colaboração, que resolvam problemas simples e do cotidiano com uso de sequências, seleções condicionais e repetições de instruções.</div>
+      </div>
+      <div class="etapa-item" style="border-left: 3px solid #1769D5;">
+        <div class="code" style="color:#1769D5;">🧩 EF15CO03</div>
+        <div class="obj">Lógica computacional</div>
+        <div class="desc">Realizar operações de negação, conjunção e disjunção sobre sentenças lógicas e valores &#x27;verdadeiro&#x27; e &#x27;falso&#x27;.</div>
+      </div>
+      <div class="etapa-item" style="border-left: 3px solid #1769D5;">
+        <div class="code" style="color:#1769D5;">🧩 EF15CO04</div>
+        <div class="obj">Decomposição</div>
+        <div class="desc">Aplicar a estratégia de decomposição para resolver problemas complexos, dividindo esse problema em partes menores, resolvendo-as e combinando suas soluções.</div>
+      </div>
+      <div class="etapa-item" style="border-left: 3px solid #1F9D5B;">
+        <div class="code" style="color:#1F9D5B;">🌐 EF15CO05</div>
+        <div class="obj">Codificação da informação</div>
+        <div class="desc">Codificar a informação de diferentes formas, entendendo a importância desta codificação para o armazenamento, manipulação e transmissão em dispositivos computacionais.</div>
+      </div>
+      <div class="etapa-item" style="border-left: 3px solid #1F9D5B;">
+        <div class="code" style="color:#1F9D5B;">🌐 EF15CO06</div>
+        <div class="obj">Funcionamento de dispositivos computacionais</div>
+        <div class="desc">Conhecer os componentes básicos de dispositivos computacionais, entendendo os princípios de seu funcionamento.</div>
+      </div>
+      <div class="etapa-item" style="border-left: 3px solid #1F9D5B;">
+        <div class="code" style="color:#1F9D5B;">🌐 EF15CO07</div>
+        <div class="obj">Sistema Operacional</div>
+        <div class="desc">Conhecer o conceito de Sistema Operacional e sua importância na integração entre software e hardware.</div>
+      </div>
+      <div class="etapa-item" style="border-left: 3px solid #7C3AED;">
+        <div class="code" style="color:#7C3AED;">👥 EF15CO08</div>
+        <div class="obj">Uso de artefatos computacionais</div>
+        <div class="desc">Reconhecer e utilizar tecnologias computacionais para pesquisar e acessar informações, expressar-se crítica e criativamente e resolver problemas.</div>
+      </div>
+      <div class="etapa-item" style="border-left: 3px solid #7C3AED;">
+        <div class="code" style="color:#7C3AED;">👥 EF15CO09</div>
+        <div class="obj">Segurança e responsabilidade</div>
+        <div class="desc">Entender que as tecnologias devem ser utilizadas de maneira segura, ética e responsável, respeitando direitos autorais, de imagem e as leis vigentes.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="container">
+    <p><strong>Guia Prático da BNCC Computação</strong> — Ensino Fundamental Anos Iniciais (1º ao 5º Ano)</p>
+    <p style="margin-top:6px;">Baseado no documento <em>Computação na Educação Básica — Complemento à BNCC</em> (Ministério da Educação, 2022).</p>
+    <p style="margin-top:6px;">Os textos normativos das habilidades são reproduzidos do documento oficial. As explicações e exemplos práticos são adaptações para uso pedagógico.</p>
+  </div>
+</footer>
+
+</body>
+</html>

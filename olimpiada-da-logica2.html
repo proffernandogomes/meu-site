@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Olimpíada da Lógica — 20 Desafios</title>
+<style>
+  :root{
+    --verde:#1D9E75; --verde-claro:#E1F5EE; --verde-escuro:#0F6E56;
+    --roxo:#7F77DD; --coral:#D85A30; --azul:#378ADD; --amarelo:#EF9F27;
+    --vermelho:#E24B4A; --vermelho-claro:#FCEBEB; --vermelho-escuro:#A32D2D;
+    --fundo:#F4F6FB; --cartao:#FFFFFF; --texto:#1F2430; --suave:#5F6470;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  body{font-family:'Segoe UI',system-ui,-apple-system,sans-serif;background:var(--fundo);color:var(--texto);min-height:100vh;display:flex;justify-content:center;padding:16px;}
+  #app{width:100%;max-width:500px;}
+  header{text-align:center;margin-bottom:14px;}
+  header h1{font-size:23px;color:var(--azul);font-weight:700;}
+  header p{font-size:13px;color:var(--suave);margin-top:2px;}
+  .barra{display:flex;justify-content:space-between;align-items:center;background:var(--cartao);border-radius:14px;padding:10px 16px;margin-bottom:12px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.05);}
+  .barra .nivel{font-size:13px;color:var(--suave);font-weight:600;}
+  .estrelas{color:var(--amarelo);font-size:16px;}
+  .progresso{height:8px;background:#DDE3EF;border-radius:8px;overflow:hidden;margin-bottom:16px;}
+  .progresso div{height:100%;background:var(--azul);width:0;transition:width .4s ease;}
+  .cartao{background:var(--cartao);border-radius:20px;padding:22px 18px 26px;box-shadow:0 4px 16px rgba(0,0,0,.06);text-align:center;}
+  .faixa{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;padding:4px 12px;border-radius:20px;margin-bottom:12px;}
+  .cena{font-size:38px;line-height:1.2;margin-bottom:8px;word-break:break-word;}
+  .historia{font-size:16px;color:var(--texto);line-height:1.6;margin-bottom:6px;text-align:left;background:#F2F5FB;border-radius:12px;padding:14px 16px;}
+  .historia b{color:var(--azul);}
+  .figura{margin:14px auto 4px;background:#fff;border:1px solid #E3E8F2;border-radius:14px;padding:12px;display:flex;justify-content:center;}
+  .figura svg{max-width:100%;height:auto;}
+  .pergunta{font-size:18px;font-weight:700;margin:16px 4px 18px;line-height:1.4;}
+  .opcoes{display:grid;gap:10px;}
+  .opt{display:flex;align-items:center;gap:10px;font-size:17px;font-weight:600;padding:14px 16px;background:#fff;border:3px solid #DDE3EF;border-radius:16px;cursor:pointer;text-align:left;transition:transform .08s,border-color .15s,background .15s;color:var(--texto);width:100%;}
+  .opt .letra{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#EEF2FA;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--suave);}
+  .opt:hover{border-color:var(--azul);}
+  .opt:active{transform:scale(.97);}
+  .opt.marcada{border-color:var(--azul);background:#EAF3FC;}
+  .opt.marcada .letra{background:var(--azul);color:#fff;}
+  .opt.certo{border-color:var(--verde);background:var(--verde-claro);}
+  .opt.certo .letra{background:var(--verde);color:#fff;}
+  .opt.errado{border-color:var(--vermelho);background:var(--vermelho-claro);}
+  .opt.errado .letra{background:var(--vermelho);color:#fff;}
+  .opt.desabilitado{cursor:default;}
+  .opt svg{flex-shrink:0;}
+  .feedback{margin-top:18px;border-radius:16px;padding:16px;text-align:left;font-size:15px;line-height:1.6;display:none;}
+  .feedback.ok{background:var(--verde-claro);border:2px solid var(--verde);}
+  .feedback.nao{background:var(--vermelho-claro);border:2px solid var(--vermelho);}
+  .feedback .titulo{font-size:17px;font-weight:700;margin-bottom:6px;}
+  .feedback.ok .titulo{color:var(--verde-escuro);}
+  .feedback.nao .titulo{color:var(--vermelho-escuro);}
+  .feedback b{color:inherit;}
+  .feedback .gab{margin-top:10px;font-weight:700;}
+  .acoes{display:flex;gap:10px;margin-top:18px;}
+  button.nav{flex:1;font-family:inherit;font-size:16px;font-weight:700;padding:14px;border:none;border-radius:14px;cursor:pointer;transition:transform .08s,opacity .2s;}
+  button.nav:active{transform:scale(.97);}
+  button.nav:disabled{opacity:.4;cursor:not-allowed;}
+  .btn-confirmar{background:var(--azul);color:#fff;}
+  .btn-prox{background:var(--verde);color:#fff;display:none;}
+  .fim{text-align:center;padding:30px 18px;}
+  .fim .trofeu{font-size:80px;}
+  .fim h2{font-size:26px;color:var(--azul);margin:12px 0 6px;}
+  .fim .placar{font-size:20px;color:var(--amarelo);font-weight:700;margin-bottom:8px;}
+  .fim p{color:var(--suave);font-size:15px;margin-bottom:20px;}
+  .fim button{font-family:inherit;font-size:17px;font-weight:700;padding:14px 30px;background:var(--azul);color:#fff;border:none;border-radius:14px;cursor:pointer;}
+  .inicio{text-align:center;padding:30px 20px;}
+  .inicio .emoji{font-size:70px;}
+  .inicio h2{font-size:23px;color:var(--azul);margin:10px 0 6px;}
+  .inicio p{color:var(--suave);font-size:15px;margin-bottom:18px;}
+  .inicio input{width:100%;font-family:inherit;font-size:18px;padding:14px 16px;border:3px solid #DDE3EF;border-radius:14px;text-align:center;margin-bottom:8px;}
+  .inicio input:focus{outline:none;border-color:var(--azul);}
+  .inicio .aviso{font-size:13px;color:var(--vermelho);min-height:18px;margin-bottom:8px;}
+  .inicio button{font-family:inherit;font-size:18px;font-weight:700;padding:14px 30px;background:var(--verde);color:#fff;border:none;border-radius:14px;cursor:pointer;width:100%;}
+  .boletim{border:3px solid var(--azul);}
+  .boletim .nome-aluno{font-size:24px;font-weight:700;color:var(--texto);margin:4px 0 2px;}
+  .boletim .data-hora{font-size:15px;color:var(--suave);margin-bottom:14px;}
+  .boletim .nota-grande{font-size:54px;font-weight:800;line-height:1;margin:6px 0;}
+  .boletim .nota-grande.aprov{color:var(--verde);}
+  .boletim .nota-grande.reprov{color:var(--coral);}
+  .boletim .selo{font-size:16px;font-weight:700;margin-top:6px;}
+  .boletim .detalhe{font-size:14px;color:var(--suave);margin-top:10px;}
+  .boletim .foto-aviso{font-size:13px;color:var(--suave);margin-top:16px;border-top:1px dashed #DDE3EF;padding-top:12px;}
+  .slider-sair{margin-top:22px;border-top:1px dashed #DDE3EF;padding-top:18px;}
+  .slider-sair .rotulo{font-size:13px;color:var(--suave);margin-bottom:10px;font-weight:600;}
+  .trilho{position:relative;height:56px;background:#EEF2FA;border-radius:28px;border:2px solid #DDE3EF;overflow:hidden;user-select:none;touch-action:none;}
+  .trilho .texto-trilho{position:absolute;top:0;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:var(--suave);pointer-events:none;padding-left:30px;}
+  .trilho .preenche{position:absolute;top:0;left:0;bottom:0;width:52px;background:var(--verde-claro);border-radius:28px;transition:background .2s;}
+  .puxador{position:absolute;top:3px;left:3px;width:50px;height:46px;background:var(--verde);border-radius:24px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:22px;cursor:grab;touch-action:none;z-index:2;transition:background .2s;}
+  .puxador:active{cursor:grabbing;}
+  .trilho.pronto .puxador{background:var(--verde-escuro);}
+  .trilho.pronto .preenche{background:var(--verde);}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>🔎 Olimpíada da Lógica</h1>
+    <p>Olimpíada da Lógica - desafio 2</p>
+  </header>
+  <div class="barra" id="barra" style="display:none;">
+    <span class="nivel">Desafio <span id="num">1</span>/20</span>
+    <span class="estrelas">⭐ <span id="placar">0</span></span>
+  </div>
+  <div class="progresso" id="progressoWrap" style="display:none;"><div id="prog"></div></div>
+  <div id="tela"></div>
+</div>
+
+<script>
+/* ==========================================================================
+   FIGURAS SVG — cada função devolve o código SVG da figura da questão.
+   São desenhadas dentro do próprio app (offline, um único arquivo).
+   ========================================================================== */
+const FIG = {
+
+  tabela(){ // tabela 10 colunas, números 1..30, destaca 24 e 34
+    let cells="";
+    for(let n=1;n<=30;n++){
+      const c=(n-1)%10, r=Math.floor((n-1)/10);
+      const x=10+c*36, y=10+r*30;
+      const dest = (n===24)?"#B5D4F4":(n===34?"#9FE1CB":"#fff");
+      cells+=`<rect x="${x}" y="${y}" width="36" height="30" fill="${dest}" stroke="#B9C2D6"/>
+              <text x="${x+18}" y="${y+20}" text-anchor="middle" font-size="14" fill="#1F2430">${n}</text>`;
+    }
+    return `<svg viewBox="0 0 380 110" role="img"><title>Tabela de números de 1 a 30 em 10 colunas</title>${cells}</svg>`;
+  },
+
+  presentes(...precos){ // 5 presentes com etiquetas de preço
+    let g="";
+    precos.forEach((p,i)=>{
+      const x=10+i*74;
+      g+=`<rect x="${x}" y="34" width="56" height="46" rx="4" fill="#E1F5EE" stroke="#1D9E75"/>
+          <rect x="${x+24}" y="34" width="8" height="46" fill="#1D9E75"/>
+          <rect x="${x}" y="50" width="56" height="7" fill="#1D9E75"/>
+          <rect x="${x+6}" y="4" width="44" height="22" rx="3" fill="#fff" stroke="#5F6470"/>
+          <text x="${x+28}" y="19" text-anchor="middle" font-size="12" font-weight="bold" fill="#1F2430">${p}</text>`;
+    });
+    return `<svg viewBox="0 0 380 90" role="img"><title>Cinco presentes com etiquetas de preço</title>${g}</svg>`;
+  },
+
+  alturas(){ // parede com marcas, dois atletas (7 e 6 marcas)
+    let marcas="";
+    for(let i=0;i<=8;i++){ const y=140-i*15; marcas+=`<line x1="30" y1="${y}" x2="350" y2="${y}" stroke="#DDE3EF"/>`; }
+    return `<svg viewBox="0 0 380 160" role="img"><title>Dois atletas medidos por marcas na parede</title>
+      ${marcas}
+      <rect x="90" y="50" width="34" height="90" rx="8" fill="#7F77DD"/>
+      <circle cx="107" cy="40" r="14" fill="#EF9F27"/>
+      <text x="107" y="155" text-anchor="middle" font-size="12" fill="#5F6470">7 marcas</text>
+      <rect x="250" y="65" width="34" height="75" rx="8" fill="#378ADD"/>
+      <circle cx="267" cy="55" r="14" fill="#EF9F27"/>
+      <text x="267" y="155" text-anchor="middle" font-size="12" fill="#5F6470">6 marcas</text>
+      <text x="360" y="145" font-size="11" fill="#5F6470">chão</text>
+    </svg>`;
+  },
+
+  estacionamento(){ // 4 vagas vazias
+    let vagas="";
+    for(let i=0;i<4;i++){ const x=20+i*85; vagas+=`<rect x="${x}" y="20" width="75" height="60" fill="#F2F5FB" stroke="#5F6470" stroke-dasharray="4 3"/>
+      <text x="${x+37}" y="55" text-anchor="middle" font-size="13" fill="#B9C2D6">vazia</text>`; }
+    return `<svg viewBox="0 0 380 100" role="img"><title>Quatro vagas de garagem vazias</title>${vagas}
+      <text x="190" y="95" text-anchor="middle" font-size="12" fill="#5F6470">🚗 chega mais 1 carro</text></svg>`;
+  },
+
+  aquario(){ // tabela de ração
+    const linhas=[["🐙 polvo","30 g",1],["🦐 camarão","18 g",2],["🐟 peixe-azul","22 g",0],["🐠 peixe-laranja","12 g",3]];
+    let g="";
+    linhas.forEach((l,i)=>{ const y=8+i*30;
+      g+=`<rect x="6" y="${y}" width="220" height="30" fill="${i%2?'#F2F5FB':'#fff'}" stroke="#DDE3EF"/>
+          <text x="14" y="${y+20}" font-size="13" fill="#1F2430">${l[0]}</text>
+          <text x="180" y="${y+20}" font-size="13" font-weight="bold" fill="#1D9E75">${l[1]}</text>
+          <text x="300" y="${y+20}" text-anchor="middle" font-size="14" fill="#378ADD">${l[2]} no aquário</text>`;
+    });
+    return `<svg viewBox="0 0 380 132" role="img"><title>Tabela de ração por animal</title>${g}</svg>`;
+  },
+
+  palitos(){ // faixa de 6 casinhas COLADAS: partilham a parede do meio
+    let g="", x0=40, L=50;
+    // desenha as bases/telhados; as paredes verticais são desenhadas só uma vez cada (partilhadas)
+    for(let k=0;k<6;k++){ const x=x0+k*L;
+      g+=`<line x1="${x}" y1="95" x2="${x+L}" y2="95" stroke="#D85A30" stroke-width="2.5"/>
+          <polygon points="${x},60 ${x+25},40 ${x+L},60" fill="none" stroke="#D85A30" stroke-width="2.5"/>`;
+    }
+    // 7 paredes verticais no total (6 casas coladas = 6+1 paredes, cada interna partilhada)
+    for(let k=0;k<=6;k++){ const x=x0+k*L;
+      const cor=(k>0 && k<6)?"#1D9E75":"#D85A30"; const w=(k>0 && k<6)?3:2.5;
+      g+=`<line x1="${x}" y1="60" x2="${x}" y2="95" stroke="${cor}" stroke-width="${w}"/>`;
+    }
+    g+=`<text x="190" y="20" text-anchor="middle" font-size="11" fill="#0F6E56">paredes verdes = partilhadas entre 2 casas</text>`;
+    return `<svg viewBox="0 0 380 105" role="img"><title>Faixa com seis casinhas coladas partilhando as paredes do meio</title>${g}</svg>`;
+  },
+
+  contornoL(){ // figura de 3 quadrados de 4cm em fila (retângulo)
+    return `<svg viewBox="0 0 380 130" role="img"><title>Três quadrados iguais em fila</title>
+      <rect x="40" y="30" width="300" height="70" fill="#E1F5EE" stroke="#1D9E75" stroke-width="2.5"/>
+      <line x1="140" y1="30" x2="140" y2="100" stroke="#1D9E75" stroke-width="1.5"/>
+      <line x1="240" y1="30" x2="240" y2="100" stroke="#1D9E75" stroke-width="1.5"/>
+      <text x="90" y="120" text-anchor="middle" font-size="12" fill="#5F6470">4 cm</text>
+      <text x="190" y="120" text-anchor="middle" font-size="12" fill="#5F6470">4 cm</text>
+      <text x="290" y="120" text-anchor="middle" font-size="12" fill="#5F6470">4 cm</text>
+      <text x="20" y="70" text-anchor="middle" font-size="12" fill="#5F6470">4</text></svg>`;
+  },
+
+  quadro2x2(){ // grade 2x2 com somas de linha e coluna, mostra o 4
+    return `<svg viewBox="0 0 300 170" role="img"><title>Quadro 2 por 2 com somas indicadas</title>
+      <rect x="70" y="20" width="60" height="60" fill="#fff" stroke="#5F6470" stroke-width="1.5"/>
+      <rect x="130" y="20" width="60" height="60" fill="#fff" stroke="#5F6470" stroke-width="1.5"/>
+      <rect x="70" y="80" width="60" height="60" fill="#fff" stroke="#5F6470" stroke-width="1.5"/>
+      <rect x="130" y="80" width="60" height="60" fill="#EEF2FA" stroke="#5F6470" stroke-width="1.5"/>
+      <text x="100" y="58" text-anchor="middle" font-size="22" font-weight="bold" fill="#1F2430">4</text>
+      <text x="160" y="58" text-anchor="middle" font-size="20" fill="#B9C2D6">?</text>
+      <text x="100" y="118" text-anchor="middle" font-size="20" fill="#B9C2D6">?</text>
+      <text x="160" y="118" text-anchor="middle" font-size="20" fill="#B9C2D6">?</text>
+      <text x="215" y="55" font-size="14" fill="#378ADD">→ 9</text>
+      <text x="215" y="115" font-size="14" fill="#378ADD">→ 8</text>
+      <text x="100" y="162" text-anchor="middle" font-size="14" fill="#378ADD">7</text>
+      <text x="160" y="162" text-anchor="middle" font-size="14" fill="#378ADD">↓</text></svg>`;
+  },
+
+  regua(largura,inicio,marcaSetas){ // régua 0..25 com marcador
+    let ticks="";
+    for(let i=0;i<=25;i++){ const x=15+i*13.6; const h=(i%5===0)?14:8;
+      ticks+=`<line x1="${x}" y1="40" x2="${x}" y2="${40+h}" stroke="#5F6470"/>`;
+      if(i%5===0) ticks+=`<text x="${x}" y="72" text-anchor="middle" font-size="10" fill="#5F6470">${i}</text>`;
+    }
+    const mx=15+inicio*13.6;
+    return `<svg viewBox="0 0 380 85" role="img"><title>Régua com formiga na marca ${inicio}</title>
+      <rect x="8" y="40" width="360" height="4" fill="#EF9F27"/>${ticks}
+      <text x="${mx}" y="30" text-anchor="middle" font-size="18">🐜</text>
+      <polygon points="${mx-6},32 ${mx+6},32 ${mx},40" fill="#D85A30"/></svg>`;
+  },
+
+  bolasTubos(){ // três tubos que cruzam: entrada 1,2,3 -> saída 2,3,1
+    return `<svg viewBox="0 0 380 170" role="img"><title>Tubos cruzados com três bolas</title>
+      <text x="60" y="20" text-anchor="middle" font-size="14" font-weight="bold">1</text>
+      <text x="190" y="20" text-anchor="middle" font-size="14" font-weight="bold">2</text>
+      <text x="320" y="20" text-anchor="middle" font-size="14" font-weight="bold">3</text>
+      <path d="M60 30 C 60 90, 320 90, 320 150" fill="none" stroke="#7F77DD" stroke-width="10" opacity=".85"/>
+      <path d="M190 30 C 190 100, 60 100, 60 150" fill="none" stroke="#1D9E75" stroke-width="10" opacity=".85"/>
+      <path d="M320 30 C 320 110, 190 110, 190 150" fill="none" stroke="#D85A30" stroke-width="10" opacity=".85"/>
+      <circle cx="60" cy="30" r="9" fill="#7F77DD"/><circle cx="190" cy="30" r="9" fill="#1D9E75"/><circle cx="320" cy="30" r="9" fill="#D85A30"/>
+      <text x="60" y="166" text-anchor="middle" font-size="12" fill="#5F6470">saída 1</text>
+      <text x="190" y="166" text-anchor="middle" font-size="12" fill="#5F6470">saída 2</text>
+      <text x="320" y="166" text-anchor="middle" font-size="12" fill="#5F6470">saída 3</text></svg>`;
+  },
+
+  grafico(){ // barras de temperatura A..E = 9,7,5,6,3
+    const vals=[9,7,5,6,3], nomes=["A","B","C","D","E"];
+    let g="", base=130;
+    vals.forEach((v,i)=>{ const x=40+i*62, h=v*11;
+      g+=`<rect x="${x}" y="${base-h}" width="40" height="${h}" fill="#B5D4F4" stroke="#378ADD"/>
+          <text x="${x+20}" y="${base+16}" text-anchor="middle" font-size="13" fill="#1F2430">${nomes[i]}</text>
+          <text x="${x+20}" y="${base-h-6}" text-anchor="middle" font-size="12" font-weight="bold" fill="#185FA5">${v}</text>`;
+    });
+    return `<svg viewBox="0 0 360 155" role="img"><title>Temperaturas mínimas de cinco cidades</title>
+      <line x1="30" y1="130" x2="345" y2="130" stroke="#5F6470"/>
+      <line x1="30" y1="20" x2="30" y2="130" stroke="#5F6470"/>${g}
+      <text x="12" y="60" font-size="10" fill="#5F6470" transform="rotate(-90 12 60)">graus</text></svg>`;
+  },
+
+  cartoes(){ // cinco cartões 1 4 3 2 5
+    const nums=[1,4,3,2,5]; let g="";
+    nums.forEach((n,i)=>{ const x=20+i*70;
+      g+=`<rect x="${x}" y="15" width="55" height="70" rx="8" fill="#fff" stroke="#378ADD" stroke-width="2.5"/>
+          <text x="${x+27}" y="62" text-anchor="middle" font-size="30" font-weight="bold" fill="#1F2430">${n}</text>`;
+    });
+    return `<svg viewBox="0 0 380 100" role="img"><title>Cinco cartões numerados 1 4 3 2 5</title>${g}</svg>`;
+  },
+
+  bois(){ // dois cercados 10 e 4
+    return `<svg viewBox="0 0 380 130" role="img"><title>Dois cercados com bois</title>
+      <rect x="10" y="15" width="175" height="100" fill="#EAF3DE" stroke="#639922" stroke-width="2.5"/>
+      <rect x="195" y="15" width="175" height="100" fill="#FAEEDA" stroke="#BA7517" stroke-width="2.5"/>
+      <text x="97" y="70" text-anchor="middle" font-size="34">🐂</text>
+      <text x="97" y="100" text-anchor="middle" font-size="14" font-weight="bold" fill="#3B6D11">10 bois</text>
+      <text x="282" y="70" text-anchor="middle" font-size="34">🐂</text>
+      <text x="282" y="100" text-anchor="middle" font-size="14" font-weight="bold" fill="#854F0B">4 bois</text>
+      <text x="190" y="128" text-anchor="middle" font-size="11" fill="#5F6470">esquerda → direita</text></svg>`;
+  },
+
+  cubinhosFila(){ // fila de 4 cubinhos
+    let g=""; for(let i=0;i<4;i++){ const x=60+i*60;
+      g+=`<polygon points="${x},50 ${x+40},50 ${x+40},90 ${x},90" fill="#B5D4F4" stroke="#185FA5" stroke-width="1.5"/>
+          <polygon points="${x},50 ${x+12},38 ${x+52},38 ${x+40},50" fill="#85B7EB" stroke="#185FA5" stroke-width="1.5"/>
+          <polygon points="${x+40},50 ${x+52},38 ${x+52},78 ${x+40},90" fill="#378ADD" stroke="#185FA5" stroke-width="1.5"/>`;
+    }
+    return `<svg viewBox="0 0 380 105" role="img"><title>Fila de quatro cubinhos colados</title>${g}</svg>`;
+  },
+
+  labirinto(){ // giros: seta para cima
+    return `<svg viewBox="0 0 200 140" role="img"><title>Robô entra andando para cima</title>
+      <rect x="20" y="20" width="160" height="100" fill="#F2F5FB" stroke="#5F6470"/>
+      <rect x="60" y="20" width="30" height="45" fill="#5F6470"/>
+      <rect x="120" y="55" width="40" height="30" fill="#5F6470"/>
+      <text x="100" y="132" text-anchor="middle" font-size="11" fill="#5F6470">entrada (sobe ↑)</text>
+      <polygon points="100,110 92,124 108,124" fill="#D85A30"/>
+      <line x1="100" y1="124" x2="100" y2="100" stroke="#D85A30" stroke-width="3"/></svg>`;
+  }
+};
+
+/* ==========================================================================
+   BANCO DE QUESTÕES PRINCIPAIS — questões visuais têm campo "fig".
+   ========================================================================== */
+const BANCO_PRINCIPAL = [
+{ fig:"tabela",
+  tipo:"Tabela", cena:"🔢",
+  historia:"Marcos preencheu uma tabela de <b>10 colunas</b> em ordem (1, 2, 3, ...), uma linha embaixo da outra, como mostra a figura.",
+  pergunta:"O número 34 fica exatamente ABAIXO de qual número?",
+  opcoes:[{t:"24",ok:true},{t:"23"},{t:"25"},{t:"44"},{t:"33"}],
+  explica:"Numa tabela de 10 colunas, cada número fica embaixo do que tem 10 a menos. Abaixo do 24 vem o <b>34</b> (24 + 10)."
+},
+{ fig:"presentes", figArgs:["R$ 118","R$ 96","R$ 154","R$ 160","R$ 132"],
+  tipo:"Preços", cena:"🎁",
+  historia:"Os preços dos presentes estão nas etiquetas, como mostra a figura.",
+  pergunta:"Qual é a diferença entre o presente MAIS CARO e o MAIS BARATO?",
+  opcoes:[{t:"R$ 64,00",ok:true},{t:"R$ 58,00"},{t:"R$ 42,00"},{t:"R$ 70,00"},{t:"R$ 74,00"}],
+  explica:"O mais caro é R$ 160,00 e o mais barato é R$ 96,00. A diferença é 160 − 96 = <b>R$ 64,00</b>."
+},
+{ fig:"alturas",
+  tipo:"Alturas", cena:"📏",
+  historia:"Dois atletas mediram a altura com marcas igualmente espaçadas. O MAIOR ocupa <b>7 marcas</b> e mede <b>168 cm</b>. O menor ocupa <b>6 marcas</b>.",
+  pergunta:"Qual é a altura do atleta MENOR?",
+  opcoes:[{t:"144 cm",ok:true},{t:"150 cm"},{t:"138 cm"},{t:"156 cm"},{t:"140 cm"}],
+  explica:"Cada marca vale 168 ÷ 7 = 24 cm. O menor tem 6 marcas: 6 × 24 = <b>144 cm</b>."
+},
+{ fig:"estacionamento",
+  tipo:"Estacionamento", cena:"🚗",
+  historia:"Numa garagem cada carro estaciona <b>de frente ou de ré</b>, um por vaga. Há <b>4 vagas vazias</b> em fila e chega mais um carro.",
+  pergunta:"De quantas maneiras diferentes esse carro pode estacionar? (vaga × frente/ré)",
+  opcoes:[{t:"8",ok:true},{t:"4"},{t:"6"},{t:"12"},{t:"16"}],
+  explica:"São 4 vagas e, em cada uma, 2 jeitos (frente ou ré): 4 × 2 = <b>8</b> maneiras."
+},
+{ fig:"aquario",
+  tipo:"Ração", cena:"🐠",
+  historia:"A tabela mostra a ração por dia de cada bicho e quantos há no aquário.",
+  pergunta:"Quantos gramas de ração devem ser colocados por dia?",
+  opcoes:[{t:"102 g",ok:true},{t:"90 g"},{t:"110 g"},{t:"96 g"},{t:"84 g"}],
+  explica:"Polvo: 30. Camarões: 2 × 18 = 36. Peixes-laranja: 3 × 12 = 36. Total: 30 + 36 + 36 = <b>102 g</b>."
+},
+{ fig:"palitos",
+  tipo:"Palitos", cena:"🔺",
+  historia:"A faixa é feita de <b>6 casinhas iguais</b> lado a lado, onde o <b>palito do meio é compartilhado entre 2 casas</b>.",
+  pergunta:"Quantos palitos foram usados ao todo?",
+  opcoes:[{t:"25",ok:true},{t:"30"},{t:"31"},{t:"24"},{t:"29"}],
+  explica:"A 1ª casinha usa 5 palitos. Cada casinha seguinte aproveita 1 parede da vizinha, então usa só mais 4. São 5 + 4 × 5 = 5 + 20 = <b>25</b> palitos."
+},
+{ fig:"contornoL",
+  tipo:"Contorno", cena:"⬜",
+  historia:"A figura é formada por <b>3 quadrados iguais</b> em fila, cada um com <b>4 cm</b> de lado.<br><i>Perímetro = soma de todos os lados.</i>",
+  pergunta:"Qual é a medida do contorno (perímetro) da figura?",
+  opcoes:[{t:"32 cm",ok:true},{t:"48 cm"},{t:"36 cm"},{t:"24 cm"},{t:"28 cm"}],
+  explica:"Vira um retângulo de 12 cm por 4 cm. Contorno: 12 + 4 + 12 + 4 = <b>32 cm</b>."
+},
+{ fig:"quadro2x2",
+  tipo:"Quadro de somas", cena:"➕",
+  historia:"Complete o quadro. As setas mostram as somas: 1ª linha = 9, 2ª linha = 8, 1ª coluna = 7. O número de cima à esquerda é <b>4</b>.",
+  pergunta:"Qual número vai na casa CINZA (baixo à direita)?",
+  opcoes:[{t:"5",ok:true},{t:"3"},{t:"6"},{t:"9"},{t:"8"}],
+  explica:"Cima-esq = 4, então cima-dir = 9 − 4 = 5. Coluna 1 = 7, então baixo-esq = 7 − 4 = 3. Linha 2 soma 8, então baixo-dir = 8 − 3 = <b>5</b>."
+},
+{ fig:"regua", figArgs:[25,15],
+  tipo:"Régua", cena:"📐",
+  historia:"A formiga está na marca de <b>15 cm</b>. Ela anda <b>6 cm para a direita</b>, depois <b>10 cm para a esquerda</b> e para.",
+  pergunta:"Quantos cm ela precisa andar para a DIREITA para voltar ao início?",
+  opcoes:[{t:"4 cm",ok:true},{t:"5 cm"},{t:"3 cm"},{t:"6 cm"},{t:"1 cm"}],
+  explica:"15 + 6 = 21, depois 21 − 10 = 11. Ela parou em 11. Para voltar aos 15: 15 − 11 = <b>4 cm</b>."
+},
+{
+  tipo:"Remédio", cena:"💊",
+  historia:"Rita deve tomar <b>6 comprimidos</b>, um a cada <b>12 horas</b>, começando na <b>segunda de manhã (8h)</b>.",
+  pergunta:"Quando ela toma o ÚLTIMO comprimido?",
+  opcoes:[{t:"Quarta à noite",ok:true},{t:"Quarta de manhã"},{t:"Quinta de manhã"},{t:"Terça à noite"},{t:"Quinta à noite"}],
+  explica:"1º seg 8h, 2º seg 20h, 3º ter 8h, 4º ter 20h, 5º qua 8h, 6º qua 20h → <b>quarta à noite</b>."
+},
+{
+  tipo:"Chocolate", cena:"🍫",
+  historia:"Uma barra tem <b>12 quadradinhos</b>. Bela deu <b>um terço</b> para uma amiga e depois <b>metade do que sobrou</b> para outra.",
+  pergunta:"Com quantos quadradinhos Bela ficou?",
+  opcoes:[{t:"4",ok:true},{t:"3"},{t:"6"},{t:"2"},{t:"5"}],
+  explica:"Um terço de 12 = 4 (sobram 8). Metade de 8 = 4 (sobram 4). Ficou com <b>4</b>."
+},
+{
+  tipo:"Campeonato", cena:"🏀",
+  historia:"Um campeonato tem <b>5 times</b>. Cada time joga <b>uma vez</b> contra cada um dos outros.",
+  pergunta:"Quantas partidas são disputadas no total?",
+  opcoes:[{t:"10",ok:true},{t:"20"},{t:"15"},{t:"12"},{t:"25"}],
+  explica:"Cada dupla joga uma vez: 4+3+2+1 = <b>10</b> partidas."
+},
+{
+  tipo:"Verdade", cena:"🗣️",
+  historia:"Cinco crianças em fila, cada uma mais alta que a da esquerda. Todas dizem \"Sou mais alto que 2 crianças\". Só fala a verdade quem realmente tem exatamente 2 pessoas mais baixas.",
+  pergunta:"Da mais baixa (1ª) à mais alta (5ª), quem fala a verdade?",
+  opcoes:[{t:"A 3ª criança",ok:true},{t:"A 1ª criança"},{t:"A 5ª criança"},{t:"A 2ª criança"},{t:"A 4ª criança"}],
+  explica:"Ter exatamente 2 pessoas mais baixas = estar na 3ª posição. Logo, a <b>3ª criança</b>."
+},
+{ fig:"grafico",
+  tipo:"Gráfico", cena:"📊",
+  historia:"O gráfico mostra a temperatura mínima de 5 cidades no mês de julho.",
+  pergunta:"Em quantas cidades a mínima ficou ENTRE 4 e 8 graus (incluindo 4 e 8)?",
+  opcoes:[{t:"3",ok:true},{t:"2"},{t:"4"},{t:"5"},{t:"1"}],
+  explica:"Entre 4 e 8: B=7, C=5, D=6. A=9 e E=3 ficam de fora. São <b>3</b> cidades."
+},
+{ fig:"cartoes",
+  tipo:"Cartões", cena:"🔢",
+  historia:"Os cartões estão nesta ordem. Joana vai <b>tirar três</b> e juntar os dois que sobram, na ordem em que estão.",
+  pergunta:"Qual é o MAIOR número de dois algarismos que ela pode formar?",
+  opcoes:[{t:"45",ok:true},{t:"55"},{t:"54"},{t:"43"},{t:"35"}],
+  explica:"O 4 (posição 2) pode ficar antes do 5 (posição 5): forma <b>45</b>. Não dá 54, pois o 5 vem depois do 4."
+},
+{ fig:"bois",
+  tipo:"Bois", cena:"🐂",
+  historia:"No cercado da esquerda há <b>10 bois</b> e no da direita há <b>4 bois</b>.",
+  pergunta:"Quantos bois devem passar da esquerda para a direita para ficarem IGUAIS?",
+  opcoes:[{t:"3",ok:true},{t:"2"},{t:"4"},{t:"5"},{t:"6"}],
+  explica:"Ao todo 14 bois; iguais dá 7 e 7. A direita tem 4 e precisa de 7: passam <b>3</b>."
+},
+{
+  tipo:"Silogismo", cena:"🐶",
+  historia:"São verdadeiras: \"Todo cão é um mamífero\" e \"Todo mamífero é um animal\".",
+  pergunta:"O que é COM CERTEZA verdade?",
+  opcoes:[{t:"Todo cão é um animal",ok:true},{t:"Todo animal é cão"},{t:"Todo mamífero é cão"},{t:"Nenhum cão é animal"},{t:"Só cães são mamíferos"}],
+  explica:"Se todo cão é mamífero e todo mamífero é animal, então todo cão é animal. Resposta: <b>todo cão é um animal</b>."
+},
+{ fig:"bolasTubos",
+  tipo:"Bolas nos tubos", cena:"⚪",
+  historia:"Três bolas (1, 2, 3) são soltas ao mesmo tempo nos tubos que se cruzam, como na figura.",
+  pergunta:"Lendo as saídas da esquerda para a direita, qual a ordem das bolas?",
+  opcoes:[{t:"2 3 1",ok:true},{t:"1 2 3"},{t:"3 2 1"},{t:"1 3 2"},{t:"3 1 2"}],
+  explica:"Saída 1 = bola 2, saída 2 = bola 3, saída 3 = bola 1. Da esquerda para a direita: <b>2 3 1</b>."
+},
+{
+  tipo:"Ordem", cena:"🎀",
+  historia:"Cinco meninas em fila:<br>• Ana está à esquerda de Bia.<br>• Cléo está no meio (3ª).<br>• Duda é a última.<br>• Bia está logo antes de Cléo.",
+  pergunta:"Quem está na 1ª posição (mais à esquerda)?",
+  opcoes:[{t:"Ana",ok:true},{t:"Bia"},{t:"Cléo"},{t:"Eva"},{t:"Duda"}],
+  explica:"Cléo é 3ª, Bia é 2ª (logo antes). Ana está à esquerda de Bia → Ana é 1ª. Resposta: <b>Ana</b>."
+},
+{ fig:"labirinto",
+  tipo:"Labirinto", cena:"🧭",
+  historia:"Um robô entra andando para <b>CIMA</b> e vira à direita toda vez que bate numa parede. Ele bate 3 vezes seguidas.",
+  pergunta:"Depois de virar à direita 3 vezes, para qual lado ele está indo?",
+  opcoes:[{t:"Para a esquerda",ok:true},{t:"Para cima"},{t:"Para a direita"},{t:"Para baixo"},{t:"Fica parado"}],
+  explica:"Cima → (1) direita → (2) baixo → (3) <b>esquerda</b>."
+},
+{ fig:"cubinhosFila",
+  tipo:"Cubinhos", cena:"🧊",
+  historia:"Cada par de faces de cubinhos em contato leva <b>1 pingo de cola</b>. A peça é uma fila reta de 4 cubinhos.",
+  pergunta:"Quantos pingos de cola há nessa fila de 4 cubinhos?",
+  opcoes:[{t:"3",ok:true},{t:"4"},{t:"2"},{t:"5"},{t:"6"}],
+  explica:"Numa fila de 4 cubinhos há 3 contatos entre vizinhos: <b>3</b> pingos."
+},
+{
+  tipo:"Sequência", cena:"🔢 5 · 10 · 15 · 20 · ?",
+  historia:"Veja a sequência: 5, 10, 15, 20, ...",
+  pergunta:"Qual número vem na 6ª posição?",
+  opcoes:[{t:"30",ok:true},{t:"25"},{t:"35"},{t:"28"},{t:"40"}],
+  explica:"Soma 5 cada vez: 5,10,15,20,25,30. O 6º é <b>30</b>."
+},
+{
+  tipo:"Notas", cena:"📝",
+  historia:"Cinco alunos:<br>• Ana > Caio;<br>• Caio > Duda;<br>• Bruno foi o melhor de todos;<br>• Elis não ficou em último.",
+  pergunta:"Quem tirou a MENOR nota?",
+  opcoes:[{t:"Duda",ok:true},{t:"Ana"},{t:"Caio"},{t:"Bruno"},{t:"Elis"}],
+  explica:"Bruno é 1º. Ana > Caio > Duda. Como Elis não é a última, o último é a <b>Duda</b>."
+}
+];
+
+/* ==========================================================================
+   BANCO DE RECUPERAÇÃO — mais fáceis (algumas com figura simples).
+   ========================================================================== */
+const BANCO_RECUPERACAO = [
+{ tipo:"Sequência", cena:"🔢 2 · 4 · 6 · 8 · ?",
+  historia:"Veja a sequência: 2, 4, 6, 8, ...",
+  pergunta:"Qual número vem agora?",
+  opcoes:[{t:"10",ok:true},{t:"9"},{t:"12"},{t:"16"}],
+  explica:"Sempre soma 2. Depois do 8 vem <b>10</b>."
+},
+{ tipo:"Conta", cena:"🍬",
+  historia:"Léo tinha 7 balas. Deu 2 para o amigo e ganhou 4 da mãe.",
+  pergunta:"Com quantas balas Léo ficou?",
+  opcoes:[{t:"9",ok:true},{t:"8"},{t:"10"},{t:"11"}],
+  explica:"7 − 2 = 5, depois 5 + 4 = <b>9</b>."
+},
+{ tipo:"Fila", cena:"🎬",
+  historia:"Na fila: Tina está na frente de Léo; Léo na frente de Bia; Gui é o último.",
+  pergunta:"Quem é o PRIMEIRO da fila?",
+  opcoes:[{t:"Tina",ok:true},{t:"Léo"},{t:"Bia"},{t:"Gui"}],
+  explica:"Ordem: Tina, Léo, Bia, Gui. Primeiro é a <b>Tina</b>."
+},
+{ tipo:"Patas", cena:"🐕🐔",
+  historia:"No quintal há 2 cachorros e 3 galinhas. Cachorro tem 4 patas, galinha tem 2.",
+  pergunta:"Quantas patas há ao todo?",
+  opcoes:[{t:"14",ok:true},{t:"12"},{t:"16"},{t:"18"}],
+  explica:"2 × 4 = 8 e 3 × 2 = 6. Total: <b>14</b>."
+},
+{ tipo:"Relógio", cena:"🕐",
+  historia:"Agora são 2 horas da tarde. Um passeio vai durar 3 horas.",
+  pergunta:"A que horas o passeio termina?",
+  opcoes:[{t:"5 horas",ok:true},{t:"4 horas"},{t:"6 horas"},{t:"7 horas"}],
+  explica:"2 + 3 = <b>5 horas</b>."
+},
+{ tipo:"Sequência", cena:"🔢 3 · 6 · 9 · ?",
+  historia:"Veja a sequência: 3, 6, 9, ...",
+  pergunta:"Qual número vem agora?",
+  opcoes:[{t:"12",ok:true},{t:"10"},{t:"11"},{t:"15"}],
+  explica:"Sempre soma 3. Depois do 9 vem <b>12</b>."
+},
+{ tipo:"Cores", cena:"🐾",
+  historia:"Três bichinhos têm cores diferentes: azul, verde e vermelho.<br>• O gato NÃO é azul nem verde.",
+  pergunta:"Qual é a cor do GATO?",
+  opcoes:[{t:"Vermelho",ok:true},{t:"Azul"},{t:"Verde"},{t:"Não dá para saber"}],
+  explica:"Se não é azul nem verde, só sobra o <b>vermelho</b>."
+},
+{ tipo:"Diferença", cena:"💰",
+  historia:"Um brinquedo custa R$ 30,00 e outro custa R$ 18,00.",
+  pergunta:"Qual é a diferença entre os preços?",
+  opcoes:[{t:"R$ 12,00",ok:true},{t:"R$ 10,00"},{t:"R$ 14,00"},{t:"R$ 8,00"}],
+  explica:"30 − 18 = <b>R$ 12,00</b>."
+},
+{ tipo:"Silogismo", cena:"🐶",
+  historia:"São verdadeiras: \"Todo cachorro é um animal\" e \"Rex é um cachorro\".",
+  pergunta:"Então é certo que:",
+  opcoes:[{t:"Rex é um animal",ok:true},{t:"Todo animal é cachorro"},{t:"Rex não é animal"},{t:"Só cachorros são animais"}],
+  explica:"Todo cachorro é animal e Rex é cachorro → <b>Rex é um animal</b>."
+},
+{ fig:"contornoQuad",
+  tipo:"Contorno", cena:"⬛",
+  historia:"Um quadrado tem 5 cm de lado, como mostra a figura.<br><i>Perímetro = soma de todos os lados.</i>",
+  pergunta:"Qual é o contorno (perímetro) desse quadrado?",
+  opcoes:[{t:"20 cm",ok:true},{t:"25 cm"},{t:"10 cm"},{t:"15 cm"}],
+  explica:"4 lados iguais: 4 × 5 = <b>20 cm</b>."
+},
+{ tipo:"Metade", cena:"🍫",
+  historia:"Uma barra tem 8 quadradinhos. Bela comeu a metade.",
+  pergunta:"Quantos quadradinhos sobraram?",
+  opcoes:[{t:"4",ok:true},{t:"3"},{t:"5"},{t:"2"}],
+  explica:"Metade de 8 é 4. Sobraram <b>4</b>."
+},
+{ fig:"reguaFacil",
+  tipo:"Régua", cena:"📐",
+  historia:"A formiga está na marca de 10 cm. Ela anda 3 cm para a direita.",
+  pergunta:"Em que marca ela para?",
+  opcoes:[{t:"13 cm",ok:true},{t:"7 cm"},{t:"12 cm"},{t:"14 cm"}],
+  explica:"10 + 3 = <b>13 cm</b>."
+}
+];
+
+// Figuras extras usadas só na recuperação
+FIG.contornoQuad=function(){ return `<svg viewBox="0 0 200 130" role="img"><title>Um quadrado de 5 cm</title>
+  <rect x="55" y="20" width="90" height="90" fill="#E1F5EE" stroke="#1D9E75" stroke-width="2.5"/>
+  <text x="100" y="126" text-anchor="middle" font-size="12" fill="#5F6470">5 cm</text>
+  <text x="40" y="70" text-anchor="middle" font-size="12" fill="#5F6470">5</text></svg>`; };
+FIG.reguaFacil=function(){ return FIG.regua(20,10); };
+
+/* ==========================================================================
+   EMBARALHAMENTO E SORTEIO
+   ========================================================================== */
+function embaralhar(arr){
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+  return a;
+}
+function montarProva(banco,n){
+  return embaralhar(banco).slice(0,n).map(q=>({
+    fig:q.fig, figArgs:q.figArgs, tipo:q.tipo, cena:q.cena,
+    historia:q.historia, pergunta:q.pergunta, explica:q.explica,
+    opcoes:embaralhar(q.opcoes)
+  }));
+}
+function svgDe(q){
+  if(!q.fig || !FIG[q.fig]) return "";
+  const s = q.figArgs ? FIG[q.fig](...q.figArgs) : FIG[q.fig]();
+  return `<div class="figura">${s}</div>`;
+}
+
+let PROVA=[], RECUP=[];
+let indice=0, pontos=0, respondida=false, marcada=-1, emRecuperacao=false, nomeAluno="";
+const tela=document.getElementById("tela");
+const cores=["#7F77DD","#1D9E75","#D85A30","#378ADD","#EF9F27"];
+const VALOR=5, META=60, N_PRINCIPAL=20, N_RECUP=10;
+
+function fonteAtual(){ return emRecuperacao ? RECUP : PROVA; }
+function nota(){ return pontos*VALOR; }
+
+function render(){
+  respondida=false; marcada=-1;
+  const lista=fonteAtual(); const a=lista[indice]; const total=lista.length;
+  const rotulo=emRecuperacao ? "Recuperação" : "Desafio";
+  document.querySelector(".barra .nivel").innerHTML = rotulo+" <span id=\"num\">"+(indice+1)+"</span>/"+total;
+  document.getElementById("prog").style.width=(indice/total*100)+"%";
+  const cor=cores[indice%cores.length];
+  let html=`<div class="cartao">
+    <span class="faixa" style="background:${cor}22;color:${cor}">${a.tipo}</span>
+    <div class="cena">${a.cena}</div>
+    <div class="historia">${a.historia}</div>
+    ${svgDe(a)}
+    <div class="pergunta">${a.pergunta}</div>
+    <div class="opcoes" id="opcoes">`;
+  a.opcoes.forEach((o,i)=>{
+    const letra=String.fromCharCode(65+i);
+    html+=`<button class="opt" data-i="${i}"><span class="letra">${letra}</span><span>${o.t}</span></button>`;
+  });
+  html+=`</div>
+    <div class="feedback" id="feedback"></div>
+    <div class="acoes">
+      <button class="nav btn-confirmar" id="confirmar" disabled>Confirmar resposta ✓</button>
+      <button class="nav btn-prox" id="prox">Próximo →</button>
+    </div></div>`;
+  tela.innerHTML=html;
+  document.querySelectorAll(".opt").forEach(b=>{ b.onclick=()=>marcar(parseInt(b.dataset.i),b); });
+  document.getElementById("confirmar").onclick=confirmar;
+  document.getElementById("prox").onclick=avancar;
+}
+
+function marcar(i,btn){
+  if(respondida)return;
+  marcada=i;
+  document.querySelectorAll(".opt").forEach(b=>b.classList.remove("marcada"));
+  btn.classList.add("marcada");
+  document.getElementById("confirmar").disabled=false;
+}
+
+function confirmar(){
+  if(respondida||marcada<0)return;
+  respondida=true;
+  const a=fonteAtual()[indice];
+  const acertou=!!a.opcoes[marcada].ok;
+  document.querySelectorAll(".opt").forEach((b,j)=>{
+    b.classList.add("desabilitado"); b.classList.remove("marcada");
+    if(a.opcoes[j].ok)b.classList.add("certo");
+  });
+  if(!acertou)document.querySelectorAll(".opt")[marcada].classList.add("errado");
+  const letraCerta=String.fromCharCode(65+a.opcoes.findIndex(o=>o.ok));
+  const fb=document.getElementById("feedback"); fb.style.display="block";
+  if(acertou){
+    pontos++; document.getElementById("placar").textContent=pontos;
+    fb.className="feedback ok";
+    fb.innerHTML=`<div class="titulo">🎉 Parabéns, você acertou!</div><div>${a.explica}</div><div class="gab">✅ Gabarito: alternativa ${letraCerta}.</div>`;
+  }else{
+    fb.className="feedback nao";
+    fb.innerHTML=`<div class="titulo">🤔 Não foi dessa vez. Vamos entender:</div><div>${a.explica}</div><div class="gab">✅ Gabarito: alternativa ${letraCerta}.</div>`;
+  }
+  document.getElementById("confirmar").style.display="none";
+  document.getElementById("prox").style.display="block";
+  const ultimo = indice >= fonteAtual().length-1;
+  document.getElementById("prox").textContent = ultimo ? (emRecuperacao ? "Ver nota final 🏆" : "Ver resultado 🏆") : "Próximo →";
+}
+
+function avancar(){
+  indice++;
+  if(indice>=fonteAtual().length){ if(emRecuperacao) fimRecuperacao(); else fimPrincipal(); return; }
+  if(emRecuperacao && nota()>=META){ fimRecuperacao(); return; }
+  render();
+}
+
+function dataHora(){ const d=new Date(); const p=n=>String(n).padStart(2,"0");
+  return `${p(d.getDate())}/${p(d.getMonth()+1)}/${d.getFullYear()} às ${p(d.getHours())}:${p(d.getMinutes())}`; }
+
+function boletim(titulo, emoji, n, aprovado, acertos, totalQ){
+  const classe = aprovado ? "aprov" : "reprov";
+  const selo = aprovado
+    ? '<div class="selo" style="color:var(--verde)">✅ APROVADO</div>'
+    : '<div class="selo" style="color:var(--coral)">📚 NÃO ATINGIU 60</div>';
+  return `<div class="cartao fim boletim">
+    <div class="trofeu">${emoji}</div>
+    <h2>${titulo}</h2>
+    <div class="nome-aluno">${nomeAluno}</div>
+    <div class="data-hora">${dataHora()}</div>
+    <div class="nota-grande ${classe}">${n}<span style="font-size:24px;color:var(--suave)"> / 100</span></div>
+    ${selo}
+    <div class="detalhe">Acertos: ${acertos} de ${totalQ}</div>
+    <div class="foto-aviso">📸 Professor(a): tire a foto desta tela para registrar a nota.</div>
+    <div class="slider-sair">
+      <div class="rotulo">Arraste até o fim para continuar 👉</div>
+      <div class="trilho" id="trilho">
+        <div class="preenche" id="preenche"></div>
+        <div class="puxador" id="puxador">➜</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+// Ativa o slider atual e chama "aoConcluir" quando arrastado até o fim.
+function ativarSlider(aoConcluir){
+  const trilho=document.getElementById("trilho");
+  const puxador=document.getElementById("puxador");
+  const preenche=document.getElementById("preenche");
+  if(!trilho)return;
+  let arrastando=false, larguraMax=0, x0=0, esq0=0, feito=false;
+  function limites(){ larguraMax = trilho.clientWidth - puxador.clientWidth - 6; }
+  function pos(x){ let e=Math.max(0,Math.min(larguraMax,x));
+    puxador.style.left=(e+3)+"px"; preenche.style.width=(e+50)+"px";
+    if(e>=larguraMax-2){ concluir(); } }
+  function concluir(){ if(feito)return; feito=true; trilho.classList.add("pronto"); puxador.style.left=(larguraMax+3)+"px"; preenche.style.width="100%"; setTimeout(aoConcluir,250); }
+  function iniciar(cx){ if(feito)return; arrastando=true; limites(); x0=cx; esq0=parseInt(puxador.style.left||"3")-3; }
+  function mover(cx){ if(!arrastando)return; pos(esq0 + (cx-x0)); }
+  function soltar(){ if(!arrastando)return; arrastando=false;
+    const atual=parseInt(puxador.style.left||"3")-3;
+    if(atual<larguraMax-2){ puxador.style.left="3px"; preenche.style.width="50px"; } }
+  puxador.addEventListener("mousedown",e=>{e.preventDefault();iniciar(e.clientX);});
+  window.addEventListener("mousemove",e=>mover(e.clientX));
+  window.addEventListener("mouseup",soltar);
+  puxador.addEventListener("touchstart",e=>{iniciar(e.touches[0].clientX);},{passive:true});
+  window.addEventListener("touchmove",e=>{ if(arrastando){ mover(e.touches[0].clientX);} },{passive:true});
+  window.addEventListener("touchend",soltar);
+}
+
+// 2ª etapa: tela "Prova encerrada" que TAMBÉM mostra nome e nota do aluno,
+// para o professor ver a nota mesmo que tenha passado rápido pela 1ª tela.
+function telaEncerrada(n, acertos, totalQ){
+  const classe = n>=META ? "aprov" : "reprov";
+  tela.innerHTML=`<div class="cartao fim boletim">
+    <div class="trofeu">👋</div>
+    <h2>Prova encerrada</h2>
+    <div class="nome-aluno">${nomeAluno}</div>
+    <div class="data-hora">${dataHora()}</div>
+    <div class="nota-grande ${classe}">${n}<span style="font-size:24px;color:var(--suave)"> / 100</span></div>
+    <div class="detalhe">Acertos: ${acertos} de ${totalQ}</div>
+    <div class="foto-aviso">📸 Professor(a): confira/fotografe a nota antes de iniciar a próxima prova.</div>
+    <div class="slider-sair">
+      <div class="rotulo">Arraste até o fim para iniciar uma nova prova 👉</div>
+      <div class="trilho" id="trilho">
+        <div class="preenche" id="preenche"></div>
+        <div class="puxador" id="puxador">➜</div>
+      </div>
+    </div>
+  </div>`;
+  document.getElementById("barra").style.display="none";
+  document.getElementById("progressoWrap").style.display="none";
+  ativarSlider(reiniciarTudo);
+}
+
+function fimPrincipal(){
+  document.getElementById("prog").style.width="100%";
+  const n=nota();
+  if(n>=META){
+    const titulo = n>=85 ? "Detetive Mestre!" : "Aprovado!";
+    tela.innerHTML=boletim(titulo, n>=85?"🏆":"🎉", n, true, pontos, N_PRINCIPAL);
+    ativarSlider(()=>telaEncerrada(n, pontos, N_PRINCIPAL));
+  } else {
+    tela.innerHTML=`<div class="cartao fim"><div class="trofeu">💪</div><h2>Quase lá!</h2><div class="placar">📋 Nota: ${n} de 100 · Acertos: ${pontos}/${N_PRINCIPAL}</div><p>Você precisa de <b>60 pontos</b> para passar. Vamos para a <b>recuperação</b> com questões mais fáceis! Cada acerto vale mais 5 pontos. O exame termina assim que você chegar a 60.</p><button onclick="iniciarRecuperacao()">Começar recuperação →</button></div>`;
+  }
+}
+function iniciarRecuperacao(){ emRecuperacao=true; indice=0; RECUP=montarProva(BANCO_RECUPERACAO,N_RECUP); render(); }
+function fimRecuperacao(){
+  document.getElementById("prog").style.width="100%";
+  const n=nota();
+  tela.innerHTML=boletim(n>=META?"Recuperado!":"Exame encerrado", n>=META?"🎉":"📚", n, n>=META, pontos, N_PRINCIPAL+"+rec");
+  ativarSlider(()=>telaEncerrada(n, pontos, N_PRINCIPAL+"+rec"));
+}
+function reiniciarTudo(){
+  indice=0; pontos=0; respondida=false; marcada=-1; emRecuperacao=false; nomeAluno="";
+  document.getElementById("placar").textContent="0"; telaInicio();
+}
+
+function telaInicio(){
+  document.getElementById("barra").style.display="none";
+  document.getElementById("progressoWrap").style.display="none";
+  tela.innerHTML=`<div class="cartao inicio">
+    <div class="emoji">🔎</div><h2>Olimpíada da Lógica</h2>
+    <p>Antes de começar, escreva seu nome completo:</p>
+    <input id="campoNome" type="text" placeholder="Seu nome aqui" autocomplete="off" maxlength="40">
+    <div class="aviso" id="avisoNome"></div>
+    <button id="btnComecar">Começar o exame →</button></div>`;
+  const campo=document.getElementById("campoNome"); campo.focus();
+  function comecar(){
+    const v=campo.value.trim();
+    if(v.length<2){ document.getElementById("avisoNome").textContent="Por favor, escreva seu nome para continuar."; campo.focus(); return; }
+    nomeAluno=v.replace(/[<>&]/g,"");
+    PROVA=montarProva(BANCO_PRINCIPAL,N_PRINCIPAL);
+    document.getElementById("barra").style.display="flex";
+    document.getElementById("progressoWrap").style.display="block";
+    render();
+  }
+  document.getElementById("btnComecar").onclick=comecar;
+  campo.addEventListener("keydown",e=>{ if(e.key==="Enter") comecar(); });
+}
+
+telaInicio();
+</script>
+</body>
+</html>
