@@ -477,7 +477,7 @@ const cores = ["#d62828","#c25a1f","#a67c00","#1f7a6f","#3a6a8a",
 
 const dic = {
 A:{emoji:"📚", palavra:"AULA", silabas:["AU","LA"],
-   img:"https://raw.githubusercontent.com/proffernandogomes/meu-site/main/imagens/a_.png",
+   img:"imagens/a_.png",
    definicao:"AULA É ONDE TEM ATIVIDADES PARA A GENTE FICAR MAIS INTELIGENTE. A AULA É LEGAL, PORQUE A GENTE APRENDE COISAS NOVAS E FICA MAIS CONTENTE."},
 B:{emoji:"🧸", palavra:"BRINQUEDO", silabas:["BRIN","QUE","DO"],
    definicao:"BRINQUEDO É ALGO QUE AJUDA AS CRIANÇAS A SE SENTIREM ALEGRES, SE DIVERTIREM E NÃO FICAREM NA TELA O DIA INTEIRO. É UMA COISA QUE A GENTE PENSA E DEPOIS FAZ."},
@@ -642,19 +642,11 @@ function abrirLetra(L,btn){
   const colImagem = document.createElement("div");
   colImagem.className = "coluna-imagem";
 
-  const nomeArquivo = L.toLowerCase() + "_.png";
-
-  const vazio = document.createElement("div");
-  vazio.className = "sem-imagem";
-  vazio.innerHTML = `<span class="emoji-vazio">${dados.emoji}</span>`
-    + `<span class="arquivo">${nomeArquivo}</span>`
-    + `<span class="dica">Envie este arquivo para o GitHub e o desenho aparecerá aqui.</span>`;
-
   const moldura = document.createElement("div");
   moldura.className = "moldura-imagem";
-  moldura.style.display = "none";
 
   const img = document.createElement("img");
+  img.src = dados.img;
   img.alt = "Ilustração da palavra " + dados.palavra + ", feita pela turma do 1º ano C";
   img.loading = "lazy";
   img.decoding = "async";
@@ -663,28 +655,8 @@ function abrirLetra(L,btn){
   legenda.className = "legenda-imagem";
   legenda.textContent = dados.palavra;
 
-  /* 1ª tentativa: pasta configurada; 2ª: mesma pasta do HTML; senão, moldura vazia */
-  let tentativa = 0;
-  img.addEventListener("error", ()=>{
-    tentativa++;
-    if(tentativa === 1 && PASTA_IMAGENS !== ""){
-      img.src = nomeArquivo;
-    } else {
-      moldura.style.display = "none";
-      legenda.style.display = "none";
-      vazio.style.display = "flex";
-    }
-  });
-  img.addEventListener("load", ()=>{
-    vazio.style.display = "none";
-    moldura.style.display = "block";
-    legenda.style.display = "block";
-  });
-
   moldura.appendChild(img);
-  colImagem.append(vazio, moldura, legenda);
-  legenda.style.display = "none";
-  img.src = PASTA_IMAGENS + nomeArquivo;
+  colImagem.append(moldura, legenda);
 
   /* ----- coluna do texto ----- */
   const colTexto = document.createElement("div");
