@@ -3,26 +3,91 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>A Escola de A a Z</title>
+<title>Dicionário: Que Livro É Esse? — 1º ano C</title>
 <style>
+  :root { --nav: 86px; }
   * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { height:100%; }
   body {
     font-family: 'Comic Sans MS', 'Trebuchet MS', sans-serif;
     background: #fdf6e3 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='2' fill='%23f0e0b0'/%3E%3C/svg%3E");
     display:flex; min-height:100vh; overflow-x:hidden;
   }
 
-  /* ===== LIVRO ===== */
+  /* ===================== CAPA ===================== */
+  #capa {
+    position:fixed; top:0; left:0; right:var(--nav); bottom:0; z-index:60;
+    background:#fdf6e3 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='20' cy='20' r='2' fill='%23f0e0b0'/%3E%3C/svg%3E");
+    display:flex; align-items:center; justify-content:center;
+    padding:16px; overflow-y:auto;
+  }
+  #capa.fechada { display:none; }
+
+  .capa-folha {
+    position:relative;
+    width:100%; max-width:620px;
+    background:#fff;
+    border:5px solid #2f6690;
+    box-shadow: inset 0 0 0 6px #fff, inset 0 0 0 9px #2f6690, 0 10px 0 rgba(0,0,0,.15);
+    padding:34px 26px 30px;
+    text-align:center;
+  }
+
+  /* faixa de desenhos de cima */
+  .capa-topo, .capa-base {
+    display:flex; align-items:flex-end; justify-content:space-between;
+    gap:6px; font-size:clamp(30px,7vw,46px); line-height:1;
+  }
+  .capa-topo { margin-bottom:6px; }
+  .capa-base { margin-top:14px; align-items:flex-end; }
+  .capa-topo span, .capa-base span { display:inline-block; transform:rotate(var(--r,0deg)); }
+
+  .capa-abc { font-size:clamp(34px,8vw,56px); font-weight:900; letter-spacing:4px; }
+  .capa-abc b { display:inline-block; transform:rotate(var(--r)); }
+
+  .capa-titulo { transform:rotate(-3.5deg); margin:10px 0 22px; }
+  .capa-escola {
+    font-size:clamp(12px,2.6vw,16px); letter-spacing:1px;
+    color:#2f6690; font-weight:bold; text-transform:uppercase;
+  }
+  .capa-titulo h1 {
+    font-size:clamp(26px,6.4vw,44px); line-height:1.1;
+    color:#1f4e79; letter-spacing:1px; margin-top:4px;
+  }
+  .capa-titulo h1 em { font-style:normal; display:block; font-size:.82em; }
+
+  .capa-ficha { text-align:left; max-width:400px; margin:0 auto; }
+  .capa-linha { display:flex; gap:10px; align-items:flex-start; margin-bottom:14px; transform:rotate(-1.2deg); }
+  .capa-linha:nth-child(even) { transform:rotate(.8deg); }
+  .capa-icone { font-size:26px; flex-shrink:0; }
+  .capa-rotulo { font-size:clamp(11px,2.3vw,13px); color:#2f6690; font-weight:bold; letter-spacing:.5px; }
+  .capa-valor1  { font-size:clamp(18px, 2.8vw, 22px); color:#3a2f1c; }
+  .capa-valor2  { font-size:clamp(16px, 2.45vw, 20px); color:#3a2f1c; }
+  .capa-valor3  { font-size:clamp(14px, 2.1vw, 18px); color:#3a2f1c; }
+
+  .capa-local { margin-top:18px; font-size:clamp(13px,2.8vw,16px); color:#1f4e79; letter-spacing:2px; transform:rotate(-2deg); display:inline-block; }
+
+  #btnAbrir {
+    margin-top:24px; font-family:inherit; font-size:clamp(15px,3.4vw,19px); font-weight:bold;
+    padding:14px 30px; border:4px solid #333; border-radius:18px;
+    background:#2a7d6f; color:#fff; cursor:pointer;
+    box-shadow:0 6px 0 rgba(0,0,0,.28);
+  }
+  #btnAbrir:active { transform:translateY(4px); box-shadow:0 2px 0 rgba(0,0,0,.28); }
+  #btnAbrir:focus-visible { outline:4px solid #e0407c; outline-offset:3px; }
+
+  /* espaço para trocar os emojis pelo desenho escaneado da turma */
+  .capa-desenho { max-width:100%; border-radius:10px; display:block; margin:0 auto 10px; }
+
+  /* ===================== LIVRO ===================== */
   #livro {
     flex:1; min-width:0; display:flex; flex-direction:column;
     padding:20px; max-width:100%;
   }
 
-  header {
-    text-align:center; margin-bottom:14px;
-  }
+  header { text-align:center; margin-bottom:14px; }
   header h1 {
-    font-size:clamp(22px,4.6vw,44px);
+    font-size:clamp(24px,5vw,46px);
     letter-spacing:2px;
     display:inline-block;
   }
@@ -32,9 +97,13 @@
     border-radius:6px; transform:rotate(var(--r));
     box-shadow:2px 2px 0 rgba(0,0,0,.2);
   }
-  header p { color:#8a6d3b; font-size:15px; margin-top:8px; }
+  .subtitulo {
+    color:#1f4e79; font-size:clamp(14px,3vw,19px); font-weight:bold;
+    margin-top:10px; letter-spacing:1px;
+  }
+  .creditinho { color:#8a6d3b; font-size:13px; margin-top:4px; }
+  .instrucao { color:#8a6d3b; font-size:14px; margin-top:10px; }
 
-  /* ===== ÁREA DE CONTEÚDO ===== */
   #painel {
     background:#fff; border-radius:20px;
     box-shadow:0 8px 0 rgba(0,0,0,.12), 0 0 0 6px #fff inset;
@@ -48,15 +117,41 @@
     margin:0 auto 20px; border-radius:24px;
     box-shadow:4px 4px 0 rgba(0,0,0,.2);
   }
+  #letraGrande.icone { font-size:46px; }
 
   #cards { display:flex; justify-content:center; }
 
   .palavra-card {
     background:#fffdf6; border-radius:22px; padding:26px;
-    max-width:640px; width:100%; text-align:center;
+    max-width:1000px; width:100%; text-align:center;
     border:4px solid #333;
     box-shadow:0 6px 0 rgba(0,0,0,.15);
+    display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:start;
   }
+  .coluna-imagem { position:sticky; top:0; }
+  .coluna-texto { min-width:0; }
+
+  .moldura-imagem {
+    background:#fff; border:4px solid #333; border-radius:18px;
+    padding:10px; box-shadow:0 5px 0 rgba(0,0,0,.15);
+  }
+  .moldura-imagem img {
+    width:100%; height:auto; display:block;
+    max-height:62vh; object-fit:contain; border-radius:10px;
+  }
+  .legenda-imagem { font-size:13px; color:#8a7a55; margin-top:8px; font-style:italic; }
+
+  /* aparece enquanto o arquivo .png ainda não foi enviado */
+  .sem-imagem {
+    border:4px dashed #c9b479; border-radius:18px; background:#fffef8;
+    padding:30px 16px; color:#8a6d3b;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:10px; min-height:220px;
+  }
+  .sem-imagem .emoji-vazio { font-size:56px; }
+  .sem-imagem .arquivo { font-size:14px; font-weight:bold; letter-spacing:.5px; }
+  .sem-imagem .dica { font-size:12px; line-height:1.4; max-width:230px; }
+
   .palavra-emoji { font-size:60px; display:block; margin-bottom:4px; }
 
   .palavra-inteira {
@@ -85,11 +180,10 @@
     box-shadow:0 6px 0 rgba(0,0,0,.28);
     position:relative; z-index:2;
   }
-  .separador { display:inline-block; padding:0 2px; font-size:30px; font-weight:800; color:#ccc; }
+  .separador { display:inline-block; padding:0 2px; font-size:30px; font-weight:800; color:#bbb; }
 
-  .silabas-guia {
-    font-size:14px; color:#999; font-style:italic; margin-bottom:16px;
-  }
+  .silabas-guia { font-size:14px; color:#8a7a55; font-style:italic; margin-bottom:16px; }
+  .nota-leitura { font-size:13px; color:#8a7a55; margin-bottom:12px; }
 
   .definicao {
     font-size:17px; line-height:1.65; text-align:left;
@@ -104,9 +198,44 @@
   }
   .btn-ouvir:active { transform:translateY(3px); box-shadow:0 1px 0 rgba(0,0,0,.25); }
 
-  /* ===== GUIAS LATERAIS ===== */
+  /* ===== páginas de créditos e autores ===== */
+  .pagina {
+    max-width:660px; margin:0 auto; text-align:left;
+    background:#fffdf6; border:4px solid #333; border-radius:22px;
+    padding:26px; box-shadow:0 6px 0 rgba(0,0,0,.15);
+  }
+  .pagina h2 {
+    font-size:clamp(22px,4.4vw,30px); color:#1f4e79;
+    text-align:center; margin-bottom:6px; letter-spacing:1px;
+  }
+  .pagina .linha-fina { text-align:center; color:#8a6d3b; font-size:14px; margin-bottom:20px; }
+
+  .bloco { margin-bottom:16px; }
+  .bloco .rotulo {
+    font-size:13px; letter-spacing:1px; color:#2f6690; font-weight:bold;
+    text-transform:uppercase; display:block; margin-bottom:2px;
+  }
+  .bloco .valor { font-size:17px; color:#3a2f1c; line-height:1.5; }
+
+  .texto-pagina { font-size:16px; line-height:1.65; color:#3a2f1c; background:#f7f3e4; border-radius:14px; padding:16px 18px; }
+  .texto-pagina + .texto-pagina { margin-top:12px; }
+  .texto-pagina strong { color:#1f4e79; }
+
+  .lista-autores { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:6px; }
+  .autor {
+    color:#fff; font-weight:bold; font-size:16px;
+    padding:9px 16px; border-radius:12px;
+    box-shadow:2px 3px 0 rgba(0,0,0,.22);
+    transform:rotate(var(--r));
+  }
+  .aviso-editar {
+    margin-top:20px; font-size:13px; color:#8a6d3b; line-height:1.5;
+    border-top:2px dashed #ddd0a8; padding-top:12px;
+  }
+
+  /* ===================== GUIAS LATERAIS ===================== */
   #guias {
-    width:78px; flex-shrink:0; background:#e9d8a6;
+    width:var(--nav); flex-shrink:0; background:#e9d8a6;
     display:flex; flex-direction:column;
     padding:10px 0; gap:3px; overflow-y:auto;
     border-left:4px solid #333;
@@ -125,22 +254,111 @@
   }
   .guia:hover { margin-left:4px; }
   .guia.ativa { margin-left:0; transform:scale(1.08); box-shadow:-5px 4px 0 rgba(0,0,0,.3); }
+  .guia:focus-visible { outline:3px solid #1f4e79; outline-offset:-3px; }
+
+  .divisor-guias { height:2px; background:#c9b479; margin:8px 6px 8px 10px; border-radius:2px; }
+
+  .guia-grande {
+    margin-left:4px; padding:12px 4px 11px;
+    display:flex; flex-direction:column; align-items:center; gap:3px;
+    font-size:11px; letter-spacing:.5px; line-height:1.15;
+    border-radius:14px 0 0 14px;
+  }
+  .guia-grande .icone-guia { font-size:24px; }
+  .guia-grande:hover { margin-left:0; }
+  .guia-grande.ativa { margin-left:0; transform:scale(1.04); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition:none !important; }
+  }
+
+  /* telas estreitas: imagem em cima, texto embaixo */
+  @media(max-width:900px){
+    .palavra-card { grid-template-columns:1fr; gap:18px; }
+    .coluna-imagem { position:static; }
+    .moldura-imagem img { max-height:46vh; }
+  }
+
+  /* a guia Fechar só existe com o dicionário aberto */
+  #guias.capa-aberta .guia-fechar,
+  #guias.capa-aberta .divisor-topo { display:none; }
 
   @media(max-width:600px){
-    #guias{width:56px}
+    :root { --nav: 64px; }
     .guia{font-size:19px;padding:7px 0}
+    .guia-grande{font-size:9px; padding:10px 2px}
+    .guia-grande .icone-guia{font-size:19px}
     .silaba{font-size:22px}
     .separador{font-size:22px}
     .palavra-inteira{font-size:28px; padding:6px 16px}
+    .capa-folha{padding:24px 16px 22px}
   }
 </style>
 </head>
 <body>
 
+<!-- ===================== CAPA ===================== -->
+<div id="capa">
+  <div class="capa-folha">
+
+    <!--
+      PARA USAR O DESENHO ORIGINAL DA TURMA:
+      escaneie ou fotografe a capa feita pelas crianças, salve o arquivo
+      na mesma pasta deste HTML com o nome capa-turma.jpg e troque a
+      linha <div class="capa-topo"> ... </div> abaixo por:
+      <img class="capa-desenho" src="capa-turma.jpg" alt="Capa desenhada pela turma do 1º ano C">
+    -->
+
+    <div class="capa-topo">
+      <span style="--r:-6deg">🌳</span>
+      <span class="capa-abc" id="capaAbc"></span>
+      <span style="--r:5deg">▶️</span>
+    </div>
+
+    <div class="capa-titulo">
+      <div class="capa-escola">EMEF São Francisco</div>
+      <h1>DICIONÁRIO:<em>QUE LIVRO É ESSE?</em></h1>
+    </div>
+
+    <div class="capa-ficha">
+      <div class="capa-linha">
+        <span class="capa-icone">🔍</span>
+        <span>
+          <span class="capa-rotulo">Alunos pesquisadores</span><br>
+          <span class="capa-valor1">Turma do 1º ano C</span>
+        </span>
+      </div>
+      <div class="capa-linha">
+        <span class="capa-icone">✏️</span>
+        <span>
+          <span class="capa-rotulo">Professora orientadora</span><br>
+          <span class="capa-valor2">Nádia Maria Klassmann</span>
+        </span>
+      </div>
+      <div class="capa-linha">
+        <span class="capa-icone">📖</span>
+        <span>
+          <span class="capa-rotulo">Coorientador</span><br>
+          <span class="capa-valor3">Fernando Fraga Gomes</span>
+        </span>
+      </div>
+    </div>
+
+    <div class="capa-base">
+      <span style="--r:-7deg">✂️</span>
+      <span class="capa-local">TUPANDI, 2026</span>
+      <span style="--r:4deg">🧒</span>
+    </div>
+
+    <button id="btnAbrir">📖 Abrir o dicionário</button>
+  </div>
+</div>
+
+<!-- ===================== LIVRO ===================== -->
 <div id="livro">
   <header>
     <h1 id="titulo"></h1>
-    <p>Passe o mouse pelas sílabas para ouvir e clique nas guias para trocar de letra! ✨</p>
+    <p class="instrucao">Passe o dedo ou o mouse pelas sílabas para ouvir. Use as guias ao lado para trocar de letra. ✨</p>
   </header>
   <div id="painel">
     <div id="letraGrande">A</div>
@@ -148,10 +366,54 @@
   </div>
 </div>
 
-<nav id="guias"></nav>
+<nav id="guias" aria-label="Navegação do dicionário"></nav>
 
 <script>
-const cores = ["#e63946","#f4a261","#e9c46a","#2a9d8f","#457b9d","#9d4edd","#ff6392","#06d6a0","#118ab2","#ef476f"];
+/* ---------------------------------------------------------------
+   1) NOMES DOS AUTORES — substitua os textos abaixo pelos nomes
+      reais das crianças da turma. Pode acrescentar ou remover
+      linhas à vontade; a página se ajusta sozinha.
+   --------------------------------------------------------------- */
+const autores = [
+  "NOME DO ALUNO 1",
+  "NOME DO ALUNO 2",
+  "NOME DO ALUNO 3",
+  "NOME DO ALUNO 4",
+  "NOME DO ALUNO 5",
+  "NOME DO ALUNO 6",
+  "NOME DO ALUNO 7",
+  "NOME DO ALUNO 8",
+  "NOME DO ALUNO 9",
+  "NOME DO ALUNO 10",
+  "NOME DO ALUNO 11",
+  "NOME DO ALUNO 12",
+  "NOME DO ALUNO 13",
+  "NOME DO ALUNO 14",
+  "NOME DO ALUNO 15",
+  "NOME DO ALUNO 16",
+  "NOME DO ALUNO 17",
+  "NOME DO ALUNO 18",
+  "NOME DO ALUNO 19",
+  "NOME DO ALUNO 20"
+];
+
+/* ---------------------------------------------------------------
+   2) IMAGENS DAS LETRAS
+      Cada letra procura o arquivo a_.png, b_.png, c_.png ... z_.png
+      (sempre em MINÚSCULO — o GitHub diferencia maiúsculas).
+
+      Por padrão o arquivo procura dentro da pasta "imagens/".
+      Se você preferir deixar os .png soltos na mesma pasta do HTML,
+      basta trocar a linha abaixo por:  const PASTA_IMAGENS = "";
+
+      Enquanto um .png não existir, a letra mostra uma moldura
+      pontilhada com o nome do arquivo que falta.
+   --------------------------------------------------------------- */
+const PASTA_IMAGENS = "imagens/";
+
+/* cores escurecidas o suficiente para o texto branco ficar legível */
+const cores = ["#d62828","#c25a1f","#a67c00","#1f7a6f","#3a6a8a",
+               "#7b2cbf","#c62f6b","#0d8f6a","#0f6f8f","#b3243f"];
 
 const dic = {
 A:{emoji:"📚", palavra:"AULA", silabas:["AU","LA"],
@@ -166,7 +428,7 @@ E:{emoji:"🏫", palavra:"ESCOLA", silabas:["ES","CO","LA"],
    definicao:"ESCOLA É UM LUGAR PARA APRENDER, BRINCAR NA PRAÇA, FAZER AMIGOS E RETIRAR LIVROS NA BIBLIOTECA. É ONDE A GENTE CONHECE PESSOAS NOVAS, ESTUDA, APRENDE A LER E ESCREVER."},
 F:{emoji:"🌸", palavra:"FLOR", silabas:["FLOR"],
    definicao:"FLOR É UMA PLANTA BONITA E CHEIROSA, QUE ENFEITA O JARDIM E TAMBÉM O CABELO."},
-G:{emoji:"🌀", palavra:"GIRA-GIRA", silabas:["GIRA","-","GIRA"],
+G:{emoji:"🌀", palavra:"GIRA-GIRA", silabas:["GI","RA","-","GI","RA"],
    definicao:"GIRA-GIRA É UM BRINQUEDO QUE NÃO FOI FEITO PARA FICAR PARADO. SERVE PARA BRINCAR GIRANDO, GIRANDO, MAS NÃO PODE SER USADO DEPOIS DO ALMOÇO, PORQUE A GENTE PODE PASSAR MAL."},
 H:{emoji:"📜", palavra:"HISTÓRIA", silabas:["HIS","TÓ","RIA"],
    definicao:"HISTÓRIA É O NOME DE UMA AULA QUE ENSINA COISAS DO PASSADO. TAMBÉM É UM CONTO QUE AS PESSOAS INVENTAM, COMO OS CONTOS DE FADAS."},
@@ -174,7 +436,7 @@ I:{emoji:"💡", palavra:"IDEIA", silabas:["I","DEI","A"],
    definicao:"IDEIA É QUANDO VEM ALGO NA CABEÇA QUE A GENTE PODE INVENTAR. É QUANDO, POR EXEMPLO, A GENTE ENCONTRA UMA GARRAFA, ENTÃO PENSA E TEM A IDEIA DO QUE PODE FAZER COM ELA."},
 J:{emoji:"🎲", palavra:"JOGO", silabas:["JO","GO"],
    definicao:"JOGO É ALGO PARA A GENTE BRINCAR E FICAR FELIZ. TEM REGRAS, COMEÇO, MEIO E FIM. PODE TER RODADAS, CARTELAS, LETRAS E NÚMEROS. SEMPRE TEM UM VENCEDOR E UM PERDEDOR E, TAMBÉM, DÁ PARA CONVIDAR AMIGOS PARA JOGAR."},
-K:{emoji:"🔤", palavra:"K", silabas:["CÁ"],
+K:{emoji:"🔤", palavra:"K", silabas:["CÁ"], leitura:true,
    definicao:"K É UMA LETRA QUE TEM O MESMO SOM DA LETRA /Q/ E DA LETRA /C/, QUANDO ELA VEM JUNTO DAS VOGAIS /A/, /O/ E /U/. ELA APARECE EM NOMES COMO KEVYN."},
 L:{emoji:"✏️", palavra:"LÁPIS", silabas:["LÁ","PIS"],
    definicao:"O LÁPIS SERVE PARA FAZER ATIVIDADES NA ESCOLA, ANOTAR E LEMBRAR DAS COISAS. ELE É FEITO DE MADEIRA E A PARTE DE DENTRO É PARECIDA COM CINZAS E SUJEIRAS DAS CAVERNAS."},
@@ -198,7 +460,7 @@ U:{emoji:"👕", palavra:"UNIFORME", silabas:["U","NI","FOR","ME"],
    definicao:"UNIFORME É UMA CAMISETA, CALÇA, MOLETOM OU CASACO. É UMA ROUPA OBRIGATÓRIA PARA SER USADA NA ESCOLA. PRECISAMOS USAR UNIFORME, PORQUE SE A GENTE DESCE DO ÔNIBUS NA PARADA ERRADA, AS PESSOAS VÃO NOS RECONHECER E SABER QUE SOMOS DA SÃO FRANCISCO. O UNIFORME É IMPORTANTE PARA A NOSSA SEGURANÇA."},
 V:{emoji:"🧹", palavra:"VASSOURA", silabas:["VAS","SOU","RA"],
    definicao:"A VASSOURA SERVE PARA LIMPAR SUJEIRA E PARA PEGAR COISAS QUE ESTÃO NO ALTO. ELA É UM CABO QUE NUMA PONTA TEM UM CABELO E ESSA PARTE É USADA PARA VARRER. A PESSOA SEGURA O CABO, VAI DANDO TAPA NO VENTO E O CHÃO FICA LIMPO."},
-W:{emoji:"🔤", palavra:"W", silabas:["DÁ","BLIO"],
+W:{emoji:"🔤", palavra:"W", silabas:["DÁ","BLIO"], leitura:true,
    definicao:"W É UMA LETRA QUE PODE TER O SOM DO /U/ E DO /V/. ELE APARECE EM NOMES COMO WANDINHA E WILLIAM."},
 X:{emoji:"🖨️", palavra:"XEROX", silabas:["XE","ROX"],
    definicao:"XEROX É UMA MÁQUINA PROGRAMADA QUE FAZ CÓPIAS DE OUTRAS FOLHAS. ELA TEM FOLHAS EM BRANCO E BOTÕES QUE A GENTE APERTA PARA ESCOLHER QUANTAS CÓPIAS QUER FAZER. DEPOIS, A MÁQUINA COPIA A FOLHA QUE ESTÁ EM CIMA, TANTAS VEZES QUE A GENTE QUER."},
@@ -210,22 +472,55 @@ Z:{emoji:"0️⃣", palavra:"ZERO", silabas:["ZE","RO"],
 
 const letras = Object.keys(dic);
 
-// título colorido
-const tituloTexto = "A ESCOLA DE A A Z";
+/* ---------- capa: ABC colorido ---------- */
+document.getElementById("capaAbc").innerHTML =
+  [..."ABC"].map((c,i)=>`<b style="color:${cores[i*3]};--r:${i===1?"4deg":"-4deg"}">${c}</b>`).join("");
+
+/* ---------- título do miolo ---------- */
+const tituloTexto = "DICIONÁRIO";
 document.getElementById("titulo").innerHTML =
   [...tituloTexto].map((c,i)=>
-    c===" " ? " " : `<span style="background:${cores[i%cores.length]};--r:${(i%2?2:-2)}deg">${c}</span>`).join("");
+    `<span style="background:${cores[i%cores.length]};--r:${(i%2?2:-2)}deg">${c}</span>`).join("");
 
-// guias
+/* ---------- guias ---------- */
 const nav = document.getElementById("guias");
+
+function criarGuiaGrande(icone, texto, cor, acao, classeExtra){
+  const b=document.createElement("button");
+  b.className="guia guia-grande" + (classeExtra ? " "+classeExtra : "");
+  b.style.background=cor;
+  b.innerHTML=`<span class="icone-guia">${icone}</span><span>${texto}</span>`;
+  b.onclick=()=>acao(b);
+  nav.appendChild(b);
+  return b;
+}
+
+/* guia Fechar — volta para a capa */
+criarGuiaGrande("✖","FECHAR","#8a6d3b", ()=>mostrarCapa(), "guia-fechar");
+
+const divisorTopo=document.createElement("div");
+divisorTopo.className="divisor-guias divisor-topo";
+nav.appendChild(divisorTopo);
+
+/* guias das letras */
+const botoesLetra = [];
 letras.forEach((L,i)=>{
   const b=document.createElement("button");
   b.className="guia"; b.textContent=L;
   b.style.background=cores[i%cores.length];
   b.onclick=()=>abrirLetra(L,b);
   nav.appendChild(b);
+  botoesLetra.push(b);
 });
 
+const divisor=document.createElement("div");
+divisor.className="divisor-guias";
+nav.appendChild(divisor);
+
+const guiaCreditos = criarGuiaGrande("📝","CRÉDITOS","#3a6a8a", b=>abrirPagina(renderCreditos, b, "📝"));
+const guiaAutores  = criarGuiaGrande("🧒","AUTORES", "#7b2cbf", b=>abrirPagina(renderAutores,  b, "🧒"));
+
+/* ---------- voz ---------- */
 function falar(texto){
   if(!("speechSynthesis" in window)) return;
   speechSynthesis.cancel();
@@ -234,11 +529,18 @@ function falar(texto){
   speechSynthesis.speak(u);
 }
 
-function abrirLetra(L,btn){
+function limparAtivas(){
   document.querySelectorAll(".guia").forEach(g=>g.classList.remove("ativa"));
+}
+
+/* ---------- página de uma letra ---------- */
+function abrirLetra(L,btn){
+  esconderCapa();
+  limparAtivas();
   btn.classList.add("ativa");
   const cor = btn.style.background;
   const lg = document.getElementById("letraGrande");
+  lg.classList.remove("icone");
   lg.textContent=L; lg.style.background=cor;
 
   const dados = dic[L];
@@ -247,6 +549,58 @@ function abrirLetra(L,btn){
 
   const card = document.createElement("div");
   card.className = "palavra-card";
+
+  /* ----- coluna da imagem ----- */
+  const colImagem = document.createElement("div");
+  colImagem.className = "coluna-imagem";
+
+  const nomeArquivo = L.toLowerCase() + "_.png";
+
+  const vazio = document.createElement("div");
+  vazio.className = "sem-imagem";
+  vazio.innerHTML = `<span class="emoji-vazio">${dados.emoji}</span>`
+    + `<span class="arquivo">${nomeArquivo}</span>`
+    + `<span class="dica">Envie este arquivo para o GitHub e o desenho aparecerá aqui.</span>`;
+
+  const moldura = document.createElement("div");
+  moldura.className = "moldura-imagem";
+  moldura.style.display = "none";
+
+  const img = document.createElement("img");
+  img.alt = "Ilustração da palavra " + dados.palavra + ", feita pela turma do 1º ano C";
+  img.loading = "lazy";
+  img.decoding = "async";
+
+  const legenda = document.createElement("p");
+  legenda.className = "legenda-imagem";
+  legenda.textContent = dados.palavra;
+
+  /* 1ª tentativa: pasta configurada; 2ª: mesma pasta do HTML; senão, moldura vazia */
+  let tentativa = 0;
+  img.addEventListener("error", ()=>{
+    tentativa++;
+    if(tentativa === 1 && PASTA_IMAGENS !== ""){
+      img.src = nomeArquivo;
+    } else {
+      moldura.style.display = "none";
+      legenda.style.display = "none";
+      vazio.style.display = "flex";
+    }
+  });
+  img.addEventListener("load", ()=>{
+    vazio.style.display = "none";
+    moldura.style.display = "block";
+    legenda.style.display = "block";
+  });
+
+  moldura.appendChild(img);
+  colImagem.append(vazio, moldura, legenda);
+  legenda.style.display = "none";
+  img.src = PASTA_IMAGENS + nomeArquivo;
+
+  /* ----- coluna do texto ----- */
+  const colTexto = document.createElement("div");
+  colTexto.className = "coluna-texto";
 
   const emojiEl = document.createElement("span");
   emojiEl.className = "palavra-emoji";
@@ -271,7 +625,7 @@ function abrirLetra(L,btn){
     if(sil===" " || sil==="-"){
       const sep=document.createElement("span");
       sep.className="separador";
-      sep.textContent = sil==="-" ? "-" : " ";
+      sep.textContent = sil==="-" ? "-" : "\u00A0";
       tituloEl.appendChild(sep);
     } else {
       const s=document.createElement("span");
@@ -289,9 +643,26 @@ function abrirLetra(L,btn){
     }
   });
 
-  const guiaEl = document.createElement("div");
-  guiaEl.className = "silabas-guia";
-  guiaEl.textContent = dados.silabas.filter(s=>s!==" "&&s!=="-").join("-").toLowerCase();
+  colTexto.append(emojiEl, palavraInteira, tituloEl);
+
+  /* guia de sílabas: mantém espaço entre palavras e hífen composto */
+  if(dados.leitura){
+    const nota = document.createElement("div");
+    nota.className = "nota-leitura";
+    nota.textContent = "como se lê o nome da letra: " + dados.silabas.join("-").toLowerCase();
+    colTexto.appendChild(nota);
+  } else {
+    const guiaEl = document.createElement("div");
+    guiaEl.className = "silabas-guia";
+    let texto = "";
+    dados.silabas.forEach(sil=>{
+      if(sil===" ")      texto += " ";
+      else if(sil==="-") texto += "-";
+      else               texto += (texto && !/[\s-]$/.test(texto) ? "-" : "") + sil;
+    });
+    guiaEl.textContent = texto.toLowerCase();
+    colTexto.appendChild(guiaEl);
+  }
 
   const defEl = document.createElement("p");
   defEl.className = "definicao";
@@ -303,11 +674,134 @@ function abrirLetra(L,btn){
   btnOuvir.textContent = "🔊 Ouvir tudo";
   btnOuvir.onclick = ()=>falar(dados.palavra+". "+dados.definicao);
 
-  card.append(emojiEl, palavraInteira, tituloEl, guiaEl, defEl, btnOuvir);
+  colTexto.append(defEl, btnOuvir);
+  card.append(colImagem, colTexto);
   box.appendChild(card);
 }
 
-abrirLetra("A", nav.children[0]);
+/* ---------- páginas extras ---------- */
+function abrirPagina(render, btn, icone){
+  esconderCapa();
+  limparAtivas();
+  btn.classList.add("ativa");
+  const lg = document.getElementById("letraGrande");
+  lg.classList.add("icone");
+  lg.textContent = icone;
+  lg.style.background = btn.style.background;
+  const box = document.getElementById("cards");
+  box.innerHTML = "";
+  box.appendChild(render());
+}
+
+function renderCreditos(){
+  const p = document.createElement("div");
+  p.className = "pagina";
+  p.innerHTML = `
+    <h2>Créditos</h2>
+    <p class="linha-fina">Como este dicionário foi feito</p>
+
+    <div class="bloco"><span class="rotulo">Título do projeto</span>
+      <span class="valor">Dicionário: Que Livro É Esse?</span></div>
+
+    <div class="bloco"><span class="rotulo">Escola</span>
+      <span class="valor">EMEF São Francisco — Tupandi, Rio Grande do Sul</span></div>
+
+    <div class="bloco"><span class="rotulo">Turma</span>
+      <span class="valor">1º ano C — 2026</span></div>
+
+    <div class="bloco"><span class="rotulo">Professora orientadora</span>
+      <span class="valor">Nádia Maria Klassmann</span></div>
+
+    <div class="bloco"><span class="rotulo">Coorientador</span>
+      <span class="valor">Fernando Fraga Gomes</span></div>
+
+    <div class="bloco"><span class="rotulo">Capa</span>
+      <span class="valor">Desenhada pelas crianças da turma</span></div>
+
+    <p class="texto-pagina">
+      Tudo começou com uma pergunta da turma diante do livro <strong>O Bichionário</strong>:
+      afinal, que livro é esse? Para responder, as crianças investigaram como um dicionário
+      funciona, descobriram a ordem alfabética e perceberam que os verbetes explicam o
+      significado das palavras.
+    </p>
+
+    <p class="texto-pagina">
+      Depois, cada criança escolheu uma palavra do dia a dia da escola e escreveu a própria
+      definição. As definições foram comparadas com as de dicionários convencionais e
+      revisadas coletivamente, até virarem as páginas deste livro digital.
+      Todos os textos dos verbetes são de autoria das crianças.
+    </p>
+
+    <p class="texto-pagina">
+      <strong>Referências que apoiaram o trabalho:</strong> Magda Soares (alfabetização e
+      letramento), o programa Pró-Letramento e os estudos de Rangel e Bagno sobre o uso
+      do dicionário em sala de aula.
+    </p>
+  `;
+  return p;
+}
+
+function renderAutores(){
+  const p = document.createElement("div");
+  p.className = "pagina";
+
+  const h = document.createElement("h2");
+  h.textContent = "Autores";
+  const sub = document.createElement("p");
+  sub.className = "linha-fina";
+  sub.textContent = "Alunos pesquisadores da turma do 1º ano C";
+
+  const lista = document.createElement("div");
+  lista.className = "lista-autores";
+  autores.forEach((nome,i)=>{
+    const a = document.createElement("span");
+    a.className = "autor";
+    a.textContent = nome;
+    a.style.background = cores[i % cores.length];
+    a.style.setProperty("--r", (i%2 ? "1.5deg" : "-1.5deg"));
+    lista.appendChild(a);
+  });
+
+  const texto = document.createElement("p");
+  texto.className = "texto-pagina";
+  texto.style.marginTop = "18px";
+  texto.innerHTML = "Cada palavra deste dicionário foi escolhida, definida e ilustrada por estas crianças, "
+    + "com a orientação da professora <strong>Nádia Maria Klassmann</strong> e a coorientação de "
+    + "<strong>Fernando Fraga Gomes</strong>.";
+
+  const aviso = document.createElement("p");
+  aviso.className = "aviso-editar";
+  aviso.textContent = "Para inserir os nomes reais: abra este arquivo em um editor de texto e "
+    + "substitua a lista chamada \"autores\", logo no começo do bloco de código.";
+
+  p.append(h, sub, lista, texto, aviso);
+  return p;
+}
+
+/* ---------- capa: abrir e fechar ---------- */
+const capa = document.getElementById("capa");
+
+function esconderCapa(){
+  capa.classList.add("fechada");
+  nav.classList.remove("capa-aberta");
+}
+
+function mostrarCapa(){
+  capa.classList.remove("fechada");
+  nav.classList.add("capa-aberta");
+  if("speechSynthesis" in window) speechSynthesis.cancel();
+  document.getElementById("btnAbrir").focus();
+}
+
+document.getElementById("btnAbrir").addEventListener("click", ()=>{
+  esconderCapa();
+  botoesLetra[0].focus();
+});
+
+/* ---------- estado inicial: capa aberta, letra A já pronta atrás ---------- */
+abrirLetra("A", botoesLetra[0]);
+nav.classList.add("capa-aberta");
+capa.classList.remove("fechada");
 </script>
 </body>
 </html>
