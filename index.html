@@ -459,17 +459,10 @@ const autores = [
 
 /* ---------------------------------------------------------------
    2) IMAGENS DAS LETRAS
-      Cada letra procura o arquivo a_.png, b_.png, c_.png ... z_.png
-      (sempre em MINÚSCULO — o GitHub diferencia maiúsculas).
-
-      Por padrão o arquivo procura dentro da pasta "imagens/".
-      Se você preferir deixar os .png soltos na mesma pasta do HTML,
-      basta trocar a linha abaixo por:  const PASTA_IMAGENS = "";
-
-      Enquanto um .png não existir, a letra mostra uma moldura
-      pontilhada com o nome do arquivo que falta.
+      Cada verbete abaixo tem seu caminho de imagem escrito
+      manualmente no campo "img" (ex.: "imagens/a_.png").
+      Basta editar o caminho ali se o nome do arquivo mudar.
    --------------------------------------------------------------- */
-const PASTA_IMAGENS = "imagens/";
 
 /* cores escurecidas o suficiente para o texto branco ficar legível */
 const cores = ["#d62828","#c25a1f","#a67c00","#1f7a6f","#3a6a8a",
@@ -480,54 +473,79 @@ A:{emoji:"📚", palavra:"AULA", silabas:["AU","LA"],
    img:"imagens/a_.png",
    definicao:"AULA É ONDE TEM ATIVIDADES PARA A GENTE FICAR MAIS INTELIGENTE. A AULA É LEGAL, PORQUE A GENTE APRENDE COISAS NOVAS E FICA MAIS CONTENTE."},
 B:{emoji:"🧸", palavra:"BRINQUEDO", silabas:["BRIN","QUE","DO"],
+   img:"imagens/b_.png",
    definicao:"BRINQUEDO É ALGO QUE AJUDA AS CRIANÇAS A SE SENTIREM ALEGRES, SE DIVERTIREM E NÃO FICAREM NA TELA O DIA INTEIRO. É UMA COISA QUE A GENTE PENSA E DEPOIS FAZ."},
 C:{emoji:"🤝", palavra:"COLEGA", silabas:["CO","LE","GA"],
+   img:"imagens/c_.png",
    definicao:"É ALGUÉM QUE AJUDA A GENTE QUANDO NÃO SABEMOS DE ALGUMA COISA OU QUANDO PRECISAMOS DE ALGO. É UMA PESSOA PEQUENA, UM AMIGO PARA BRINCAR E FAZER GRUPO PARA ESTUDAR."},
 D:{emoji:"📖", palavra:"DICIONÁRIO", silabas:["DI","CIO","NÁ","RIO"],
+   img:"imagens/d_.png",
    definicao:"É UM LIVRO COM MUITAS PALAVRAS E ELAS ESTÃO EM ORDEM ALFABÉTICA. O DICIONÁRIO SERVE PARA LER E SABER O SIGNIFICADO DAS COISAS. ELE TAMBÉM FOI FEITO PARA A GENTE DESCOBRIR PALAVRAS QUE NUNCA VIU E SABER COM QUE LETRAS SE ESCREVE UMA PALAVRA QUANDO TEMOS DÚVIDAS."},
 E:{emoji:"🏫", palavra:"ESCOLA", silabas:["ES","CO","LA"],
+   img:"imagens/e_.png",
    definicao:"ESCOLA É UM LUGAR PARA APRENDER, BRINCAR NA PRAÇA, FAZER AMIGOS E RETIRAR LIVROS NA BIBLIOTECA. É ONDE A GENTE CONHECE PESSOAS NOVAS, ESTUDA, APRENDE A LER E ESCREVER."},
 F:{emoji:"🌸", palavra:"FLOR", silabas:["FLOR"],
+   img:"imagens/f_.png",
    definicao:"FLOR É UMA PLANTA BONITA E CHEIROSA, QUE ENFEITA O JARDIM E TAMBÉM O CABELO."},
 G:{emoji:"🌀", palavra:"GIRA-GIRA", silabas:["GI","RA","-","GI","RA"],
+   img:"imagens/g_.png",
    definicao:"GIRA-GIRA É UM BRINQUEDO QUE NÃO FOI FEITO PARA FICAR PARADO. SERVE PARA BRINCAR GIRANDO, GIRANDO, MAS NÃO PODE SER USADO DEPOIS DO ALMOÇO, PORQUE A GENTE PODE PASSAR MAL."},
 H:{emoji:"📜", palavra:"HISTÓRIA", silabas:["HIS","TÓ","RIA"],
+   img:"imagens/h_.png",
    definicao:"HISTÓRIA É O NOME DE UMA AULA QUE ENSINA COISAS DO PASSADO. TAMBÉM É UM CONTO QUE AS PESSOAS INVENTAM, COMO OS CONTOS DE FADAS."},
 I:{emoji:"💡", palavra:"IDEIA", silabas:["I","DEI","A"],
+   img:"imagens/i_.png",
    definicao:"IDEIA É QUANDO VEM ALGO NA CABEÇA QUE A GENTE PODE INVENTAR. É QUANDO, POR EXEMPLO, A GENTE ENCONTRA UMA GARRAFA, ENTÃO PENSA E TEM A IDEIA DO QUE PODE FAZER COM ELA."},
 J:{emoji:"🎲", palavra:"JOGO", silabas:["JO","GO"],
+   img:"imagens/j_.png",
    definicao:"JOGO É ALGO PARA A GENTE BRINCAR E FICAR FELIZ. TEM REGRAS, COMEÇO, MEIO E FIM. PODE TER RODADAS, CARTELAS, LETRAS E NÚMEROS. SEMPRE TEM UM VENCEDOR E UM PERDEDOR E, TAMBÉM, DÁ PARA CONVIDAR AMIGOS PARA JOGAR."},
 K:{emoji:"🔤", palavra:"K", silabas:["CÁ"], leitura:true,
+   img:"imagens/k_.png",
    definicao:"K É UMA LETRA QUE TEM O MESMO SOM DA LETRA /Q/ E DA LETRA /C/, QUANDO ELA VEM JUNTO DAS VOGAIS /A/, /O/ E /U/. ELA APARECE EM NOMES COMO KEVYN."},
 L:{emoji:"✏️", palavra:"LÁPIS", silabas:["LÁ","PIS"],
+   img:"imagens/l_.png",
    definicao:"O LÁPIS SERVE PARA FAZER ATIVIDADES NA ESCOLA, ANOTAR E LEMBRAR DAS COISAS. ELE É FEITO DE MADEIRA E A PARTE DE DENTRO É PARECIDA COM CINZAS E SUJEIRAS DAS CAVERNAS."},
 M:{emoji:"🎵", palavra:"MÚSICA", silabas:["MÚ","SI","CA"],
+   img:"imagens/m_.png",
    definicao:"MÚSICA É UM SOM PARA ESCUTAR, TOCAR E CANTAR. TEM RITMOS, BATIDAS E INSTRUMENTOS. ELA SERVE PARA RELAXAR E TAMBÉM PARA ANIMAR."},
 N:{emoji:"🌿", palavra:"NATUREZA", silabas:["NA","TU","RE","ZA"],
+   img:"imagens/n_.png",
    definicao:"NATUREZA É TUDO ISSO: ÁRVORES, FLORES, GRAMA, AR, CÉU, PESSOAS, BICHOS, TERRA, PLANTAS, RIOS E MARES. NA NATUREZA TEM MUITA BELEZA E ELA PRECISA SER CUIDADA COM DELICADEZA. SEM A NATUREZA, NÃO EXISTIRIA A BORBOLETA COR VIOLETA."},
 O:{emoji:"🚌", palavra:"ÔNIBUS", silabas:["Ô","NI","BUS"],
+   img:"imagens/o_.png",
    definicao:"ÔNIBUS É UM CARRO GRANDE QUE LEVA AS PESSOAS PARA LÁ E PARA CÁ. TEM MOTOR, RODAS E JANELAS. É UM TRANSPORTE QUE LEVA AS CRIANÇAS PARA A ESCOLA E PARA CASA, PARA NÃO ANDAREM SOZINHAS A PÉ, PORQUE AINDA NÃO TÊM IDADE. ELE TAMBÉM SERVE PARA VIAJAR."},
 P:{emoji:"👩‍🏫", palavra:"PROFESSORA", silabas:["PRO","FES","SO","RA"],
+   img:"imagens/p_.png",
    definicao:"A PROFESSORA AJUDA AS CRIANÇAS A APRENDER, DÁ AULA E CARINHO. A PROFESSORA É TUDO. DÁ AULA, ENSINA, DEIXA A GENTE COMER NO LANCHE E IR NO PARQUINHO PARA BRINCAR. ELA PRESTA MUITA ATENÇÃO NOS PERÍODOS, PORQUE, SENÃO, COMO A GENTE IA FAZER ATIVIDADES, BRINCAR, LANCHAR, IR EMBORA E FAZER TUDO?"},
 Q:{emoji:"🖍️", palavra:"QUADRO", silabas:["QUA","DRO"],
+   img:"imagens/q_.png",
    definicao:"QUADRO É COMO UMA FOLHA GIGANTE E É USADO PARA DESENHAR E ESCREVER COM O GIZ E APAGAR COM O APAGADOR. ELE É RETANGULAR, VERDE, TEM BORDAS E É FEITO DE MADEIRA. A PROFESSORA ESCREVE NELE PARA ENSINAR OS ALUNOS, PARA ELES APRENDEREM MAIS. SERVE TAMBÉM PARA COPIAR NO CADERNO O QUE ESTÁ ESCRITO NELE (SEM ELE NÃO TEM COMO COPIAR NO CADERNO). NO QUADRO VAI DATA E AS COISAS QUE A GENTE VAI FAZER NA AULA."},
 R:{emoji:"⚽", palavra:"RECREIO", silabas:["RE","CREI","O"],
+   img:"imagens/r_.png",
    definicao:"O RECREIO É UM TEMPO EM QUE OS PROFESSORES LANCHAM E AS CRIANÇAS SE DIVERTEM. O RECREIO SERVE PARA BRINCAR, TOMAR ÁGUA, IR NO BANHEIRO E DESCANSAR. QUANDO O RECREIO CHEGA NA ESCOLA, AS CRIANÇAS COMEÇAM A BRINCAR. É UM MOMENTO DEPOIS DO LANCHE EM QUE AS CRIANÇAS BRINCAM. O RECREIO FOI FEITO PARA JOGAR FUTEBOL, OUTROS JOGOS E BRINCAR NA PRAÇA. O RECREIO DEIXA TODO MUNDO FELIZ. O RECREIO É BRINCAR E SE DIVERTIR COM OS AMIGOS."},
 S:{emoji:"⛪", palavra:"SÃO FRANCISCO", silabas:["SÃO"," ","FRAN","CIS","CO"],
+   img:"imagens/s_.png",
    definicao:"SÃO FRANCISCO FOI MUITO IMPORTANTE, PORQUE ELE CUIDAVA DOS ANIMAIS COM MUITO AMOR E CARINHO. ELE TAMBÉM ERA O PROTETOR DA NATUREZA. A HISTÓRIA DA ESCOLA SÃO FRANCISCO COMEÇA COM AS IRMÃS FRANCISCANAS E FORAM ELAS QUE DERAM O NOME DA NOSSA ESCOLA."},
 T:{emoji:"✂️", palavra:"TESOURA", silabas:["TE","SOU","RA"],
+   img:"imagens/t_.png",
    definicao:"A TESOURA CORTA PAPEL, PAPELÃO, TECIDO, CABELO E GRAMA. TESOURA É UM MATERIAL QUE ABRE E FECHA E CORTA TUDO. A GENTE SEGURA COM OS DEDOS NUMA PONTA E A OUTRA PARTE CORTA. ELA É DE FERRO E PODE SER DE VÁRIAS CORES. A TESOURA PODE SER PERIGOSA, PORQUE CORTA O DEDO. ELA SE PARECE COM UMA ESTRELA, TEM 2 BRAÇOS E 2 PERNAS. TAMBÉM QUANDO ABRIMOS A TESOURA ELA FORMA UM X. A TESOURA DO ESTOJO É MORADORA."},
 U:{emoji:"👕", palavra:"UNIFORME", silabas:["U","NI","FOR","ME"],
+   img:"imagens/u_.png",
    definicao:"UNIFORME É UMA CAMISETA, CALÇA, MOLETOM OU CASACO. É UMA ROUPA OBRIGATÓRIA PARA SER USADA NA ESCOLA. PRECISAMOS USAR UNIFORME, PORQUE SE A GENTE DESCE DO ÔNIBUS NA PARADA ERRADA, AS PESSOAS VÃO NOS RECONHECER E SABER QUE SOMOS DA SÃO FRANCISCO. O UNIFORME É IMPORTANTE PARA A NOSSA SEGURANÇA."},
 V:{emoji:"🧹", palavra:"VASSOURA", silabas:["VAS","SOU","RA"],
+   img:"imagens/v_.png",
    definicao:"A VASSOURA SERVE PARA LIMPAR SUJEIRA E PARA PEGAR COISAS QUE ESTÃO NO ALTO. ELA É UM CABO QUE NUMA PONTA TEM UM CABELO E ESSA PARTE É USADA PARA VARRER. A PESSOA SEGURA O CABO, VAI DANDO TAPA NO VENTO E O CHÃO FICA LIMPO."},
 W:{emoji:"🔤", palavra:"W", silabas:["DÁ","BLIO"], leitura:true,
+   img:"imagens/w_.png",
    definicao:"W É UMA LETRA QUE PODE TER O SOM DO /U/ E DO /V/. ELE APARECE EM NOMES COMO WANDINHA E WILLIAM."},
 X:{emoji:"🖨️", palavra:"XEROX", silabas:["XE","ROX"],
+   img:"imagens/x_.png",
    definicao:"XEROX É UMA MÁQUINA PROGRAMADA QUE FAZ CÓPIAS DE OUTRAS FOLHAS. ELA TEM FOLHAS EM BRANCO E BOTÕES QUE A GENTE APERTA PARA ESCOLHER QUANTAS CÓPIAS QUER FAZER. DEPOIS, A MÁQUINA COPIA A FOLHA QUE ESTÁ EM CIMA, TANTAS VEZES QUE A GENTE QUER."},
 Y:{emoji:"▶️", palavra:"YOUTUBE", silabas:["YOU","TU","BE"],
+   img:"imagens/y_.png",
    definicao:"YOUTUBE TEM NA TV E SERVE PARA ASSISTIR FILMES, DESENHOS, JOGOS, MÚSICA E VÍDEOS SOBRE QUALQUER COISA. SE POR EXEMPLO, A GENTE TEM UM BICHO E QUER SABER COMO CUIDAR DELE, É SÓ PESQUISAR NO YOUTUBE E ASSISTIR VÍDEOS QUE ENSINAM A CUIDAR DELE. NO YOUTUBE TAMBÉM PODEMOS APRENDER COMO FAZER RECEITAS."},
 Z:{emoji:"0️⃣", palavra:"ZERO", silabas:["ZE","RO"],
+   img:"imagens/z_.png",
    definicao:"É UM NÚMERO CIRCULAR, REDONDO COMO O OVO E A BOLA. É UM NÚMERO QUE NÃO VALE NADA QUANDO A GENTE FAZ A CONTA ZERO MAIS DEZ, PORQUE CONTINUA SENDO DEZ. ELE TAMBÉM É UM AJUDANTE DE MUITOS NÚMEROS COMO O 10, 20, 30, 40, POR EXEMPLO."}
 };
 
@@ -538,31 +556,20 @@ document.getElementById("capaAbc").innerHTML =
   [..."ABC"].map((c,i)=>`<b style="color:${cores[i*3]};--r:${i===1?"4deg":"-4deg"}">${c}</b>`).join("");
 
 /* ---------- capa: logo da escola e São Francisco ----------
-   Cada imagem é procurada em várias versões, na ordem: .png na pasta
-   configurada, .png na raiz, .jpg na pasta, .jpg na raiz.
-   Use .png se a imagem tiver fundo transparente — jpg não guarda transparência.
+   Caminhos fixos: se o arquivo ainda não existir, a moldura
+   pontilhada continua aparecendo (evento "error" da <img>).
    ------------------------------------------------------------------ */
-function montarImagemCapa(idContainer, base, textoAlt){
+function montarImagemCapa(idContainer, caminho, textoAlt){
   const box = document.getElementById(idContainer);
-  const caminhos = [];
-  ["png","jpg","jpeg"].forEach(ext=>{
-    if(PASTA_IMAGENS !== "") caminhos.push(PASTA_IMAGENS + base + "." + ext);
-    caminhos.push(base + "." + ext);
-  });
-  let i = 0;
   const img = new Image();
   img.className = "img-capa";
   img.alt = textoAlt;
-  img.addEventListener("error", ()=>{
-    i++;
-    if(i < caminhos.length) img.src = caminhos[i];
-  });
   img.addEventListener("load", ()=>{ box.innerHTML = ""; box.appendChild(img); });
-  img.src = caminhos[0];
+  img.src = caminho;
 }
 
-montarImagemCapa("capaLogo", "logo", "Logo da EMEF São Francisco");
-montarImagemCapa("capaSF",   "sf",   "Ilustração de São Francisco de Assis");
+montarImagemCapa("capaLogo", "imagens/logo.jpg", "Logo da EMEF São Francisco");
+montarImagemCapa("capaSF",   "imagens/sf.png",   "Ilustração de São Francisco de Assis");
 
 /* ---------- título do miolo ---------- */
 const tituloTexto = "DICIONÁRIO";
@@ -685,7 +692,7 @@ function abrirLetra(L,btn){
     if(sil===" " || sil==="-"){
       const sep=document.createElement("span");
       sep.className="separador";
-      sep.textContent = sil==="-" ? "-" : "\u00A0";
+      sep.textContent = sil==="-" ? "-" : " ";
       tituloEl.appendChild(sep);
     } else {
       const s=document.createElement("span");
