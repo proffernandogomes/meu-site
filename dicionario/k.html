@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>K — Dicionário: Que Livro É Esse?</title>
+<link rel="stylesheet" href="style.css">
+<script>
+function falar(texto){
+  if(!("speechSynthesis" in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(texto);
+  u.lang = "pt-BR"; u.rate = .85;
+  speechSynthesis.speak(u);
+}
+function ativar(el, silaba){ el.classList.add("ativa"); falar(silaba); }
+function desativar(el){ el.classList.remove("ativa"); }
+function ativarPalavra(el, palavra){ el.classList.add("ativa"); falar(palavra); }
+function desativarPalavra(el){ el.classList.remove("ativa"); }
+</script>
+</head>
+<body>
+<div id="livro">
+  <header>
+    <h1 id="titulo">
+      <span style="background:#d62828">D</span><span style="background:#c25a1f">I</span><span style="background:#a67c00">C</span><span style="background:#1f7a6f">I</span><span style="background:#3a6a8a">O</span><span style="background:#7b2cbf">N</span><span style="background:#c62f6b">Á</span><span style="background:#0d8f6a">R</span><span style="background:#0f6f8f">I</span><span style="background:#b3243f">O</span>
+    </h1>
+    <p class="instrucao">Passe o dedo ou o mouse pelas sílabas para ouvir. Use as guias ao lado para trocar de letra. ✨</p>
+  </header>
+  <div id="painel">
+    <div id="letraGrande" class="" style="background:#d62828">K</div>
+    <div id="cards">
+    <div class="palavra-card">
+      <div class="coluna-imagem">
+        <div class="moldura-imagem">
+          <img src="imagens/k_.png" alt="Ilustração da palavra K, feita pela turma do 1º ano C" loading="lazy" decoding="async">
+        </div>
+        <p class="legenda-imagem">K</p>
+      </div>
+      <div class="coluna-texto">
+        <span class="palavra-emoji">🔤</span>
+        <div class="palavra-inteira" style="background:#d62828"
+             onmouseenter="ativarPalavra(this,'K')"
+             onmouseleave="desativarPalavra(this)"
+             onclick="ativarPalavra(this,'K'); setTimeout(()=>desativarPalavra(this),700)">K</div>
+        <div class="palavra-titulo"><span class="silaba" style="background:#d62828" onmouseenter="ativar(this,'CÁ')" onmouseleave="desativar(this)" onclick="ativar(this,'CÁ'); setTimeout(()=>desativar(this),700)">CÁ</span></div>
+        <div class="nota-leitura">como se lê o nome da letra: cá</div>
+        <p class="definicao">K É UMA LETRA QUE TEM O MESMO SOM DA LETRA /Q/ E DA LETRA /C/, QUANDO ELA VEM JUNTO DAS VOGAIS /A/, /O/ E /U/. ELA APARECE EM NOMES COMO KEVYN.</p>
+        <button class="btn-ouvir" style="background:#d62828" onclick="falar('K. K É UMA LETRA QUE TEM O MESMO SOM DA LETRA /Q/ E DA LETRA /C/, QUANDO ELA VEM JUNTO DAS VOGAIS /A/, /O/ E /U/. ELA APARECE EM NOMES COMO KEVYN.')">🔊 Ouvir tudo</button>
+      </div>
+    </div>
+    </div>
+  </div>
+</div>
+<nav id="guias" aria-label="Navegação do dicionário">
+<a class="guia guia-grande" href="index.html" style="background:#8a6d3b"><span class="icone-guia">✖</span><span>FECHAR</span></a>
+<div class="divisor-guias"></div>
+<a class="guia" href="a.html" style="background:#d62828">A</a>
+<a class="guia" href="b.html" style="background:#c25a1f">B</a>
+<a class="guia" href="c.html" style="background:#a67c00">C</a>
+<a class="guia" href="d.html" style="background:#1f7a6f">D</a>
+<a class="guia" href="e.html" style="background:#3a6a8a">E</a>
+<a class="guia" href="f.html" style="background:#7b2cbf">F</a>
+<a class="guia" href="g.html" style="background:#c62f6b">G</a>
+<a class="guia" href="h.html" style="background:#0d8f6a">H</a>
+<a class="guia" href="i.html" style="background:#0f6f8f">I</a>
+<a class="guia" href="j.html" style="background:#b3243f">J</a>
+<a class="guia ativa" href="k.html" style="background:#d62828">K</a>
+<a class="guia" href="l.html" style="background:#c25a1f">L</a>
+<a class="guia" href="m.html" style="background:#a67c00">M</a>
+<a class="guia" href="n.html" style="background:#1f7a6f">N</a>
+<a class="guia" href="o.html" style="background:#3a6a8a">O</a>
+<a class="guia" href="p.html" style="background:#7b2cbf">P</a>
+<a class="guia" href="q.html" style="background:#c62f6b">Q</a>
+<a class="guia" href="r.html" style="background:#0d8f6a">R</a>
+<a class="guia" href="s.html" style="background:#0f6f8f">S</a>
+<a class="guia" href="t.html" style="background:#b3243f">T</a>
+<a class="guia" href="u.html" style="background:#d62828">U</a>
+<a class="guia" href="v.html" style="background:#c25a1f">V</a>
+<a class="guia" href="w.html" style="background:#a67c00">W</a>
+<a class="guia" href="x.html" style="background:#1f7a6f">X</a>
+<a class="guia" href="y.html" style="background:#3a6a8a">Y</a>
+<a class="guia" href="z.html" style="background:#7b2cbf">Z</a>
+<div class="divisor-guias"></div>
+<a class="guia guia-grande" href="creditos.html" style="background:#3a6a8a"><span class="icone-guia">📝</span><span>CRÉDITOS</span></a>
+<a class="guia guia-grande" href="autores.html" style="background:#7b2cbf"><span class="icone-guia">🧒</span><span>AUTORES</span></a>
+</nav>
+</body>
+</html>
