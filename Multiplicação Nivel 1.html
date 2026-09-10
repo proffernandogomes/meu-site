@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desafio da Tabuada Armada — multiplicação de dois algarismos</title>
+<style>
+  :root{
+    --papel:#F7F9FB;
+    --linha:#D6E4F0;
+    --tinta:#153A5B;
+    --grafite:#5A6B7A;
+    --caneta:#1F4FD8;
+    --marca:#FFE066;
+    --certo:#1E7A4C;
+    --errado:#C62F2A;
+    --borda:#B9CFE2;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Trebuchet MS","Segoe UI",Verdana,sans-serif;
+    color:var(--tinta);
+    background-color:var(--papel);
+    background-image:
+      linear-gradient(var(--linha) 1px, transparent 1px),
+      linear-gradient(90deg, var(--linha) 1px, transparent 1px);
+    background-size:26px 26px;
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:26px 14px 60px;
+  }
+  .folha{
+    width:100%;
+    max-width:640px;
+    background:rgba(255,255,255,.93);
+    border:1px solid var(--borda);
+    border-left:6px solid var(--caneta);
+    box-shadow:0 2px 0 rgba(21,58,91,.10);
+    padding:26px 24px 30px;
+  }
+  h1{
+    font-size:29px;
+    line-height:1.15;
+    margin:0 0 6px;
+    letter-spacing:-.4px;
+  }
+  .sub{color:var(--grafite);font-size:15px;margin:0 0 22px;}
+  p{line-height:1.55;}
+  label{display:block;font-size:15px;margin-bottom:7px;}
+  input[type=text]{
+    width:100%;
+    font:inherit;
+    font-size:18px;
+    padding:11px 12px;
+    border:1px solid var(--borda);
+    background:#fff;
+    color:var(--tinta);
+  }
+  input[type=text]:focus,button:focus-visible,.alt:focus-visible{
+    outline:3px solid var(--marca);
+    outline-offset:2px;
+  }
+  button{
+    font:inherit;
+    font-size:17px;
+    padding:13px 22px;
+    border:none;
+    background:var(--caneta);
+    color:#fff;
+    cursor:pointer;
+  }
+  button:disabled{background:#AFC0D0;cursor:not-allowed;}
+  button.secundario{background:transparent;color:var(--caneta);border:1px solid var(--caneta);}
+  .regras{
+    border-top:1px solid var(--linha);
+    border-bottom:1px solid var(--linha);
+    padding:14px 0;
+    margin:22px 0;
+    font-size:15px;
+    color:var(--grafite);
+  }
+  .regras span{display:block;margin:3px 0;}
+
+  /* --- barra de andamento --- */
+  .barra{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    font-size:14px;
+    color:var(--grafite);
+    border-bottom:1px solid var(--linha);
+    padding-bottom:8px;
+    margin-bottom:20px;
+  }
+  .pontos{font-size:20px;color:var(--tinta);}
+  .pontos b{background:var(--marca);padding:1px 7px;}
+
+  /* --- a conta armada --- */
+  .conta{
+    display:table;
+    margin:6px auto 26px;
+    font-family:"Courier New",monospace;
+    font-size:52px;
+    line-height:1.18;
+    letter-spacing:6px;
+  }
+  .conta div{display:block;text-align:right;padding-right:4px;}
+  .conta .sinal{
+    border-bottom:3px solid var(--tinta);
+    padding-bottom:4px;
+    position:relative;
+  }
+  .conta .sinal::before{
+    content:"×";
+    position:absolute;
+    left:-42px;
+    color:var(--caneta);
+  }
+  .conta .vazio{
+    color:var(--grafite);
+    padding-top:4px;
+    letter-spacing:10px;
+  }
+
+  /* --- alternativas --- */
+  .alts{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .alt{
+    font:inherit;
+    font-size:26px;
+    font-family:"Courier New",monospace;
+    padding:16px 10px;
+    background:#fff;
+    border:2px solid var(--borda);
+    color:var(--tinta);
+    cursor:pointer;
+    text-align:center;
+  }
+  .alt:hover{border-color:var(--caneta);}
+  .alt.escolhida{border-color:var(--caneta);background:#EEF3FF;}
+  .alt.certa{border-color:var(--certo);background:#E9F5EF;color:var(--certo);}
+  .alt.errada{border-color:var(--errado);background:#FBEDEC;color:var(--errado);}
+  .alt[disabled]{cursor:default;}
+
+  .retorno{
+    margin-top:18px;
+    padding:14px 16px;
+    font-size:16px;
+    border-left:5px solid var(--grafite);
+    background:#F2F6FA;
+    line-height:1.5;
+  }
+  .retorno.ok{border-left-color:var(--certo);}
+  .retorno.nao{border-left-color:var(--errado);}
+  .retorno strong{display:block;margin-bottom:3px;}
+
+  .acoes{margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;}
+
+  /* --- boletim --- */
+  .boletim{border:2px solid var(--tinta);padding:20px;margin:20px 0;}
+  .boletim .campo{
+    display:flex;
+    justify-content:space-between;
+    gap:12px;
+    border-bottom:1px dashed var(--borda);
+    padding:9px 0;
+    font-size:16px;
+  }
+  .boletim .campo:last-child{border-bottom:none;}
+  .boletim .campo span:last-child{font-weight:bold;text-align:right;}
+  .nota{font-size:46px;line-height:1;}
+  .conceito{font-size:16px;color:var(--grafite);margin-top:4px;}
+
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px;}
+  th,td{border:1px solid var(--borda);padding:6px 8px;text-align:left;}
+  th{background:#EEF3FF;font-weight:normal;color:var(--grafite);}
+  td.v{color:var(--certo);}
+  td.x{color:var(--errado);}
+
+  /* --- trava deslizante --- */
+  .trava{
+    margin-top:24px;
+    border:1px solid var(--borda);
+    background:#fff;
+    padding:12px 14px;
+  }
+  .trava p{margin:0 0 8px;font-size:14px;color:var(--grafite);}
+  input[type=range]{width:100%;}
+
+  .oculto{display:none;}
+  @media (max-width:460px){
+    .conta{font-size:40px;letter-spacing:4px;}
+    .conta .sinal::before{left:-32px;}
+    .alts{grid-template-columns:1fr;}
+    h1{font-size:24px;}
+  }
+  @media print{
+    body{background:#fff;padding:0;}
+    .folha{border:none;box-shadow:none;}
+    .trava,.acoes{display:none;}
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .retorno{animation:surge .18s ease-out;}
+    @keyframes surge{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
+  }
+</style>
+</head>
+<body>
+<main class="folha">
+
+  <!-- ============ CAPA ============ -->
+  <section id="capa">
+    <h1>Desafio da Tabuada Armada</h1>
+    <p class="sub">Multiplicação de dois algarismos por dois algarismos — 20 questões</p>
+
+    <label for="nome">Nome do estudante</label>
+    <input type="text" id="nome" autocomplete="off" placeholder="Escreva seu nome completo">
+
+    <div class="regras">
+      <span>Cada acerto vale 5 pontos. A prova toda vale 100 pontos.</span>
+      <span>Você escolhe a alternativa e depois confirma — dá para trocar antes de confirmar.</span>
+      <span>Depois de confirmar, não dá para voltar na questão.</span>
+      <span>As questões e as alternativas mudam de ordem a cada prova.</span>
+    </div>
+
+    <button id="btComecar">Começar a prova</button>
+    <p id="aviso" class="sub oculto" style="margin-top:12px;color:var(--errado)">Escreva seu nome antes de começar.</p>
+  </section>
+
+  <!-- ============ PROVA ============ -->
+  <section id="prova" class="oculto">
+    <div class="barra">
+      <span id="andamento">Questão 1 de 20</span>
+      <span class="pontos">Pontos: <b id="placar">0</b></span>
+    </div>
+
+    <div class="conta" id="conta">
+      <div id="fator1">00</div>
+      <div class="sinal" id="fator2">00</div>
+      <div class="vazio">?</div>
+    </div>
+
+    <div class="alts" id="alts"></div>
+
+    <div id="retorno" class="retorno oculto"></div>
+
+    <div class="acoes">
+      <button id="btConfirmar" disabled>Confirmar resposta</button>
+      <button id="btProxima" class="oculto">Próxima questão</button>
+    </div>
+  </section>
+
+  <!-- ============ BOLETIM ============ -->
+  <section id="boletim" class="oculto">
+    <h1>Boletim da prova</h1>
+    <p class="sub">Professor: registre este resultado antes de liberar a próxima prova.</p>
+
+    <div class="boletim">
+      <div class="campo"><span>Estudante</span><span id="bNome">—</span></div>
+      <div class="campo"><span>Data e hora</span><span id="bData">—</span></div>
+      <div class="campo"><span>Acertos</span><span id="bAcertos">—</span></div>
+      <div class="campo"><span>Erros</span><span id="bErros">—</span></div>
+      <div class="campo">
+        <span>Pontuação final</span>
+        <span><span class="nota" id="bNota">0</span> / 100<br><span class="conceito" id="bConceito"></span></span>
+      </div>
+    </div>
+
+    <h2 style="font-size:19px;margin:26px 0 0">Questão por questão</h2>
+    <table id="tabela">
+      <thead><tr><th>#</th><th>Conta</th><th>Sua resposta</th><th>Certo</th><th>Pontos</th></tr></thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="acoes"><button class="secundario" onclick="window.print()">Imprimir boletim</button></div>
+
+    <div class="trava">
+      <p>Arraste até o fim para liberar a prova do próximo estudante.</p>
+      <input type="range" id="slider" min="0" max="100" value="0" step="1">
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* ---------- banco de questões: 20 contas de 2 algarismos × 2 algarismos ---------- */
+const BANCO = [
+  {a:12, b:13, r:156,  d:[144,169,166]},
+  {a:21, b:14, r:294,  d:[273,308,304]},
+  {a:32, b:11, r:352,  d:[320,363,362]},
+  {a:23, b:12, r:276,  d:[253,288,286]},
+  {a:41, b:15, r:615,  d:[574,630,625]},
+  {a:25, b:16, r:400,  d:[375,416,410]},
+  {a:34, b:18, r:612,  d:[578,630,622]},
+  {a:27, b:13, r:351,  d:[324,364,361]},
+  {a:45, b:22, r:990,  d:[945,1012,1000]},
+  {a:36, b:24, r:864,  d:[828,888,874]},
+  {a:52, b:19, r:988,  d:[936,1007,998]},
+  {a:47, b:21, r:987,  d:[940,1008,997]},
+  {a:38, b:26, r:988,  d:[950,1014,998]},
+  {a:64, b:17, r:1088, d:[1024,1105,1098]},
+  {a:55, b:28, r:1540, d:[1485,1568,1550]},
+  {a:73, b:32, r:2336, d:[2263,2368,2346]},
+  {a:49, b:37, r:1813, d:[1764,1850,1823]},
+  {a:86, b:24, r:2064, d:[1978,2088,2074]},
+  {a:68, b:45, r:3060, d:[2992,3105,3070]},
+  {a:97, b:58, r:5626, d:[5529,5684,5636]}
+];
+
+const PONTOS_POR_ACERTO = 5;
+
+/* ---------- utilitários ---------- */
+const $ = id => document.getElementById(id);
+function embaralhar(lista){
+  const c = lista.slice();
+  for(let i=c.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [c[i],c[j]] = [c[j],c[i]];
+  }
+  return c;
+}
+
+/* ---------- estado ---------- */
+let questoes = [], atual = 0, pontos = 0, acertos = 0, escolhida = null, respondida = false, registro = [];
+
+/* ---------- início ---------- */
+$("btComecar").addEventListener("click", () => {
+  const nome = $("nome").value.trim();
+  if(nome === ""){ $("aviso").classList.remove("oculto"); $("nome").focus(); return; }
+  $("aviso").classList.add("oculto");
+  questoes = embaralhar(BANCO);
+  atual = 0; pontos = 0; acertos = 0; registro = [];
+  $("capa").classList.add("oculto");
+  $("prova").classList.remove("oculto");
+  mostrarQuestao();
+});
+
+/* ---------- questão ---------- */
+function mostrarQuestao(){
+  const q = questoes[atual];
+  escolhida = null; respondida = false;
+
+  $("andamento").textContent = "Questão " + (atual+1) + " de " + questoes.length;
+  $("placar").textContent = pontos;
+  $("fator1").textContent = q.a;
+  $("fator2").textContent = q.b;
+
+  const caixa = $("alts");
+  caixa.innerHTML = "";
+  embaralhar([q.r, ...q.d]).forEach(valor => {
+    const bt = document.createElement("button");
+    bt.className = "alt";
+    bt.textContent = valor.toLocaleString("pt-BR");
+    bt.dataset.valor = valor;
+    bt.addEventListener("click", () => escolher(bt, valor));
+    caixa.appendChild(bt);
+  });
+
+  $("retorno").classList.add("oculto");
+  $("retorno").className = "retorno oculto";
+  $("btConfirmar").classList.remove("oculto");
+  $("btConfirmar").disabled = true;
+  $("btProxima").classList.add("oculto");
+}
+
+function escolher(botao, valor){
+  if(respondida) return;
+  document.querySelectorAll(".alt").forEach(b => b.classList.remove("escolhida"));
+  botao.classList.add("escolhida");
+  escolhida = valor;
+  $("btConfirmar").disabled = false;
+}
+
+/* ---------- confirmação ---------- */
+$("btConfirmar").addEventListener("click", () => {
+  if(escolhida === null || respondida) return;
+  respondida = true;
+
+  const q = questoes[atual];
+  const certo = (escolhida === q.r);
+  if(certo){ pontos += PONTOS_POR_ACERTO; acertos++; }
+
+  document.querySelectorAll(".alt").forEach(b => {
+    const v = Number(b.dataset.valor);
+    b.disabled = true;
+    b.classList.remove("escolhida");
+    if(v === q.r) b.classList.add("certa");
+    else if(v === escolhida) b.classList.add("errada");
+  });
+
+  const r = $("retorno");
+  r.className = "retorno " + (certo ? "ok" : "nao");
+  r.innerHTML = certo
+    ? "<strong>Certo. +" + PONTOS_POR_ACERTO + " pontos.</strong>" + explicacao(q)
+    : "<strong>Não é essa. 0 ponto nesta questão.</strong>" + explicacao(q);
+
+  registro.push({a:q.a, b:q.b, r:q.r, resposta:escolhida, certo:certo});
+
+  $("placar").textContent = pontos;
+  $("btConfirmar").classList.add("oculto");
+  $("btProxima").classList.remove("oculto");
+  $("btProxima").textContent = (atual === questoes.length-1) ? "Ver o boletim" : "Próxima questão";
+  $("btProxima").focus();
+});
+
+function explicacao(q){
+  const u = q.b % 10, dez = Math.floor(q.b/10);
+  return "<br>" + q.a + " × " + u + " = " + (q.a*u) +
+         " e " + q.a + " × " + dez + "0 = " + (q.a*dez*10) +
+         ". Somando: " + (q.a*u) + " + " + (q.a*dez*10) + " = " + q.r + ".";
+}
+
+/* ---------- avanço ---------- */
+$("btProxima").addEventListener("click", () => {
+  atual++;
+  if(atual < questoes.length) mostrarQuestao();
+  else encerrar();
+});
+
+/* ---------- boletim ---------- */
+function encerrar(){
+  $("prova").classList.add("oculto");
+  $("boletim").classList.remove("oculto");
+
+  const agora = new Date();
+  $("bNome").textContent = $("nome").value.trim();
+  $("bData").textContent = agora.toLocaleDateString("pt-BR") + " às " + agora.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  $("bAcertos").textContent = acertos + " de " + questoes.length;
+  $("bErros").textContent = (questoes.length - acertos);
+  $("bNota").textContent = pontos;
+
+  let conceito;
+  if(pontos === 100) conceito = "Prova perfeita";
+  else if(pontos >= 85) conceito = "Domina o algoritmo";
+  else if(pontos >= 70) conceito = "Bom, com escorregões no vai um";
+  else if(pontos >= 50) conceito = "Precisa treinar as contas maiores";
+  else conceito = "Retomar a conta armada passo a passo";
+  $("bConceito").textContent = conceito;
+
+  const corpo = $("tabela").querySelector("tbody");
+  corpo.innerHTML = "";
+  registro.forEach((item, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = "<td>" + (i+1) + "</td>" +
+      "<td>" + item.a + " × " + item.b + "</td>" +
+      "<td class='" + (item.certo ? "v" : "x") + "'>" + item.resposta.toLocaleString("pt-BR") + "</td>" +
+      "<td>" + item.r.toLocaleString("pt-BR") + "</td>" +
+      "<td>" + (item.certo ? PONTOS_POR_ACERTO : 0) + "</td>";
+    corpo.appendChild(tr);
+  });
+
+  $("slider").value = 0;
+}
+
+/* ---------- trava para a próxima prova ---------- */
+$("slider").addEventListener("change", e => {
+  if(Number(e.target.value) >= 100){
+    $("boletim").classList.add("oculto");
+    $("capa").classList.remove("oculto");
+    $("nome").value = "";
+    $("nome").focus();
+  } else {
+    e.target.value = 0;
+  }
+});
+</script>
+</body>
+</html>
