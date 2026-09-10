@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sudoku da Turma — 4×4, 6×6 e 9×9</title>
+<style>
+  :root{
+    --papel:#F7F9FB;
+    --linha:#D6E4F0;
+    --tinta:#153A5B;
+    --grafite:#5A6B7A;
+    --caneta:#1F4FD8;
+    --marca:#FFE066;
+    --certo:#1E7A4C;
+    --errado:#C62F2A;
+    --borda:#B9CFE2;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Trebuchet MS","Segoe UI",Verdana,sans-serif;
+    color:var(--tinta);
+    background-color:var(--papel);
+    background-image:
+      linear-gradient(var(--linha) 1px, transparent 1px),
+      linear-gradient(90deg, var(--linha) 1px, transparent 1px);
+    background-size:26px 26px;
+    min-height:100vh;
+    display:flex;align-items:flex-start;justify-content:center;
+    padding:26px 14px 60px;
+  }
+  .folha{
+    width:100%;max-width:660px;background:rgba(255,255,255,.94);
+    border:1px solid var(--borda);border-left:6px solid var(--caneta);
+    box-shadow:0 2px 0 rgba(21,58,91,.10);padding:26px 24px 30px;
+  }
+  h1{font-size:29px;line-height:1.15;margin:0 0 6px;letter-spacing:-.4px;}
+  .sub{color:var(--grafite);font-size:15px;margin:0 0 22px;}
+  p{line-height:1.55;}
+  label{display:block;font-size:15px;margin-bottom:7px;}
+  input[type=text]{width:100%;font:inherit;font-size:18px;padding:11px 12px;
+    border:1px solid var(--borda);background:#fff;color:var(--tinta);}
+  input:focus,button:focus-visible{outline:3px solid var(--marca);outline-offset:2px;}
+  button{font:inherit;font-size:17px;padding:13px 22px;border:none;background:var(--caneta);color:#fff;cursor:pointer;}
+  button:disabled{background:#AFC0D0;cursor:not-allowed;}
+  button.secundario{background:transparent;color:var(--caneta);border:1px solid var(--caneta);}
+
+  /* --- escolhas da capa --- */
+  .grupo{margin:20px 0;}
+  .opcoes{display:flex;gap:10px;flex-wrap:wrap;}
+  .opcao{
+    font:inherit;font-size:16px;padding:12px 16px;background:#fff;
+    border:2px solid var(--borda);color:var(--tinta);cursor:pointer;text-align:center;line-height:1.3;
+  }
+  .opcao small{display:block;font-size:13px;color:var(--grafite);}
+  .opcao.ativa{border-color:var(--caneta);background:#EEF3FF;}
+  .opcao.ativa small{color:var(--caneta);}
+
+  .regras{border-top:1px solid var(--linha);border-bottom:1px solid var(--linha);
+    padding:14px 0;margin:22px 0;font-size:15px;color:var(--grafite);}
+  .regras span{display:block;margin:3px 0;}
+
+  .barra{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;
+    font-size:14px;color:var(--grafite);border-bottom:1px solid var(--linha);padding-bottom:8px;margin-bottom:18px;}
+  .pontos{font-size:20px;color:var(--tinta);}
+  .pontos b{background:var(--marca);padding:1px 7px;}
+  .relogio{font-family:"Courier New",monospace;font-size:18px;color:var(--tinta);}
+
+  /* --- tabuleiro --- */
+  #tabuleiro{
+    display:grid;gap:0;margin:0 auto 18px;
+    width:min(92vw,440px);
+    border:3px solid var(--tinta);background:var(--tinta);
+  }
+  .cel{
+    aspect-ratio:1/1;background:#fff;border:1px solid var(--borda);
+    display:flex;align-items:center;justify-content:center;
+    font-family:"Courier New",monospace;font-weight:bold;
+    font-size:clamp(16px,6vw,30px);color:var(--caneta);
+    cursor:pointer;user-select:none;position:relative;padding:0;
+  }
+  .cel.fixa{color:var(--tinta);background:#F1F5FA;cursor:default;}
+  .cel.errada{color:var(--errado);background:#FBEDEC;}
+  .cel.sel{background:#E4ECFF;box-shadow:inset 0 0 0 3px var(--caneta);}
+  .cel.irmã{background:#F3F7FF;}
+  .cel.igual{background:#FFF7D6;}
+  .cel.sel.errada{background:#F8DEDC;}
+  .cel.paredeD{border-right:3px solid var(--tinta);}
+  .cel.paredeB{border-bottom:3px solid var(--tinta);}
+  .notas{
+    display:grid;width:100%;height:100%;
+    font-family:"Trebuchet MS",sans-serif;font-weight:normal;
+    font-size:clamp(8px,2.4vw,12px);color:var(--grafite);
+  }
+  .notas span{display:flex;align-items:center;justify-content:center;}
+
+  /* --- teclado --- */
+  #teclado{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px;}
+  .tecla{
+    font-family:"Courier New",monospace;font-size:24px;font-weight:bold;
+    width:52px;height:52px;padding:0;background:#fff;border:2px solid var(--borda);color:var(--caneta);cursor:pointer;
+  }
+  .tecla:hover{border-color:var(--caneta);}
+  .tecla.pronto{opacity:.35;}
+  .ferramentas{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:8px;}
+  .ferramentas button{font-size:15px;padding:10px 16px;background:transparent;color:var(--grafite);border:1px solid var(--borda);}
+  .ferramentas button.ligado{border-color:var(--caneta);color:var(--caneta);background:#EEF3FF;}
+
+  .recado{text-align:center;font-size:15px;color:var(--grafite);min-height:24px;margin:6px 0 0;}
+  .recado.erro{color:var(--errado);}
+  .recado.bom{color:var(--certo);}
+  .acoes{margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+
+  .boletim{border:2px solid var(--tinta);padding:20px;margin:20px 0;}
+  .boletim .campo{display:flex;justify-content:space-between;gap:12px;
+    border-bottom:1px dashed var(--borda);padding:9px 0;font-size:16px;}
+  .boletim .campo:last-child{border-bottom:none;}
+  .boletim .campo span:last-child{font-weight:bold;text-align:right;}
+  .nota{font-size:46px;line-height:1;}
+  .conceito{font-size:16px;color:var(--grafite);margin-top:4px;}
+
+  .trava{margin-top:24px;border:1px solid var(--borda);background:#fff;padding:12px 14px;}
+  .trava p{margin:0 0 8px;font-size:14px;color:var(--grafite);}
+  input[type=range]{width:100%;}
+
+  .carregando{text-align:center;color:var(--grafite);padding:30px 0;font-size:17px;}
+  .oculto{display:none;}
+  @media (max-width:470px){
+    h1{font-size:24px;}
+    .tecla{width:44px;height:44px;font-size:20px;}
+  }
+  @media print{
+    body{background:#fff;padding:0;}
+    .folha{border:none;box-shadow:none;}
+    .trava,.acoes,#teclado,.ferramentas{display:none;}
+  }
+</style>
+</head>
+<body>
+<main class="folha">
+
+  <!-- ============ CAPA ============ -->
+  <section id="capa">
+    <h1>Sudoku da Turma</h1>
+    <p class="sub">Cada número aparece uma única vez em cada linha, em cada coluna e em cada bloco.</p>
+
+    <label for="nome">Nome do estudante</label>
+    <input type="text" id="nome" autocomplete="off" placeholder="Escreva seu nome completo">
+
+    <div class="grupo">
+      <label>Tamanho do tabuleiro</label>
+      <div class="opcoes" id="opcTam">
+        <button class="opcao ativa" data-tam="4">4 × 4<small>números 1 a 4</small></button>
+        <button class="opcao" data-tam="6">6 × 6<small>números 1 a 6</small></button>
+        <button class="opcao" data-tam="9">9 × 9<small>números 1 a 9</small></button>
+      </div>
+    </div>
+
+    <div class="grupo">
+      <label>Nível</label>
+      <div class="opcoes" id="opcNivel">
+        <button class="opcao ativa" data-nivel="facil">Fácil</button>
+        <button class="opcao" data-nivel="medio">Médio</button>
+        <button class="opcao" data-nivel="dificil">Difícil</button>
+      </div>
+    </div>
+
+    <div class="regras">
+      <span>O jogo começa com 100 pontos.</span>
+      <span>Cada número errado tira 3 pontos e fica marcado em vermelho até você trocar.</span>
+      <span>Cada dica revela um número e tira 5 pontos.</span>
+      <span>Use o rascunho para anotar as possibilidades sem perder pontos.</span>
+      <span>Cada partida é sorteada na hora e tem uma única solução.</span>
+    </div>
+
+    <button id="btComecar">Começar a partida</button>
+    <p id="aviso" class="sub oculto" style="margin-top:12px;color:var(--errado)">Escreva seu nome antes de começar.</p>
+  </section>
+
+  <!-- ============ CARREGANDO ============ -->
+  <section id="carregando" class="oculto">
+    <p class="carregando">Montando o tabuleiro…</p>
+  </section>
+
+  <!-- ============ JOGO ============ -->
+  <section id="jogo" class="oculto">
+    <div class="barra">
+      <span id="andamento">Sudoku 4 × 4 · fácil</span>
+      <span class="relogio" id="relogio">00:00</span>
+      <span class="pontos">Pontos: <b id="placar">100</b></span>
+    </div>
+
+    <div id="tabuleiro"></div>
+    <div id="teclado"></div>
+
+    <div class="ferramentas">
+      <button id="btRascunho">Rascunho: desligado</button>
+      <button id="btApagar">Apagar</button>
+      <button id="btDica">Dica (−5)</button>
+    </div>
+
+    <p class="recado" id="recado">Toque em uma casa vazia e escolha o número.</p>
+
+    <div class="acoes">
+      <button class="secundario" id="btDesistir">Encerrar e ver o boletim</button>
+    </div>
+  </section>
+
+  <!-- ============ BOLETIM ============ -->
+  <section id="boletim" class="oculto">
+    <h1>Boletim da partida</h1>
+    <p class="sub">Professor: registre este resultado antes de liberar a próxima partida.</p>
+
+    <div class="boletim">
+      <div class="campo"><span>Estudante</span><span id="bNome">—</span></div>
+      <div class="campo"><span>Data e hora</span><span id="bData">—</span></div>
+      <div class="campo"><span>Tabuleiro</span><span id="bTab">—</span></div>
+      <div class="campo"><span>Situação</span><span id="bSituacao">—</span></div>
+      <div class="campo"><span>Tempo de jogo</span><span id="bTempo">—</span></div>
+      <div class="campo"><span>Casas preenchidas</span><span id="bCasas">—</span></div>
+      <div class="campo"><span>Números errados</span><span id="bErros">—</span></div>
+      <div class="campo"><span>Dicas usadas</span><span id="bDicas">—</span></div>
+      <div class="campo">
+        <span>Pontuação final</span>
+        <span><span class="nota" id="bNota">0</span> / 100<br><span class="conceito" id="bConceito"></span></span>
+      </div>
+    </div>
+
+    <div class="acoes"><button class="secundario" onclick="window.print()">Imprimir boletim</button></div>
+
+    <div class="trava">
+      <p>Arraste até o fim para liberar a partida do próximo estudante.</p>
+      <input type="range" id="slider" min="0" max="100" value="0" step="1">
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* ============ configurações de tabuleiro ============ */
+const FORMATOS = {
+  4: {br:2, bc:2, pistas:{facil:9,  medio:7,  dificil:6}},
+  6: {br:2, bc:3, pistas:{facil:20, medio:16, dificil:13}},
+  9: {br:3, bc:3, pistas:{facil:38, medio:32, dificil:27}}
+};
+const CUSTO_ERRO = 3, CUSTO_DICA = 5;
+
+/* ============ utilitários ============ */
+const $ = id => document.getElementById(id);
+function embaralhar(lista){
+  const c = lista.slice();
+  for(let i=c.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [c[i],c[j]] = [c[j],c[i]];
+  }
+  return c;
+}
+function cabe(g, n, br, bc, pos, v){
+  const r = Math.floor(pos/n), c = pos%n;
+  for(let k=0;k<n;k++){
+    if(k!==c && g[r*n+k]===v) return false;
+    if(k!==r && g[k*n+c]===v) return false;
+  }
+  const r0 = Math.floor(r/br)*br, c0 = Math.floor(c/bc)*bc;
+  for(let a=0;a<br;a++) for(let b=0;b<bc;b++){
+    const i = (r0+a)*n + (c0+b);
+    if(i!==pos && g[i]===v) return false;
+  }
+  return true;
+}
+function resolverAleatorio(n, br, bc){
+  const g = new Array(n*n).fill(0);
+  const nums = Array.from({length:n},(_,k)=>k+1);
+  (function preencher(i){
+    if(i === n*n) return true;
+    for(const v of embaralhar(nums)){
+      if(cabe(g,n,br,bc,i,v)){
+        g[i] = v;
+        if(preencher(i+1)) return true;
+        g[i] = 0;
+      }
+    }
+    return false;
+  })(0);
+  return g;
+}
+function contarSolucoes(g, n, br, bc, limite){
+  let achadas = 0;
+  const nums = Array.from({length:n},(_,k)=>k+1);
+  (function busca(){
+    if(achadas >= limite) return;
+    let pos = -1;
+    for(let i=0;i<n*n;i++) if(g[i]===0){ pos = i; break; }
+    if(pos === -1){ achadas++; return; }
+    for(const v of nums){
+      if(cabe(g,n,br,bc,pos,v)){
+        g[pos] = v;
+        busca();
+        g[pos] = 0;
+        if(achadas >= limite) return;
+      }
+    }
+  })();
+  return achadas;
+}
+function montarPuzzle(n, br, bc, pistas){
+  const solucao = resolverAleatorio(n, br, bc);
+  const puzzle = solucao.slice();
+  let cheias = n*n;
+  for(const i of embaralhar([...Array(n*n).keys()])){
+    if(cheias <= pistas) break;
+    const guardado = puzzle[i];
+    puzzle[i] = 0;
+    if(contarSolucoes(puzzle.slice(), n, br, bc, 2) !== 1) puzzle[i] = guardado;
+    else cheias--;
+  }
+  return {solucao, puzzle, cheias};
+}
+function mmss(seg){
+  const m = String(Math.floor(seg/60)).padStart(2,"0");
+  const s = String(seg%60).padStart(2,"0");
+  return m+":"+s;
+}
+
+/* ============ estado ============ */
+let tam = 4, nivel = "facil", n, br, bc;
+let solucao = [], inicial = [], atual = [], notas = [];
+let selecionada = -1, rascunho = false;
+let pontos = 100, erros = 0, dicas = 0, segundos = 0, cronometro = null, terminou = false;
+
+/* ============ capa ============ */
+$("opcTam").addEventListener("click", e => {
+  const bt = e.target.closest(".opcao"); if(!bt) return;
+  $("opcTam").querySelectorAll(".opcao").forEach(b => b.classList.remove("ativa"));
+  bt.classList.add("ativa");
+  tam = Number(bt.dataset.tam);
+});
+$("opcNivel").addEventListener("click", e => {
+  const bt = e.target.closest(".opcao"); if(!bt) return;
+  $("opcNivel").querySelectorAll(".opcao").forEach(b => b.classList.remove("ativa"));
+  bt.classList.add("ativa");
+  nivel = bt.dataset.nivel;
+});
+
+$("btComecar").addEventListener("click", () => {
+  if($("nome").value.trim() === ""){ $("aviso").classList.remove("oculto"); $("nome").focus(); return; }
+  $("aviso").classList.add("oculto");
+  $("capa").classList.add("oculto");
+  $("carregando").classList.remove("oculto");
+  setTimeout(iniciarPartida, 40);
+});
+
+function iniciarPartida(){
+  n = tam; br = FORMATOS[n].br; bc = FORMATOS[n].bc;
+  const alvo = FORMATOS[n].pistas[nivel];
+  const jogo = montarPuzzle(n, br, bc, alvo);
+
+  solucao = jogo.solucao;
+  inicial = jogo.puzzle.slice();
+  atual   = jogo.puzzle.slice();
+  notas   = Array.from({length:n*n}, () => new Set());
+  selecionada = -1; rascunho = false;
+  pontos = 100; erros = 0; dicas = 0; segundos = 0; terminou = false;
+
+  $("carregando").classList.add("oculto");
+  $("jogo").classList.remove("oculto");
+  $("andamento").textContent = "Sudoku " + n + " × " + n + " · " + (nivel==="facil"?"fácil":nivel==="medio"?"médio":"difícil");
+  $("placar").textContent = pontos;
+  $("relogio").textContent = "00:00";
+  $("btRascunho").textContent = "Rascunho: desligado";
+  $("btRascunho").classList.remove("ligado");
+  dizer("Toque em uma casa vazia e escolha o número.", "");
+
+  desenharTabuleiro();
+  desenharTeclado();
+
+  clearInterval(cronometro);
+  cronometro = setInterval(() => {
+    if(terminou) return;
+    segundos++;
+    $("relogio").textContent = mmss(segundos);
+  }, 1000);
+}
+
+/* ============ desenho ============ */
+function desenharTabuleiro(){
+  const tab = $("tabuleiro");
+  tab.style.gridTemplateColumns = "repeat("+n+", 1fr)";
+  tab.innerHTML = "";
+  for(let i=0;i<n*n;i++){
+    const r = Math.floor(i/n), c = i%n;
+    const cel = document.createElement("button");
+    cel.className = "cel";
+    cel.dataset.i = i;
+    if((c+1)%bc === 0 && c !== n-1) cel.classList.add("paredeD");
+    if((r+1)%br === 0 && r !== n-1) cel.classList.add("paredeB");
+    if(inicial[i] !== 0) cel.classList.add("fixa");
+    cel.addEventListener("click", () => selecionar(i));
+    tab.appendChild(cel);
+  }
+  atualizarTabuleiro();
+}
+
+function desenharTeclado(){
+  const tec = $("teclado");
+  tec.innerHTML = "";
+  for(let v=1; v<=n; v++){
+    const bt = document.createElement("button");
+    bt.className = "tecla";
+    bt.textContent = v;
+    bt.addEventListener("click", () => digitar(v));
+    tec.appendChild(bt);
+  }
+}
+
+function atualizarTabuleiro(){
+  const celas = $("tabuleiro").children;
+  const valorSel = selecionada >= 0 ? atual[selecionada] : 0;
+  const rs = selecionada >= 0 ? Math.floor(selecionada/n) : -1;
+  const cs = selecionada >= 0 ? selecionada%n : -1;
+
+  for(let i=0;i<n*n;i++){
+    const cel = celas[i];
+    const r = Math.floor(i/n), c = i%n;
+    cel.classList.remove("sel","irmã","igual","errada");
+
+    if(atual[i] !== 0){
+      cel.textContent = atual[i];
+      if(inicial[i] === 0 && atual[i] !== solucao[i]) cel.classList.add("errada");
+    } else if(notas[i].size > 0){
+      const cols = n === 4 ? 2 : 3;
+      let html = '<span class="notas" style="grid-template-columns:repeat('+cols+',1fr)">';
+      for(let v=1; v<=n; v++) html += '<span>' + (notas[i].has(v) ? v : "") + '</span>';
+      cel.innerHTML = html + '</span>';
+    } else {
+      cel.textContent = "";
+    }
+
+    if(selecionada >= 0 && i !== selecionada){
+      const mesmoBloco = Math.floor(r/br) === Math.floor(rs/br) && Math.floor(c/bc) === Math.floor(cs/bc);
+      if(r === rs || c === cs || mesmoBloco) cel.classList.add("irmã");
+      if(valorSel !== 0 && atual[i] === valorSel) cel.classList.add("igual");
+    }
+  }
+  if(selecionada >= 0) celas[selecionada].classList.add("sel");
+}
+
+function dizer(txt, tipo){
+  const r = $("recado");
+  r.textContent = txt;
+  r.className = "recado" + (tipo ? " "+tipo : "");
+}
+
+/* ============ jogadas ============ */
+function selecionar(i){
+  if(terminou) return;
+  if(inicial[i] !== 0){
+    selecionada = i;
+    atualizarTabuleiro();
+    dizer("Essa casa já veio pronta no tabuleiro.", "");
+    return;
+  }
+  selecionada = i;
+  atualizarTabuleiro();
+}
+
+function digitar(v){
+  if(terminou) return;
+  if(selecionada < 0){ dizer("Escolha primeiro uma casa do tabuleiro.", "erro"); return; }
+  const i = selecionada;
+  if(inicial[i] !== 0){ dizer("Essa casa já veio pronta no tabuleiro.", "erro"); return; }
+
+  if(rascunho){
+    if(atual[i] !== 0) atual[i] = 0;
+    if(notas[i].has(v)) notas[i].delete(v); else notas[i].add(v);
+    atualizarTabuleiro();
+    return;
+  }
+
+  notas[i].clear();
+  atual[i] = v;
+
+  if(v !== solucao[i]){
+    erros++;
+    pontos = Math.max(0, pontos - CUSTO_ERRO);
+    $("placar").textContent = pontos;
+    dizer("Esse número não cabe aqui. −" + CUSTO_ERRO + " pontos. Confira a linha, a coluna e o bloco.", "erro");
+  } else {
+    dizer("Boa.", "bom");
+  }
+  atualizarTabuleiro();
+  conferirFim();
+}
+
+function apagar(){
+  if(terminou || selecionada < 0) return;
+  const i = selecionada;
+  if(inicial[i] !== 0) return;
+  atual[i] = 0;
+  notas[i].clear();
+  atualizarTabuleiro();
+  dizer("Casa apagada.", "");
+}
+
+$("btApagar").addEventListener("click", apagar);
+
+$("btRascunho").addEventListener("click", () => {
+  rascunho = !rascunho;
+  $("btRascunho").textContent = "Rascunho: " + (rascunho ? "ligado" : "desligado");
+  $("btRascunho").classList.toggle("ligado", rascunho);
+  dizer(rascunho ? "Rascunho ligado: os números entram pequenos e não valem ponto."
+                 : "Rascunho desligado: os números entram para valer.", "");
+});
+
+$("btDica").addEventListener("click", () => {
+  if(terminou) return;
+  const vazias = [];
+  for(let i=0;i<n*n;i++) if(inicial[i] === 0 && atual[i] !== solucao[i]) vazias.push(i);
+  if(vazias.length === 0){ dizer("Não há casa para revelar.", ""); return; }
+  const i = selecionada >= 0 && vazias.indexOf(selecionada) >= 0
+          ? selecionada
+          : vazias[Math.floor(Math.random()*vazias.length)];
+  atual[i] = solucao[i];
+  notas[i].clear();
+  dicas++;
+  pontos = Math.max(0, pontos - CUSTO_DICA);
+  $("placar").textContent = pontos;
+  selecionada = i;
+  atualizarTabuleiro();
+  dizer("Dica usada. −" + CUSTO_DICA + " pontos.", "");
+  conferirFim();
+});
+
+/* teclado físico */
+document.addEventListener("keydown", e => {
+  if($("jogo").classList.contains("oculto")) return;
+  if(e.key >= "1" && e.key <= "9"){
+    const v = Number(e.key);
+    if(v <= n) digitar(v);
+  } else if(e.key === "Backspace" || e.key === "Delete" || e.key === "0"){
+    apagar();
+  } else if(selecionada >= 0){
+    let r = Math.floor(selecionada/n), c = selecionada%n;
+    if(e.key === "ArrowUp") r = (r-1+n)%n;
+    else if(e.key === "ArrowDown") r = (r+1)%n;
+    else if(e.key === "ArrowLeft") c = (c-1+n)%n;
+    else if(e.key === "ArrowRight") c = (c+1)%n;
+    else return;
+    e.preventDefault();
+    selecionada = r*n + c;
+    atualizarTabuleiro();
+  }
+});
+
+/* ============ fim ============ */
+function conferirFim(){
+  for(let i=0;i<n*n;i++) if(atual[i] !== solucao[i]) return;
+  terminou = true;
+  clearInterval(cronometro);
+  dizer("Tabuleiro completo.", "bom");
+  setTimeout(() => encerrar(true), 700);
+}
+
+$("btDesistir").addEventListener("click", () => {
+  if(terminou) return;
+  terminou = true;
+  clearInterval(cronometro);
+  encerrar(false);
+});
+
+function encerrar(completou){
+  $("jogo").classList.add("oculto");
+  $("boletim").classList.remove("oculto");
+
+  let preenchidas = 0, total = 0;
+  for(let i=0;i<n*n;i++){
+    if(inicial[i] === 0){
+      total++;
+      if(atual[i] === solucao[i]) preenchidas++;
+    }
+  }
+
+  const agora = new Date();
+  $("bNome").textContent = $("nome").value.trim();
+  $("bData").textContent = agora.toLocaleDateString("pt-BR") + " às " + agora.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  $("bTab").textContent = n + " × " + n + " · " + (nivel==="facil"?"fácil":nivel==="medio"?"médio":"difícil");
+  $("bSituacao").textContent = completou ? "Concluído" : "Encerrado antes do fim";
+  $("bTempo").textContent = mmss(segundos);
+  $("bCasas").textContent = preenchidas + " de " + total;
+  $("bErros").textContent = erros;
+  $("bDicas").textContent = dicas;
+
+  let nota = pontos;
+  if(!completou) nota = Math.round(pontos * preenchidas / total);
+  $("bNota").textContent = nota;
+
+  let conceito;
+  if(completou && erros === 0 && dicas === 0) conceito = "Partida limpa, sem erro e sem dica";
+  else if(completou && nota >= 85) conceito = "Domina a estratégia do sudoku";
+  else if(completou) conceito = "Concluiu com tentativa e erro";
+  else if(preenchidas >= total/2) conceito = "Avançou bastante, mas não fechou";
+  else conceito = "Retomar a regra da linha, coluna e bloco";
+  $("bConceito").textContent = conceito;
+
+  $("slider").value = 0;
+}
+
+/* ============ trava para a próxima partida ============ */
+$("slider").addEventListener("change", e => {
+  if(Number(e.target.value) >= 100){
+    $("boletim").classList.add("oculto");
+    $("capa").classList.remove("oculto");
+    $("nome").value = "";
+    $("nome").focus();
+  } else {
+    e.target.value = 0;
+  }
+});
+</script>
+</body>
+</html>
