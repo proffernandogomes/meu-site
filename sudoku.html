@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Sudoku da Turma — 4×4, 6×6 e 9×9</title>
+<title>Desafio do Sidnei — 4×4, 6×6 e 9×9</title>
 <style>
   :root{
     --papel:#F7F9FB;
@@ -171,6 +171,7 @@
       <span>Cada número errado tira 3 pontos e fica marcado em vermelho até você trocar.</span>
       <span>Cada dica revela um número e tira 5 pontos.</span>
       <span>Use o rascunho para anotar as possibilidades sem perder pontos.</span>
+      <span>A tarefa só pode ser finalizada com o tabuleiro inteiro preenchido e correto.</span>
       <span>Cada partida é sorteada na hora e tem uma única solução.</span>
     </div>
 
@@ -203,8 +204,9 @@
     <p class="recado" id="recado">Toque em uma casa vazia e escolha o número.</p>
 
     <div class="acoes">
-      <button class="secundario" id="btDesistir">Encerrar e ver o boletim</button>
+      <button id="btFinalizar" disabled>Finalizar tarefa</button>
     </div>
+    <p class="recado" id="trava">O boletim só abre com o tabuleiro inteiro correto.</p>
   </section>
 
   <!-- ============ BOLETIM ============ -->
@@ -374,6 +376,7 @@ function iniciarPartida(){
 
   desenharTabuleiro();
   desenharTeclado();
+  atualizarTrava();
 
   clearInterval(cronometro);
   cronometro = setInterval(() => {
@@ -475,6 +478,7 @@ function digitar(v){
     if(atual[i] !== 0) atual[i] = 0;
     if(notas[i].has(v)) notas[i].delete(v); else notas[i].add(v);
     atualizarTabuleiro();
+    atualizarTrava();
     return;
   }
 
@@ -500,6 +504,7 @@ function apagar(){
   atual[i] = 0;
   notas[i].clear();
   atualizarTabuleiro();
+  atualizarTrava();
   dizer("Casa apagada.", "");
 }
 
@@ -553,20 +558,55 @@ document.addEventListener("keydown", e => {
   }
 });
 
-/* ============ fim ============ */
-function conferirFim(){
-  for(let i=0;i<n*n;i++) if(atual[i] !== solucao[i]) return;
-  terminou = true;
-  clearInterval(cronometro);
-  dizer("Tabuleiro completo.", "bom");
-  setTimeout(() => encerrar(true), 700);
+/* ============ trava de finalização ============ */
+function contarPendencias(){
+  let vazias = 0, erradas = 0;
+  for(let i=0;i<n*n;i++){
+    if(inicial[i] !== 0) continue;
+    if(atual[i] === 0) vazias++;
+    else if(atual[i] !== solucao[i]) erradas++;
+  }
+  return {vazias, erradas};
 }
 
-$("btDesistir").addEventListener("click", () => {
+function atualizarTrava(){
+  const p = contarPendencias();
+  const bt = $("btFinalizar");
+  const aviso = $("trava");
+
+  if(p.vazias === 0 && p.erradas === 0){
+    bt.disabled = false;
+    bt.textContent = "Finalizar tarefa";
+    aviso.textContent = "Tabuleiro completo e correto. Pode finalizar.";
+    aviso.className = "recado bom";
+    return true;
+  }
+
+  bt.disabled = true;
+  bt.textContent = "Finalizar tarefa (bloqueado)";
+  const partes = [];
+  if(p.vazias > 0)  partes.push(p.vazias === 1 ? "falta 1 casa" : "faltam " + p.vazias + " casas");
+  if(p.erradas > 0) partes.push(p.erradas === 1 ? "1 número está errado" : p.erradas + " números estão errados");
+  aviso.textContent = "Ainda não dá para finalizar: " + partes.join(" e ") + ".";
+  aviso.className = "recado" + (p.erradas > 0 ? " erro" : "");
+  return false;
+}
+
+/* ============ fim ============ */
+function conferirFim(){
+  const pronto = atualizarTrava();
+  if(pronto) dizer("Tabuleiro completo e correto. Toque em Finalizar tarefa.", "bom");
+}
+
+$("btFinalizar").addEventListener("click", () => {
   if(terminou) return;
+  if(!atualizarTrava()){
+    dizer("O sudoku precisa estar todo certo para finalizar.", "erro");
+    return;
+  }
   terminou = true;
   clearInterval(cronometro);
-  encerrar(false);
+  encerrar(true);
 });
 
 function encerrar(completou){
@@ -605,6 +645,14 @@ function encerrar(completou){
 
   $("slider").value = 0;
 }
+
+/* avisa se tentarem sair no meio da partida */
+window.addEventListener("beforeunload", e => {
+  if(!$("jogo").classList.contains("oculto") && !terminou){
+    e.preventDefault();
+    e.returnValue = "";
+  }
+});
 
 /* ============ trava para a próxima partida ============ */
 $("slider").addEventListener("change", e => {
