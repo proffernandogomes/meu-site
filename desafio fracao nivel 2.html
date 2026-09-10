@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Histórias com Frações — 20 problemas · 5º ano</title>
+<style>
+  :root{
+    --papel:#F7F9FB;
+    --linha:#D6E4F0;
+    --tinta:#153A5B;
+    --grafite:#5A6B7A;
+    --caneta:#1F4FD8;
+    --marca:#FFE066;
+    --certo:#1E7A4C;
+    --errado:#C62F2A;
+    --borda:#B9CFE2;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Trebuchet MS","Segoe UI",Verdana,sans-serif;
+    color:var(--tinta);
+    background-color:var(--papel);
+    background-image:
+      linear-gradient(var(--linha) 1px, transparent 1px),
+      linear-gradient(90deg, var(--linha) 1px, transparent 1px);
+    background-size:26px 26px;
+    min-height:100vh;
+    display:flex;align-items:flex-start;justify-content:center;
+    padding:26px 14px 60px;
+  }
+  .folha{
+    width:100%;max-width:660px;background:rgba(255,255,255,.94);
+    border:1px solid var(--borda);border-left:6px solid var(--caneta);
+    box-shadow:0 2px 0 rgba(21,58,91,.10);padding:26px 24px 30px;
+  }
+  h1{font-size:29px;line-height:1.15;margin:0 0 6px;letter-spacing:-.4px;}
+  .sub{color:var(--grafite);font-size:15px;margin:0 0 22px;}
+  p{line-height:1.55;}
+  label{display:block;font-size:15px;margin-bottom:7px;}
+  input[type=text]{width:100%;font:inherit;font-size:18px;padding:11px 12px;
+    border:1px solid var(--borda);background:#fff;color:var(--tinta);}
+  input:focus,button:focus-visible,.alt:focus-visible{outline:3px solid var(--marca);outline-offset:2px;}
+  button{font:inherit;font-size:17px;padding:13px 22px;border:none;background:var(--caneta);color:#fff;cursor:pointer;}
+  button:disabled{background:#AFC0D0;cursor:not-allowed;}
+  button.secundario{background:transparent;color:var(--caneta);border:1px solid var(--caneta);}
+  .regras{border-top:1px solid var(--linha);border-bottom:1px solid var(--linha);
+    padding:14px 0;margin:22px 0;font-size:15px;color:var(--grafite);}
+  .regras span{display:block;margin:3px 0;}
+
+  .barra{display:flex;justify-content:space-between;align-items:baseline;font-size:14px;color:var(--grafite);
+    border-bottom:1px solid var(--linha);padding-bottom:8px;margin-bottom:20px;}
+  .pontos{font-size:20px;color:var(--tinta);}
+  .pontos b{background:var(--marca);padding:1px 7px;}
+
+  /* --- a historinha --- */
+  .historia{
+    font-family:Georgia,"Times New Roman",serif;
+    font-size:19px;line-height:1.7;
+    border-left:4px solid var(--marca);
+    padding:2px 0 2px 16px;
+    margin:0 0 16px;
+    max-width:56ch;
+  }
+  .titulo-hist{
+    font-family:"Trebuchet MS",sans-serif;font-size:14px;color:var(--grafite);
+    margin:0 0 6px;
+  }
+  .pergunta{font-size:19px;font-weight:bold;line-height:1.4;margin:0 0 20px;}
+
+  .alts{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .alt{font:inherit;font-size:18px;padding:14px 10px;background:#fff;border:2px solid var(--borda);
+    color:var(--tinta);cursor:pointer;text-align:center;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:6px;min-height:74px;}
+  .alt:hover{border-color:var(--caneta);}
+  .alt.escolhida{border-color:var(--caneta);background:#EEF3FF;}
+  .alt.certa{border-color:var(--certo);background:#E9F5EF;color:var(--certo);}
+  .alt.errada{border-color:var(--errado);background:#FBEDEC;color:var(--errado);}
+  .alt[disabled]{cursor:default;}
+  .alt .letra{font-size:13px;color:var(--grafite);}
+  .alt.certa .letra,.alt.errada .letra{color:inherit;}
+
+  .frac{display:inline-flex;flex-direction:column;align-items:center;line-height:1.1;
+    font-family:"Courier New",monospace;font-size:25px;font-weight:bold;}
+  .frac .d{border-top:3px solid currentColor;padding:0 8px;}
+  .frac .n{padding:0 8px;}
+
+  .retorno{margin-top:18px;padding:14px 16px;font-size:16px;border-left:5px solid var(--grafite);
+    background:#F2F6FA;line-height:1.5;}
+  .retorno.ok{border-left-color:var(--certo);}
+  .retorno.nao{border-left-color:var(--errado);}
+  .retorno strong{display:block;margin-bottom:3px;}
+  .acoes{margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;}
+
+  .boletim{border:2px solid var(--tinta);padding:20px;margin:20px 0;}
+  .boletim .campo{display:flex;justify-content:space-between;gap:12px;
+    border-bottom:1px dashed var(--borda);padding:9px 0;font-size:16px;}
+  .boletim .campo:last-child{border-bottom:none;}
+  .boletim .campo span:last-child{font-weight:bold;text-align:right;}
+  .nota{font-size:46px;line-height:1;}
+  .conceito{font-size:16px;color:var(--grafite);margin-top:4px;}
+
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px;}
+  th,td{border:1px solid var(--borda);padding:6px 8px;text-align:left;}
+  th{background:#EEF3FF;font-weight:normal;color:var(--grafite);}
+  td.v{color:var(--certo);}
+  td.x{color:var(--errado);}
+
+  .trava{margin-top:24px;border:1px solid var(--borda);background:#fff;padding:12px 14px;}
+  .trava p{margin:0 0 8px;font-size:14px;color:var(--grafite);}
+  input[type=range]{width:100%;}
+
+  .oculto{display:none;}
+  @media (max-width:470px){
+    h1{font-size:24px;}
+    .historia{font-size:17px;}
+    .pergunta{font-size:17px;}
+    .alts{grid-template-columns:1fr;}
+  }
+  @media print{
+    body{background:#fff;padding:0;}
+    .folha{border:none;box-shadow:none;}
+    .trava,.acoes{display:none;}
+  }
+  @media (prefers-reduced-motion:no-preference){
+    .retorno{animation:surge .18s ease-out;}
+    @keyframes surge{from{opacity:0;transform:translateY(-4px);}to{opacity:1;transform:none;}}
+  }
+</style>
+</head>
+<body>
+<main class="folha">
+
+  <!-- ============ CAPA ============ -->
+  <section id="capa">
+    <h1>Histórias com Frações</h1>
+    <p class="sub">20 problemas do dia a dia — 5º ano</p>
+
+    <label for="nome">Nome do estudante</label>
+    <input type="text" id="nome" autocomplete="off" placeholder="Escreva seu nome completo">
+
+    <div class="regras">
+      <span>Cada acerto vale 5 pontos. O quiz todo vale 100 pontos.</span>
+      <span>Leia a história inteira antes de olhar as alternativas.</span>
+      <span>Preste atenção no que a pergunta pede: às vezes é o que foi usado, às vezes é o que sobrou.</span>
+      <span>Escolha uma alternativa e depois confirme — dá para trocar antes de confirmar.</span>
+      <span>A ordem das histórias e das alternativas muda a cada rodada.</span>
+    </div>
+
+    <button id="btComecar">Começar o quiz</button>
+    <p id="aviso" class="sub oculto" style="margin-top:12px;color:var(--errado)">Escreva seu nome antes de começar.</p>
+  </section>
+
+  <!-- ============ QUIZ ============ -->
+  <section id="prova" class="oculto">
+    <div class="barra">
+      <span id="andamento">História 1 de 20</span>
+      <span class="pontos">Pontos: <b id="placar">0</b></span>
+    </div>
+
+    <p class="titulo-hist" id="tituloHist"></p>
+    <p class="historia" id="historia"></p>
+    <p class="pergunta" id="pergunta"></p>
+
+    <div class="alts" id="alts"></div>
+    <div id="retorno" class="retorno oculto"></div>
+
+    <div class="acoes">
+      <button id="btConfirmar" disabled>Confirmar resposta</button>
+      <button id="btProxima" class="oculto">Próxima história</button>
+    </div>
+  </section>
+
+  <!-- ============ BOLETIM ============ -->
+  <section id="boletim" class="oculto">
+    <h1>Boletim do quiz</h1>
+    <p class="sub">Professor: registre este resultado antes de liberar o próximo estudante.</p>
+
+    <div class="boletim">
+      <div class="campo"><span>Estudante</span><span id="bNome">—</span></div>
+      <div class="campo"><span>Data e hora</span><span id="bData">—</span></div>
+      <div class="campo"><span>Acertos</span><span id="bAcertos">—</span></div>
+      <div class="campo"><span>Erros</span><span id="bErros">—</span></div>
+      <div class="campo">
+        <span>Pontuação final</span>
+        <span><span class="nota" id="bNota">0</span> / 100<br><span class="conceito" id="bConceito"></span></span>
+      </div>
+    </div>
+
+    <h2 style="font-size:19px;margin:26px 0 0">História por história</h2>
+    <table id="tabela">
+      <thead><tr><th>#</th><th>História</th><th>Sua resposta</th><th>Certo</th><th>Pontos</th></tr></thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="acoes"><button class="secundario" onclick="window.print()">Imprimir boletim</button></div>
+
+    <div class="trava">
+      <p>Arraste até o fim para liberar o quiz do próximo estudante.</p>
+      <input type="range" id="slider" min="0" max="100" value="0" step="1">
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* ============ 20 historinhas ============ */
+const BANCO = [
+  { rot:"Pizza do Lucas",
+    tit:"Sábado à noite",
+    hist:"Lucas pediu uma pizza e cortou em 8 pedaços iguais. Ele e o irmão comeram 3 pedaços e guardaram o resto na geladeira.",
+    perg:"Que fração da pizza foi guardada?",
+    alts:[{f:[5,8],ok:true},{f:[3,8]},{f:[5,3]},{f:[3,5]}],
+    exp:"Dos 8 pedaços, 3 foram comidos: sobraram 5. A parte guardada é 5/8." },
+
+  { rot:"Bolo da Maria",
+    tit:"Aniversário",
+    hist:"O bolo foi cortado em 4 fatias iguais. Maria comeu 1 fatia e o irmão dela comeu 2 fatias.",
+    perg:"Que fração do bolo os dois comeram juntos?",
+    alts:[{f:[3,4],ok:true},{f:[3,8]},{f:[2,4]},{f:[1,4]}],
+    exp:"1/4 + 2/4 = 3/4. Somamos as fatias comidas; o tamanho da fatia (o 4 de baixo) continua o mesmo." },
+
+  { rot:"Biblioteca da turma",
+    tit:"Na escola",
+    hist:"A turma do 5º ano tem 24 estudantes. Um terço da turma foi à biblioteca pegar livros.",
+    perg:"Quantos estudantes foram à biblioteca?",
+    alts:[{t:"8 estudantes",ok:true},{t:"3 estudantes"},{t:"12 estudantes"},{t:"6 estudantes"}],
+    exp:"Um terço quer dizer dividir em 3 partes iguais: 24 ÷ 3 = 8." },
+
+  { rot:"Figurinhas do Téo",
+    tit:"No recreio",
+    hist:"Téo tinha 20 figurinhas repetidas e deu 1/4 delas para um amigo.",
+    perg:"Quantas figurinhas ele deu?",
+    alts:[{t:"5 figurinhas",ok:true},{t:"4 figurinhas"},{t:"15 figurinhas"},{t:"10 figurinhas"}],
+    exp:"1/4 de 20 é 20 ÷ 4 = 5. Ele ficou com 15." },
+
+  { rot:"Garrafa de suco",
+    tit:"Depois do treino",
+    hist:"Uma garrafa estava cheia de suco. Bia bebeu 3/5 do suco durante a tarde.",
+    perg:"Que fração do suco ficou na garrafa?",
+    alts:[{f:[2,5],ok:true},{f:[3,5]},{f:[2,3]},{f:[5,3]}],
+    exp:"A garrafa inteira é 5/5. Tirando 3/5, sobram 2/5." },
+
+  { rot:"Leitura das amigas",
+    tit:"Clube do livro",
+    hist:"Ana e Bia estão lendo o mesmo livro. Ana já leu 2/3 do livro e Bia leu 2/5.",
+    perg:"Quem leu a maior parte do livro?",
+    alts:[{t:"Ana",ok:true},{t:"Bia"},{t:"As duas leram igual"},{t:"Não dá para saber"}],
+    exp:"As duas leram 2 partes, mas as partes de Ana são maiores: dividir em 3 dá pedaços maiores do que dividir em 5. Por isso 2/3 é maior que 2/5." },
+
+  { rot:"Barra de chocolate",
+    tit:"Na mochila",
+    hist:"Pedro comprou uma barra de chocolate com 12 quadradinhos iguais e comeu metade dela.",
+    perg:"Quantos quadradinhos ele comeu?",
+    alts:[{t:"6 quadradinhos",ok:true},{t:"2 quadradinhos"},{t:"4 quadradinhos"},{t:"12 quadradinhos"}],
+    exp:"Metade é 1/2: 12 ÷ 2 = 6 quadradinhos." },
+
+  { rot:"Corrida de 10 km",
+    tit:"Domingo de manhã",
+    hist:"A corrida do bairro tem 10 km. Vitor já correu 7/10 do percurso.",
+    perg:"Quantos quilômetros ainda faltam para ele terminar?",
+    alts:[{t:"3 km",ok:true},{t:"7 km"},{t:"10 km"},{t:"5 km"}],
+    exp:"7/10 de 10 km são 7 km. Faltam 10 − 7 = 3 km, que é 3/10 do percurso." },
+
+  { rot:"Fita da professora",
+    tit:"Enfeitando a sala",
+    hist:"A professora dividiu uma fita de 1 metro em 4 pedaços iguais e usou 3 pedaços para enfeitar o mural.",
+    perg:"Que fração da fita foi usada?",
+    alts:[{f:[3,4],ok:true},{f:[1,4]},{f:[4,3]},{f:[3,1]}],
+    exp:"A fita virou 4 partes iguais e 3 foram usadas: 3/4." },
+
+  { rot:"Caixa de ovos",
+    tit:"Na cozinha",
+    hist:"Uma caixa tem 30 ovos. Na hora de guardar, 1/6 dos ovos quebrou.",
+    perg:"Quantos ovos quebraram?",
+    alts:[{t:"5 ovos",ok:true},{t:"6 ovos"},{t:"25 ovos"},{t:"3 ovos"}],
+    exp:"1/6 de 30 é 30 ÷ 6 = 5 ovos. Sobraram 25 inteiros." },
+
+  { rot:"Jarra de limonada",
+    tit:"Dia quente",
+    hist:"A limonada da jarra foi dividida em 6 partes iguais. De manhã foram servidas 2 partes e à tarde, 3 partes.",
+    perg:"Que fração da limonada foi servida no dia todo?",
+    alts:[{f:[5,6],ok:true},{f:[5,12]},{f:[1,6]},{f:[6,5]}],
+    exp:"2/6 + 3/6 = 5/6. Só o numerador muda, porque as partes têm o mesmo tamanho." },
+
+  { rot:"Mesada da Clara",
+    tit:"No mercado",
+    hist:"Clara recebeu R$ 60 de mesada e gastou 1/3 desse dinheiro numa revista.",
+    perg:"Quantos reais sobraram para ela?",
+    alts:[{t:"R$ 40",ok:true},{t:"R$ 20"},{t:"R$ 30"},{t:"R$ 57"}],
+    exp:"1/3 de 60 é 60 ÷ 3 = 20 reais gastos. Sobraram 60 − 20 = 40 reais." },
+
+  { rot:"Laranja dividida",
+    tit:"No lanche",
+    hist:"Duas laranjas do mesmo tamanho foram descascadas. Pedro comeu 1/2 da laranja dele. Ana cortou a laranja dela em 4 partes iguais e comeu 2 partes.",
+    perg:"Quem comeu mais laranja?",
+    alts:[{t:"Os dois comeram a mesma quantidade",ok:true},{t:"Pedro"},{t:"Ana"},{t:"Não dá para comparar"}],
+    exp:"2/4 é o mesmo que 1/2: são frações equivalentes, mostram a mesma quantidade." },
+
+  { rot:"Um quarto de hora",
+    tit:"Esperando o ônibus",
+    hist:"Nina esperou o ônibus durante 1/4 de hora na parada.",
+    perg:"Quantos minutos ela esperou?",
+    alts:[{t:"15 minutos",ok:true},{t:"4 minutos"},{t:"25 minutos"},{t:"30 minutos"}],
+    exp:"Uma hora tem 60 minutos. 1/4 de 60 é 60 ÷ 4 = 15 minutos." },
+
+  { rot:"Turma na quadra",
+    tit:"Aula de Educação Física",
+    hist:"Na turma há 28 estudantes e 3/4 deles foram para a quadra.",
+    perg:"Quantos estudantes foram para a quadra?",
+    alts:[{t:"21 estudantes",ok:true},{t:"7 estudantes"},{t:"14 estudantes"},{t:"24 estudantes"}],
+    exp:"Primeiro 28 ÷ 4 = 7 (um quarto). Depois 7 × 3 = 21, porque são três quartos." },
+
+  { rot:"Copos da jarra",
+    tit:"Na festa",
+    hist:"Uma jarra enche exatamente 8 copos iguais. Na festa foram servidos 5 copos.",
+    perg:"Que fração da jarra foi servida?",
+    alts:[{f:[5,8],ok:true},{f:[3,8]},{f:[8,5]},{f:[5,3]}],
+    exp:"A jarra toda são 8 copos e 5 foram servidos: 5/8. Ficaram 3/8 na jarra." },
+
+  { rot:"Faltas do dia",
+    tit:"Chamada da manhã",
+    hist:"A turma tem 25 estudantes e 1/5 deles faltou por causa da chuva.",
+    perg:"Quantos estudantes estavam presentes?",
+    alts:[{t:"20 estudantes",ok:true},{t:"5 estudantes"},{t:"15 estudantes"},{t:"24 estudantes"}],
+    exp:"1/5 de 25 é 25 ÷ 5 = 5 faltosos. Presentes: 25 − 5 = 20." },
+
+  { rot:"Torta da padaria",
+    tit:"Fim de expediente",
+    hist:"Restavam 7/8 de uma torta na padaria. Durante a tarde foram vendidos 4/8 dela.",
+    perg:"Que fração da torta ficou na padaria?",
+    alts:[{f:[3,8],ok:true},{f:[4,8]},{f:[11,8]},{f:[3,16]}],
+    exp:"7/8 − 4/8 = 3/8. Tiramos os pedaços vendidos e o tamanho do pedaço não muda." },
+
+  { rot:"Saco de bolinhas",
+    tit:"No parque",
+    hist:"João e Pedro dividiram um saco de bolinhas de gude em 10 partes iguais. João ficou com 3/10 e Pedro com 4/10.",
+    perg:"Quem ficou com mais bolinhas?",
+    alts:[{t:"Pedro",ok:true},{t:"João"},{t:"Os dois ficaram iguais"},{t:"Não dá para saber"}],
+    exp:"As partes têm o mesmo tamanho (décimos), então basta comparar 3 e 4: 4/10 é maior que 3/10." },
+
+  { rot:"Barra da Camila",
+    tit:"Depois da aula",
+    hist:"Camila dividiu sua barra de cereal em 5 partes iguais. Comeu 2 partes no recreio e as 3 partes que faltavam na volta para casa.",
+    perg:"Que fração da barra ela comeu no dia?",
+    alts:[{t:"5/5, ou seja, a barra inteira",ok:true},{t:"5/10 da barra"},{t:"3/5 da barra"},{t:"2/5 da barra"}],
+    exp:"2/5 + 3/5 = 5/5. Quando o numerador fica igual ao denominador, temos um inteiro." }
+];
+
+const PONTOS_POR_ACERTO = 5;
+const LETRAS = ["A","B","C","D"];
+
+/* ============ utilitários ============ */
+const $ = id => document.getElementById(id);
+function embaralhar(lista){
+  const c = lista.slice();
+  for(let i=c.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [c[i],c[j]] = [c[j],c[i]];
+  }
+  return c;
+}
+function fracHTML(n,d){
+  return '<span class="frac"><span class="n">'+n+'</span><span class="d">'+d+'</span></span>';
+}
+function rotuloAlt(alt){ return alt.f ? (alt.f[0]+"/"+alt.f[1]) : alt.t; }
+
+/* ============ estado ============ */
+let questoes=[], atual=0, pontos=0, acertos=0, escolhida=null, respondida=false, registro=[];
+
+/* ============ início ============ */
+$("btComecar").addEventListener("click", () => {
+  const nome = $("nome").value.trim();
+  if(nome === ""){ $("aviso").classList.remove("oculto"); $("nome").focus(); return; }
+  $("aviso").classList.add("oculto");
+  questoes = embaralhar(BANCO);
+  atual=0; pontos=0; acertos=0; registro=[];
+  $("capa").classList.add("oculto");
+  $("prova").classList.remove("oculto");
+  mostrarQuestao();
+});
+
+/* ============ história atual ============ */
+function mostrarQuestao(){
+  const q = questoes[atual];
+  escolhida = null; respondida = false;
+
+  $("andamento").textContent = "História " + (atual+1) + " de " + questoes.length;
+  $("placar").textContent = pontos;
+  $("tituloHist").textContent = q.tit;
+  $("historia").textContent = q.hist;
+  $("pergunta").textContent = q.perg;
+
+  const caixa = $("alts");
+  caixa.innerHTML = "";
+  embaralhar(q.alts.map((a,i)=>({...a, id:i}))).forEach((alt, pos) => {
+    const bt = document.createElement("button");
+    bt.className = "alt";
+    bt.dataset.id = alt.id;
+    const miolo = alt.f ? fracHTML(alt.f[0], alt.f[1]) : '<span>'+alt.t+'</span>';
+    bt.innerHTML = '<span class="letra">'+LETRAS[pos]+'</span>' + miolo;
+    bt.addEventListener("click", () => escolher(bt, alt));
+    caixa.appendChild(bt);
+  });
+
+  $("retorno").className = "retorno oculto";
+  $("btConfirmar").classList.remove("oculto");
+  $("btConfirmar").disabled = true;
+  $("btProxima").classList.add("oculto");
+  window.scrollTo({top:0, behavior:"instant"});
+}
+
+function escolher(botao, alt){
+  if(respondida) return;
+  document.querySelectorAll(".alt").forEach(b => b.classList.remove("escolhida"));
+  botao.classList.add("escolhida");
+  escolhida = alt;
+  $("btConfirmar").disabled = false;
+}
+
+/* ============ confirmação ============ */
+$("btConfirmar").addEventListener("click", () => {
+  if(escolhida === null || respondida) return;
+  respondida = true;
+
+  const q = questoes[atual];
+  const certo = !!escolhida.ok;
+  if(certo){ pontos += PONTOS_POR_ACERTO; acertos++; }
+
+  document.querySelectorAll(".alt").forEach(b => {
+    const id = Number(b.dataset.id);
+    b.disabled = true;
+    b.classList.remove("escolhida");
+    if(q.alts[id].ok) b.classList.add("certa");
+    else if(id === escolhida.id) b.classList.add("errada");
+  });
+
+  const r = $("retorno");
+  r.className = "retorno " + (certo ? "ok" : "nao");
+  r.innerHTML = (certo
+      ? "<strong>Certo. +" + PONTOS_POR_ACERTO + " pontos.</strong>"
+      : "<strong>Não é essa. 0 ponto nesta história.</strong>") + q.exp;
+
+  const correta = q.alts.find(a => a.ok);
+  registro.push({rot:q.rot, resposta:rotuloAlt(escolhida), certa:rotuloAlt(correta), certo:certo});
+
+  $("placar").textContent = pontos;
+  $("btConfirmar").classList.add("oculto");
+  $("btProxima").classList.remove("oculto");
+  $("btProxima").textContent = (atual === questoes.length-1) ? "Ver o boletim" : "Próxima história";
+  $("btProxima").focus();
+});
+
+/* ============ avanço ============ */
+$("btProxima").addEventListener("click", () => {
+  atual++;
+  if(atual < questoes.length) mostrarQuestao();
+  else encerrar();
+});
+
+/* ============ boletim ============ */
+function encerrar(){
+  $("prova").classList.add("oculto");
+  $("boletim").classList.remove("oculto");
+
+  const agora = new Date();
+  $("bNome").textContent = $("nome").value.trim();
+  $("bData").textContent = agora.toLocaleDateString("pt-BR") + " às " + agora.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  $("bAcertos").textContent = acertos + " de " + questoes.length;
+  $("bErros").textContent = (questoes.length - acertos);
+  $("bNota").textContent = pontos;
+
+  let conceito;
+  if(pontos === 100) conceito = "Quiz perfeito";
+  else if(pontos >= 85) conceito = "Interpreta e resolve com segurança";
+  else if(pontos >= 70) conceito = "Bom, com tropeços na fração de quantidade";
+  else if(pontos >= 50) conceito = "Precisa reler o que a pergunta pede";
+  else conceito = "Retomar fração de um todo com material concreto";
+  $("bConceito").textContent = conceito;
+
+  const corpo = $("tabela").querySelector("tbody");
+  corpo.innerHTML = "";
+  registro.forEach((item, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = "<td>"+(i+1)+"</td>"+
+      "<td>"+item.rot+"</td>"+
+      "<td class='"+(item.certo?"v":"x")+"'>"+item.resposta+"</td>"+
+      "<td>"+item.certa+"</td>"+
+      "<td>"+(item.certo?PONTOS_POR_ACERTO:0)+"</td>";
+    corpo.appendChild(tr);
+  });
+
+  $("slider").value = 0;
+}
+
+/* ============ trava para a próxima rodada ============ */
+$("slider").addEventListener("change", e => {
+  if(Number(e.target.value) >= 100){
+    $("boletim").classList.add("oculto");
+    $("capa").classList.remove("oculto");
+    $("nome").value = "";
+    $("nome").focus();
+  } else {
+    e.target.value = 0;
+  }
+});
+</script>
+</body>
+</html>
