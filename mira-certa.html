@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mira Certa — tiro ao alvo com contas · 4º e 5º ano</title>
+<style>
+  :root{
+    --papel:#F7F9FB;
+    --linha:#D6E4F0;
+    --tinta:#153A5B;
+    --grafite:#5A6B7A;
+    --caneta:#1F4FD8;
+    --marca:#FFE066;
+    --certo:#1E7A4C;
+    --errado:#C62F2A;
+    --borda:#B9CFE2;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Trebuchet MS","Segoe UI",Verdana,sans-serif;
+    color:var(--tinta);
+    background-color:var(--papel);
+    background-image:
+      linear-gradient(var(--linha) 1px, transparent 1px),
+      linear-gradient(90deg, var(--linha) 1px, transparent 1px);
+    background-size:26px 26px;
+    min-height:100vh;
+    display:flex;align-items:flex-start;justify-content:center;
+    padding:26px 14px 60px;
+    touch-action:manipulation;
+  }
+  .folha{
+    width:100%;max-width:700px;background:rgba(255,255,255,.94);
+    border:1px solid var(--borda);border-left:6px solid var(--caneta);
+    box-shadow:0 2px 0 rgba(21,58,91,.10);padding:26px 24px 30px;
+  }
+  h1{font-size:29px;line-height:1.15;margin:0 0 6px;letter-spacing:-.4px;}
+  .sub{color:var(--grafite);font-size:15px;margin:0 0 22px;}
+  p{line-height:1.55;}
+  label{display:block;font-size:15px;margin-bottom:7px;}
+  input[type=text]{width:100%;font:inherit;font-size:18px;padding:11px 12px;
+    border:1px solid var(--borda);background:#fff;color:var(--tinta);}
+  input:focus,button:focus-visible{outline:3px solid var(--marca);outline-offset:2px;}
+  button{font:inherit;font-size:17px;padding:13px 22px;border:none;background:var(--caneta);color:#fff;cursor:pointer;}
+  button:disabled{background:#AFC0D0;cursor:not-allowed;}
+  button.secundario{background:transparent;color:var(--caneta);border:1px solid var(--caneta);}
+
+  .grupo{margin:20px 0;}
+  .opcoes{display:flex;gap:10px;flex-wrap:wrap;}
+  .opcao{font:inherit;font-size:16px;padding:12px 16px;background:#fff;
+    border:2px solid var(--borda);color:var(--tinta);cursor:pointer;text-align:center;line-height:1.3;}
+  .opcao small{display:block;font-size:13px;color:var(--grafite);}
+  .opcao.ativa{border-color:var(--caneta);background:#EEF3FF;}
+  .opcao.ativa small{color:var(--caneta);}
+
+  .regras{border-top:1px solid var(--linha);border-bottom:1px solid var(--linha);
+    padding:14px 0;margin:22px 0;font-size:15px;color:var(--grafite);}
+  .regras span{display:block;margin:3px 0;}
+
+  /* --- topo do jogo --- */
+  .barraJogo{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;
+    font-size:14px;color:var(--grafite);border-bottom:1px solid var(--linha);padding-bottom:8px;margin-bottom:14px;}
+  .pontos{font-size:20px;color:var(--tinta);}
+  .pontos b{background:var(--marca);padding:1px 7px;}
+
+  .conta{
+    text-align:center;font-family:"Courier New",monospace;font-weight:bold;
+    font-size:clamp(28px,7vw,42px);letter-spacing:2px;margin:0 0 6px;
+  }
+  .linhaStatus{display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:14px;color:var(--grafite);margin-bottom:8px;}
+  .balas{letter-spacing:3px;font-size:20px;color:var(--tinta);}
+  .balas .gasta{color:#D3DCE6;}
+  .tempo{flex:1;height:10px;background:#EDF2F7;border:1px solid var(--borda);}
+  .tempo i{display:block;height:100%;background:var(--caneta);width:100%;}
+
+  #tela{
+    background:#FBFDFF;border:3px solid var(--tinta);display:block;width:100%;height:auto;
+    cursor:crosshair;touch-action:none;
+  }
+
+  .folego{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:14px;color:var(--grafite);}
+  .folego .medidor{flex:1;height:12px;background:#EDF2F7;border:1px solid var(--borda);}
+  .folego .medidor i{display:block;height:100%;background:var(--certo);width:100%;}
+
+  .controles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;}
+  .controles button{font-size:17px;padding:16px 0;}
+  #btFirmar{background:transparent;color:var(--grafite);border:2px solid var(--borda);}
+  #btFirmar.ligado{border-color:var(--certo);color:var(--certo);background:#E9F5EF;}
+
+  .recado{text-align:center;font-size:15px;color:var(--grafite);min-height:24px;margin:12px 0 0;}
+  .recado.bom{color:var(--certo);}
+  .recado.erro{color:var(--errado);}
+  .acoes{margin-top:18px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+
+  .boletim{border:2px solid var(--tinta);padding:20px;margin:20px 0;}
+  .boletim .campo{display:flex;justify-content:space-between;gap:12px;
+    border-bottom:1px dashed var(--borda);padding:9px 0;font-size:16px;}
+  .boletim .campo:last-child{border-bottom:none;}
+  .boletim .campo span:last-child{font-weight:bold;text-align:right;}
+  .nota{font-size:46px;line-height:1;}
+  .conceito{font-size:16px;color:var(--grafite);margin-top:4px;}
+
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px;}
+  th,td{border:1px solid var(--borda);padding:6px 8px;text-align:left;}
+  th{background:#EEF3FF;font-weight:normal;color:var(--grafite);}
+  td.conta-col{font-family:"Courier New",monospace;}
+  td.v{color:var(--certo);}
+  td.x{color:var(--errado);}
+
+  .trava{margin-top:24px;border:1px solid var(--borda);background:#fff;padding:12px 14px;}
+  .trava p{margin:0 0 8px;font-size:14px;color:var(--grafite);}
+  input[type=range]{width:100%;}
+
+  .oculto{display:none;}
+  @media (max-width:470px){ h1{font-size:24px;} }
+  @media print{
+    body{background:#fff;padding:0;}
+    .folha{border:none;box-shadow:none;}
+    .trava,.acoes,.controles{display:none;}
+  }
+</style>
+</head>
+<body>
+<main class="folha">
+
+  <!-- ============ CAPA ============ -->
+  <section id="capa">
+    <h1>Mira Certa</h1>
+    <p class="sub">Leia a conta, calcule de cabeça e acerte o alvo que carrega a resposta certa.</p>
+
+    <label for="nome">Nome do estudante</label>
+    <input type="text" id="nome" autocomplete="off" placeholder="Escreva seu nome completo">
+
+    <div class="grupo">
+      <label>Contas da partida</label>
+      <div class="opcoes" id="opcConteudo">
+        <button class="opcao ativa" data-conteudo="tudo">Todas<small>× ÷ + −</small></button>
+        <button class="opcao" data-conteudo="mult">Multiplicação<small>tabuada</small></button>
+        <button class="opcao" data-conteudo="div">Divisão<small>2 algarismos ÷ 1</small></button>
+        <button class="opcao" data-conteudo="somasub">Soma e subtração<small>+ e −</small></button>
+      </div>
+    </div>
+
+    <div class="grupo">
+      <label>Dificuldade do tiro</label>
+      <div class="opcoes" id="opcNivel">
+        <button class="opcao ativa" data-nivel="treino">Treino<small>alvos lentos, 30 s</small></button>
+        <button class="opcao" data-nivel="normal">Normal<small>alvos médios, 22 s</small></button>
+        <button class="opcao" data-nivel="perito">Perito<small>alvos rápidos, 16 s</small></button>
+      </div>
+    </div>
+
+    <div class="regras">
+      <span>São 20 rodadas. Cada rodada vale 5 pontos, então a partida vale 100.</span>
+      <span>Você tem 3 balas por rodada. Cada tiro errado tira 2 pontos daquela rodada.</span>
+      <span>A mira balança sozinha. Segure "Firmar o pulso" para estabilizar — mas o fôlego acaba.</span>
+      <span>Se acabar a munição ou o tempo, a rodada vale zero e a resposta certa aparece.</span>
+      <span>No computador: mova o mouse para mirar, clique para atirar, barra de espaço firma o pulso.</span>
+    </div>
+
+    <button id="btComecar">Começar a partida</button>
+    <p id="aviso" class="sub oculto" style="margin-top:12px;color:var(--errado)">Escreva seu nome antes de começar.</p>
+  </section>
+
+  <!-- ============ JOGO ============ -->
+  <section id="jogo" class="oculto">
+    <div class="barraJogo">
+      <span id="andamento">Rodada 1 de 20</span>
+      <span><label style="display:inline;font-size:13px;"><input type="checkbox" id="som"> som</label></span>
+      <span class="pontos">Pontos: <b id="placar">0</b></span>
+    </div>
+
+    <p class="conta" id="conta">7 × 8 = ?</p>
+    <div class="linhaStatus">
+      <span class="balas" id="balas">●●●</span>
+      <span class="tempo"><i id="tempoBarra"></i></span>
+    </div>
+
+    <canvas id="tela" width="640" height="420"></canvas>
+
+    <div class="folego">
+      <span>Fôlego</span>
+      <span class="medidor"><i id="folegoBarra"></i></span>
+    </div>
+
+    <div class="controles">
+      <button id="btFirmar">Firmar o pulso</button>
+      <button id="btAtirar">Atirar</button>
+    </div>
+
+    <p class="recado" id="recado">Arraste o dedo na tela para mirar e toque em Atirar.</p>
+
+    <div class="acoes">
+      <button class="secundario" id="btEncerrar">Encerrar e ver o boletim</button>
+    </div>
+  </section>
+
+  <!-- ============ BOLETIM ============ -->
+  <section id="boletim" class="oculto">
+    <h1>Boletim da partida</h1>
+    <p class="sub">Professor: registre este resultado antes de liberar o próximo estudante.</p>
+
+    <div class="boletim">
+      <div class="campo"><span>Estudante</span><span id="bNome">—</span></div>
+      <div class="campo"><span>Data e hora</span><span id="bData">—</span></div>
+      <div class="campo"><span>Contas / dificuldade</span><span id="bModo">—</span></div>
+      <div class="campo"><span>Rodadas jogadas</span><span id="bRodadas">—</span></div>
+      <div class="campo"><span>Acertos</span><span id="bAcertos">—</span></div>
+      <div class="campo"><span>Tiros dados</span><span id="bTiros">—</span></div>
+      <div class="campo"><span>Pontaria</span><span id="bPontaria">—</span></div>
+      <div class="campo">
+        <span>Pontuação final</span>
+        <span><span class="nota" id="bNota">0</span> / 100<br><span class="conceito" id="bConceito"></span></span>
+      </div>
+    </div>
+
+    <h2 style="font-size:19px;margin:26px 0 0">Rodada por rodada</h2>
+    <table id="tabela">
+      <thead><tr><th>#</th><th>Conta</th><th>Certo</th><th>O que aconteceu</th><th>Pontos</th></tr></thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="acoes"><button class="secundario" onclick="window.print()">Imprimir boletim</button></div>
+
+    <div class="trava">
+      <p>Arraste até o fim para liberar a partida do próximo estudante.</p>
+      <input type="range" id="slider" min="0" max="100" value="0" step="1">
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* ============ configurações ============ */
+const L = 640, A = 420, RAIO = 46, RODADAS = 20;
+const NIVEIS = {
+  treino:{vel:0.45, tempo:30, balanco:9,  rotulo:"treino"},
+  normal:{vel:0.95, tempo:22, balanco:14, rotulo:"normal"},
+  perito:{vel:1.6,  tempo:16, balanco:20, rotulo:"perito"}
+};
+const VALOR_RODADA = 5, CUSTO_TIRO_ERRADO = 2, BALAS = 3;
+
+/* ============ utilitários ============ */
+const $ = id => document.getElementById(id);
+const rnd = (a,b) => a + Math.floor(Math.random()*(b-a+1));
+function embaralhar(lista){
+  const c = lista.slice();
+  for(let i=c.length-1;i>0;i--){ const j = Math.floor(Math.random()*(i+1)); [c[i],c[j]]=[c[j],c[i]]; }
+  return c;
+}
+
+/* ============ gerador de contas ============ */
+function novaConta(conteudo){
+  const tipos = conteudo === "tudo" ? ["mult","div","soma","sub"]
+              : conteudo === "mult" ? ["mult"]
+              : conteudo === "div"  ? ["div"]
+              : ["soma","sub"];
+  const tipo = tipos[rnd(0,tipos.length-1)];
+  let txt, r, cands;
+
+  if(tipo === "mult"){
+    const a = rnd(2,9), b = rnd(2,9);
+    txt = a + " × " + b + " = ?";  r = a*b;
+    cands = [r+a, r-a, r+b, r-b, a+b, r+10, r-10];
+
+  } else if(tipo === "div"){
+    const d = rnd(2,9);
+    let q = rnd(2, Math.floor(99/d));
+    if(d*q < 10) q = Math.ceil(10/d);
+    const dividendo = d*q;
+    txt = dividendo + " ÷ " + d + " = ?";  r = q;
+    cands = [r+1, r-1, r+2, r-2, d, r+10, dividendo-d];
+
+  } else if(tipo === "soma"){
+    const a = rnd(15,79), b = rnd(15,79);
+    txt = a + " + " + b + " = ?";  r = a+b;
+    cands = [r+10, r-10, r+1, r-1, r-9, r+9, Math.abs(a-b)];
+
+  } else {
+    const a = rnd(41,99), b = rnd(12, a-11);
+    txt = a + " − " + b + " = ?";  r = a-b;
+    cands = [r+10, r-10, r+1, r-1, a+b, r-9, r+9];
+  }
+
+  const erradas = [];
+  for(const v of embaralhar(cands)){
+    if(v > 0 && v !== r && erradas.indexOf(v) < 0) erradas.push(v);
+    if(erradas.length === 3) break;
+  }
+  let extra = r + 3;
+  while(erradas.length < 3){ if(extra !== r && erradas.indexOf(extra) < 0) erradas.push(extra); extra++; }
+  return {txt, r, erradas, tipo};
+}
+
+/* ============ estado ============ */
+let conteudo = "tudo", nivel = "treino";
+let alvos = [], rodada = 0, pontos = 0, acertos = 0, tiros = 0, tirosCertos = 0;
+let balas = BALAS, valorRodada = VALOR_RODADA, registro = [];
+let contaAtual = null, restante = 0, folego = 100, firmando = false;
+let mira = {x:L/2, y:A/2}, tremor = 0, marcas = [], faisca = null;
+let rodando = false, pausa = false, terminou = false, anim = null, ultimo = 0, audio = null;
+
+const cv = $("tela"), ctx = cv.getContext("2d");
+
+/* ============ som simples ============ */
+function bip(freq, dur, tipo){
+  if(!$("som").checked) return;
+  try{
+    audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+    const o = audio.createOscillator(), g = audio.createGain();
+    o.type = tipo || "square"; o.frequency.value = freq;
+    g.gain.value = 0.05;
+    o.connect(g); g.connect(audio.destination);
+    o.start(); o.stop(audio.currentTime + dur);
+  }catch(e){}
+}
+
+/* ============ capa ============ */
+$("opcConteudo").addEventListener("click", e => {
+  const bt = e.target.closest(".opcao"); if(!bt) return;
+  $("opcConteudo").querySelectorAll(".opcao").forEach(b => b.classList.remove("ativa"));
+  bt.classList.add("ativa"); conteudo = bt.dataset.conteudo;
+});
+$("opcNivel").addEventListener("click", e => {
+  const bt = e.target.closest(".opcao"); if(!bt) return;
+  $("opcNivel").querySelectorAll(".opcao").forEach(b => b.classList.remove("ativa"));
+  bt.classList.add("ativa"); nivel = bt.dataset.nivel;
+});
+
+$("btComecar").addEventListener("click", () => {
+  if($("nome").value.trim() === ""){ $("aviso").classList.remove("oculto"); $("nome").focus(); return; }
+  $("aviso").classList.add("oculto");
+  $("capa").classList.add("oculto");
+  $("jogo").classList.remove("oculto");
+  iniciarPartida();
+});
+
+function iniciarPartida(){
+  rodada = 0; pontos = 0; acertos = 0; tiros = 0; tirosCertos = 0; registro = [];
+  terminou = false;
+  $("placar").textContent = 0;
+  novaRodada();
+  ultimo = performance.now();
+  cancelAnimationFrame(anim);
+  anim = requestAnimationFrame(laco);
+}
+
+/* ============ rodada ============ */
+function novaRodada(){
+  if(rodada >= RODADAS){ encerrar("Partida completa"); return; }
+  rodada++;
+  contaAtual = novaConta(conteudo);
+  balas = BALAS;
+  valorRodada = VALOR_RODADA;
+  restante = NIVEIS[nivel].tempo;
+  folego = 100; firmando = false;
+  marcas = []; faisca = null;
+  pausa = false; rodando = true;
+
+  const valores = embaralhar([contaAtual.r].concat(contaAtual.erradas));
+  const vagas = embaralhar([
+    {x:L*0.22, y:A*0.28}, {x:L*0.72, y:A*0.26},
+    {x:L*0.26, y:A*0.72}, {x:L*0.74, y:A*0.70}
+  ]);
+  const v = NIVEIS[nivel].vel;
+  alvos = valores.map((valor, i) => ({
+    valor: valor,
+    certo: valor === contaAtual.r,
+    x: vagas[i].x, y: vagas[i].y,
+    vx: (Math.random() < .5 ? -1 : 1) * (0.6 + Math.random()*0.9) * v,
+    vy: (Math.random() < .5 ? -1 : 1) * (0.5 + Math.random()*0.8) * v,
+    vivo: true, marca: 0
+  }));
+
+  $("andamento").textContent = "Rodada " + rodada + " de " + RODADAS;
+  $("conta").textContent = contaAtual.txt;
+  desenharBalas();
+  $("btFirmar").classList.remove("ligado");
+  dizer("Calcule de cabeça e mire no alvo com a resposta certa.", "");
+}
+
+function desenharBalas(){
+  let s = "";
+  for(let i=0;i<BALAS;i++) s += i < balas ? "●" : '<span class="gasta">●</span>';
+  $("balas").innerHTML = s;
+}
+function dizer(txt, tipo){
+  const r = $("recado"); r.textContent = txt; r.className = "recado" + (tipo ? " "+tipo : "");
+}
+
+/* ============ mira ============ */
+function posNaTela(e){
+  const cx = cv.getBoundingClientRect();
+  return {
+    x: Math.max(0, Math.min(L, (e.clientX - cx.left) * L / cx.width)),
+    y: Math.max(0, Math.min(A, (e.clientY - cx.top) * A / cx.height))
+  };
+}
+cv.addEventListener("pointermove", e => {
+  if(!rodando || pausa) return;
+  const p = posNaTela(e);
+  mira.x = p.x; mira.y = p.y;
+});
+cv.addEventListener("pointerdown", e => {
+  if(!rodando || pausa) return;
+  const p = posNaTela(e);
+  mira.x = p.x; mira.y = p.y;
+  if(e.pointerType === "mouse") atirar();
+});
+
+function miraReal(){
+  const amp = firmando ? 2 : NIVEIS[nivel].balanco;
+  return {
+    x: mira.x + Math.sin(tremor*1.7) * amp + Math.sin(tremor*0.53) * amp*0.5,
+    y: mira.y + Math.cos(tremor*1.3) * amp + Math.cos(tremor*0.41) * amp*0.5
+  };
+}
+
+/* ============ tiro ============ */
+function atirar(){
+  if(!rodando || pausa || balas <= 0) return;
+  const p = miraReal();
+  balas--; tiros++;
+  desenharBalas();
+  faisca = {x:p.x, y:p.y, t:0};
+  bip(220, 0.05, "square");
+
+  let atingido = null;
+  for(const a of alvos){
+    if(!a.vivo) continue;
+    if(Math.hypot(a.x - p.x, a.y - p.y) <= RAIO){ atingido = a; break; }
+  }
+
+  if(!atingido){
+    marcas.push({x:p.x, y:p.y});
+    dizer("Passou longe. Não gastou ponto, mas gastou bala.", "erro");
+    if(balas === 0) fimDaRodada(false, "Acabou a munição");
+    return;
+  }
+
+  if(atingido.certo){
+    atingido.marca = 1; atingido.vivo = false;
+    tirosCertos++;
+    const ganhos = Math.max(0, valorRodada);
+    pontos += ganhos; acertos++;
+    $("placar").textContent = pontos;
+    bip(880, 0.12, "triangle");
+    dizer("Na mosca. " + contaAtual.txt.replace(" = ?", "") + " = " + contaAtual.r + ". +" + ganhos + " pontos.", "bom");
+    registrar("Acertou o alvo certo", ganhos);
+    pausa = true;
+    setTimeout(novaRodada, 1100);
+  } else {
+    atingido.marca = -1; atingido.vivo = false;
+    valorRodada = Math.max(0, valorRodada - CUSTO_TIRO_ERRADO);
+    bip(150, 0.15, "sawtooth");
+    dizer("Esse alvo trazia " + atingido.valor + ", que não é o resultado. −" + CUSTO_TIRO_ERRADO + " pontos na rodada.", "erro");
+    if(balas === 0) fimDaRodada(false, "Acabou a munição");
+  }
+}
+
+function fimDaRodada(ganhou, motivo){
+  if(pausa) return;
+  pausa = true;
+  dizer(motivo + ". A resposta certa era " + contaAtual.r + ".", "erro");
+  for(const a of alvos) if(a.certo) a.marca = 2;
+  registrar(motivo, 0);
+  setTimeout(novaRodada, 1600);
+}
+
+function registrar(oque, ganhos){
+  registro.push({conta: contaAtual.txt.replace(" = ?",""), certa: contaAtual.r, oque: oque, pontos: ganhos});
+}
+
+$("btAtirar").addEventListener("click", atirar);
+
+/* firmar o pulso */
+function firmar(v){
+  if(v && folego <= 0) return;
+  firmando = v;
+  $("btFirmar").classList.toggle("ligado", v);
+}
+["pointerdown","pointerup","pointerleave","pointercancel"].forEach(ev => {
+  $("btFirmar").addEventListener(ev, e => { e.preventDefault(); firmar(ev === "pointerdown"); });
+});
+document.addEventListener("keydown", e => {
+  if($("jogo").classList.contains("oculto") || terminou) return;
+  if(e.key === " "){ e.preventDefault(); firmar(true); }
+  if(e.key === "Enter"){ e.preventDefault(); atirar(); }
+});
+document.addEventListener("keyup", e => { if(e.key === " ") firmar(false); });
+
+/* ============ laço ============ */
+function laco(agora){
+  if(terminou) return;
+  const dt = Math.min(50, agora - ultimo);
+  ultimo = agora;
+  tremor += dt/220;
+
+  if(rodando && !pausa){
+    restante -= dt/1000;
+    $("tempoBarra").style.width = Math.max(0, restante / NIVEIS[nivel].tempo * 100) + "%";
+    if(restante <= 0) fimDaRodada(false, "Acabou o tempo");
+
+    if(firmando){
+      folego = Math.max(0, folego - dt/28);
+      if(folego === 0) firmar(false);
+    } else {
+      folego = Math.min(100, folego + dt/55);
+    }
+    $("folegoBarra").style.width = folego + "%";
+
+    for(const a of alvos){
+      if(!a.vivo) continue;
+      a.x += a.vx * dt/16; a.y += a.vy * dt/16;
+      if(a.x < RAIO){ a.x = RAIO; a.vx *= -1; }
+      if(a.x > L-RAIO){ a.x = L-RAIO; a.vx *= -1; }
+      if(a.y < RAIO){ a.y = RAIO; a.vy *= -1; }
+      if(a.y > A-RAIO){ a.y = A-RAIO; a.vy *= -1; }
+    }
+  }
+  if(faisca){ faisca.t += dt; if(faisca.t > 180) faisca = null; }
+
+  desenhar();
+  anim = requestAnimationFrame(laco);
+}
+
+/* ============ desenho ============ */
+function desenhar(){
+  ctx.clearRect(0,0,L,A);
+
+  /* fundo com grade leve */
+  ctx.strokeStyle = "#EAF1F8"; ctx.lineWidth = 1;
+  for(let x=40;x<L;x+=40){ ctx.beginPath(); ctx.moveTo(x+.5,0); ctx.lineTo(x+.5,A); ctx.stroke(); }
+  for(let y=40;y<A;y+=40){ ctx.beginPath(); ctx.moveTo(0,y+.5); ctx.lineTo(L,y+.5); ctx.stroke(); }
+
+  /* buracos de tiro perdido */
+  ctx.fillStyle = "rgba(21,58,91,.25)";
+  for(const m of marcas){ ctx.beginPath(); ctx.arc(m.x, m.y, 4, 0, 7); ctx.fill(); }
+
+  /* alvos */
+  for(const a of alvos) desenharAlvo(a);
+
+  /* vinheta da luneta */
+  const p = miraReal();
+  const g = ctx.createRadialGradient(p.x, p.y, 90, p.x, p.y, 330);
+  g.addColorStop(0, "rgba(21,58,91,0)");
+  g.addColorStop(1, "rgba(21,58,91,.18)");
+  ctx.fillStyle = g; ctx.fillRect(0,0,L,A);
+
+  desenharMira(p);
+
+  if(faisca){
+    const t = 1 - faisca.t/180;
+    ctx.strokeStyle = "rgba(226,103,58," + t + ")";
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(faisca.x, faisca.y, 6 + (1-t)*22, 0, 7); ctx.stroke();
+  }
+}
+
+function desenharAlvo(a){
+  if(!a.vivo && a.marca === 0) return;
+  const cores = a.marca === 1 ? ["#1E7A4C","#E9F5EF"]
+              : a.marca === -1 ? ["#C62F2A","#FBEDEC"]
+              : a.marca === 2 ? ["#1E7A4C","#FFF7D6"]
+              : ["#153A5B","#FFFFFF"];
+
+  ctx.save();
+  ctx.translate(a.x, a.y);
+  /* anéis do alvo */
+  ctx.fillStyle = cores[1];
+  ctx.beginPath(); ctx.arc(0,0,RAIO,0,7); ctx.fill();
+  ctx.strokeStyle = cores[0]; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(0,0,RAIO,0,7); ctx.stroke();
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(0,0,RAIO-11,0,7); ctx.stroke();
+  ctx.beginPath(); ctx.arc(0,0,RAIO-22,0,7); ctx.stroke();
+
+  ctx.fillStyle = cores[0];
+  ctx.font = "bold 25px 'Courier New', monospace";
+  ctx.textAlign = "center"; ctx.textBaseline = "middle";
+  ctx.fillText(String(a.valor), 0, 1);
+
+  if(a.marca === 2){
+    ctx.fillStyle = "#1E7A4C";
+    ctx.font = "bold 13px Trebuchet MS, sans-serif";
+    ctx.fillText("era este", 0, RAIO + 14);
+  }
+  ctx.restore();
+}
+
+function desenharMira(p){
+  ctx.save();
+  ctx.strokeStyle = firmando ? "#1E7A4C" : "#C62F2A";
+  ctx.lineWidth = 1.6;
+  ctx.beginPath(); ctx.arc(p.x, p.y, 26, 0, 7); ctx.stroke();
+  ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, 7); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(p.x-44, p.y); ctx.lineTo(p.x-9, p.y);
+  ctx.moveTo(p.x+9, p.y);  ctx.lineTo(p.x+44, p.y);
+  ctx.moveTo(p.x, p.y-44); ctx.lineTo(p.x, p.y-9);
+  ctx.moveTo(p.x, p.y+9);  ctx.lineTo(p.x, p.y+44);
+  ctx.stroke();
+  ctx.lineWidth = 1;
+  for(let k=-2;k<=2;k++){
+    if(k === 0) continue;
+    ctx.beginPath(); ctx.moveTo(p.x + k*12, p.y+34); ctx.lineTo(p.x + k*12, p.y+40); ctx.stroke();
+  }
+  ctx.restore();
+}
+
+/* ============ fim ============ */
+$("btEncerrar").addEventListener("click", () => encerrar("Encerrado antes do fim"));
+
+function encerrar(situacao){
+  if(terminou) return;
+  terminou = true; rodando = false;
+  cancelAnimationFrame(anim);
+  $("jogo").classList.add("oculto");
+  $("boletim").classList.remove("oculto");
+
+  const agora = new Date();
+  $("bNome").textContent = $("nome").value.trim();
+  $("bData").textContent = agora.toLocaleDateString("pt-BR") + " às " + agora.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  const rotConteudo = conteudo === "tudo" ? "todas as operações"
+                    : conteudo === "mult" ? "multiplicação"
+                    : conteudo === "div" ? "divisão" : "soma e subtração";
+  $("bModo").textContent = rotConteudo + " · " + NIVEIS[nivel].rotulo;
+  $("bRodadas").textContent = registro.length + " de " + RODADAS;
+  $("bAcertos").textContent = acertos;
+  $("bTiros").textContent = tiros;
+  $("bPontaria").textContent = tiros > 0 ? Math.round(tirosCertos/tiros*100) + "%" : "—";
+  $("bNota").textContent = pontos;
+
+  let conceito;
+  if(pontos >= 90) conceito = "Calcula rápido e tem pulso firme";
+  else if(pontos >= 70) conceito = "Boas contas, erra por pressa no tiro";
+  else if(pontos >= 50) conceito = "Acerta a conta, precisa firmar a mira";
+  else if(acertos > 0) conceito = "Retomar as contas antes de aumentar a dificuldade";
+  else conceito = "Começar pelo modo treino";
+  $("bConceito").textContent = conceito;
+
+  const corpo = $("tabela").querySelector("tbody");
+  corpo.innerHTML = "";
+  registro.forEach((item, i) => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = "<td>"+(i+1)+"</td>"+
+      "<td class='conta-col'>"+item.conta+"</td>"+
+      "<td>"+item.certa+"</td>"+
+      "<td class='"+(item.pontos>0?"v":"x")+"'>"+item.oque+"</td>"+
+      "<td>"+item.pontos+"</td>";
+    corpo.appendChild(tr);
+  });
+
+  $("slider").value = 0;
+}
+
+/* ============ trava para a próxima partida ============ */
+$("slider").addEventListener("change", e => {
+  if(Number(e.target.value) >= 100){
+    $("boletim").classList.add("oculto");
+    $("capa").classList.remove("oculto");
+    $("nome").value = "";
+    $("nome").focus();
+  } else {
+    e.target.value = 0;
+  }
+});
+</script>
+</body>
+</html>
