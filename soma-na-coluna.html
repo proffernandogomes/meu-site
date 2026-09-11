@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Soma na Coluna — salve o Seis-Sete da piscina</title>
+<style>
+  :root{
+    --papel:#F7F9FB;
+    --linha:#D6E4F0;
+    --tinta:#153A5B;
+    --grafite:#5A6B7A;
+    --caneta:#1F4FD8;
+    --marca:#FFE066;
+    --certo:#1E7A4C;
+    --errado:#C62F2A;
+    --borda:#B9CFE2;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Trebuchet MS","Segoe UI",Verdana,sans-serif;
+    color:var(--tinta);
+    background-color:var(--papel);
+    background-image:
+      linear-gradient(var(--linha) 1px, transparent 1px),
+      linear-gradient(90deg, var(--linha) 1px, transparent 1px);
+    background-size:26px 26px;
+    min-height:100vh;
+    display:flex;align-items:flex-start;justify-content:center;
+    padding:26px 14px 60px;
+    touch-action:manipulation;
+  }
+  .folha{
+    width:100%;max-width:720px;background:rgba(255,255,255,.94);
+    border:1px solid var(--borda);border-left:6px solid var(--caneta);
+    box-shadow:0 2px 0 rgba(21,58,91,.10);padding:26px 24px 30px;
+  }
+  h1{font-size:29px;line-height:1.15;margin:0 0 6px;letter-spacing:-.4px;}
+  .sub{color:var(--grafite);font-size:15px;margin:0 0 22px;}
+  p{line-height:1.55;}
+  label{display:block;font-size:15px;margin-bottom:7px;}
+  input[type=text]{width:100%;font:inherit;font-size:18px;padding:11px 12px;
+    border:1px solid var(--borda);background:#fff;color:var(--tinta);}
+  input:focus,button:focus-visible{outline:3px solid var(--marca);outline-offset:2px;}
+  button{font:inherit;font-size:17px;padding:13px 22px;border:none;background:var(--caneta);color:#fff;cursor:pointer;}
+  button:disabled{background:#AFC0D0;cursor:not-allowed;}
+  button.secundario{background:transparent;color:var(--caneta);border:1px solid var(--caneta);}
+
+  .grupo{margin:20px 0;}
+  .opcoes{display:flex;gap:10px;flex-wrap:wrap;}
+  .opcao{font:inherit;font-size:16px;padding:12px 16px;background:#fff;
+    border:2px solid var(--borda);color:var(--tinta);cursor:pointer;text-align:center;line-height:1.3;}
+  .opcao small{display:block;font-size:13px;color:var(--grafite);}
+  .opcao.ativa{border-color:var(--caneta);background:#EEF3FF;}
+  .opcao.ativa small{color:var(--caneta);}
+  .caixinha{font-size:15px;color:var(--grafite);display:flex;gap:8px;align-items:center;margin-top:10px;}
+
+  .regras{border-top:1px solid var(--linha);border-bottom:1px solid var(--linha);
+    padding:14px 0;margin:22px 0;font-size:15px;color:var(--grafite);}
+  .regras span{display:block;margin:3px 0;}
+
+  .barraJogo{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;
+    font-size:14px;color:var(--grafite);border-bottom:1px solid var(--linha);padding-bottom:8px;margin-bottom:12px;}
+  .pontos{font-size:20px;color:var(--tinta);}
+  .pontos b{background:var(--marca);padding:1px 7px;}
+
+  .alvo{text-align:center;font-size:clamp(17px,4.3vw,22px);font-weight:bold;margin:0 0 10px;}
+  .alvo b{font-family:"Courier New",monospace;background:var(--marca);padding:2px 10px;font-size:1.2em;}
+
+  .arena{display:flex;gap:12px;align-items:flex-start;justify-content:center;}
+  #quadro{height:min(58vh,540px);width:auto;max-width:100%;display:block;
+    border:3px solid var(--tinta);background:#FDFEFF;}
+  #piscina{height:min(58vh,540px);width:auto;display:block;
+    border:3px solid var(--tinta);background:#F2F8FD;flex:none;}
+
+  .controles{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;max-width:380px;margin:14px auto 0;}
+  .controles button{font-size:19px;padding:15px 0;background:#fff;border:2px solid var(--borda);color:var(--caneta);}
+  .controles button:active{background:#EEF3FF;}
+  .controles .largo{grid-column:span 3;font-size:16px;}
+  .controles .meio{grid-column:span 2;}
+  #btDescartar{color:var(--errado);border-color:#EFCFCD;}
+
+  .recado{text-align:center;font-size:15px;color:var(--grafite);min-height:24px;margin:12px 0 0;}
+  .recado.bom{color:var(--certo);}
+  .recado.erro{color:var(--errado);}
+  .acoes{margin-top:18px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;}
+
+  .boletim{border:2px solid var(--tinta);padding:20px;margin:20px 0;}
+  .boletim .campo{display:flex;justify-content:space-between;gap:12px;
+    border-bottom:1px dashed var(--borda);padding:9px 0;font-size:16px;}
+  .boletim .campo:last-child{border-bottom:none;}
+  .boletim .campo span:last-child{font-weight:bold;text-align:right;}
+  .nota{font-size:46px;line-height:1;}
+  .conceito{font-size:16px;color:var(--grafite);margin-top:4px;}
+
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px;}
+  th,td{border:1px solid var(--borda);padding:6px 8px;text-align:left;}
+  th{background:#EEF3FF;font-weight:normal;color:var(--grafite);}
+
+  .trava{margin-top:24px;border:1px solid var(--borda);background:#fff;padding:12px 14px;}
+  .trava p{margin:0 0 8px;font-size:14px;color:var(--grafite);}
+  input[type=range]{width:100%;}
+
+  .oculto{display:none;}
+  @media (max-width:470px){
+    h1{font-size:24px;}
+    .controles button{font-size:17px;padding:13px 0;}
+  }
+  @media print{
+    body{background:#fff;padding:0;}
+    .folha{border:none;box-shadow:none;}
+    .trava,.acoes,.controles{display:none;}
+  }
+</style>
+</head>
+<body>
+<main class="folha">
+
+  <!-- ============ CAPA ============ -->
+  <section id="capa">
+    <h1>Soma na Coluna</h1>
+    <p class="sub">Os números caem e empilham. Quando os blocos <b>de cima</b> de uma coluna somam exatamente o alvo, eles desaparecem — e a piscina do Seis-Sete baixa.</p>
+
+    <label for="nome">Nome do estudante</label>
+    <input type="text" id="nome" autocomplete="off" placeholder="Escreva seu nome completo">
+
+    <div class="grupo">
+      <label>Começar em qual alvo</label>
+      <div class="opcoes" id="opcFase">
+        <button class="opcao ativa" data-fase="0">Somar 10<small>coluna de 10</small></button>
+        <button class="opcao" data-fase="1">Somar 20<small>coluna de 12</small></button>
+        <button class="opcao" data-fase="2">Somar 50<small>coluna de 15</small></button>
+        <button class="opcao" data-fase="3">Somar 100<small>coluna de 20</small></button>
+      </div>
+      <label class="caixinha"><input type="checkbox" id="apoio"> Modo apoio: mostrar a soma acumulada a partir do topo</label>
+    </div>
+
+    <div class="regras">
+      <span>A conta é sempre de cima para baixo: o bloco do topo, mais o de baixo dele, e assim por diante.</span>
+      <span>Se essa soma der exatamente o alvo, todos esses blocos somem de uma vez.</span>
+      <span>Se passar do alvo, ninguém some — mas o que está embaixo continua lá e você joga por cima.</span>
+      <span>Cada soma fechada baixa a piscina em 15. Descartar um número sobe 6.</span>
+      <span>São 6 somas para passar de alvo: 10, depois 20, depois 50 e por fim 100.</span>
+      <span>No computador: setas para mover e descer, barra de espaço solta, tecla D descarta.</span>
+    </div>
+
+    <button id="btComecar">Começar a partida</button>
+    <p id="aviso" class="sub oculto" style="margin-top:12px;color:var(--errado)">Escreva seu nome antes de começar.</p>
+  </section>
+
+  <!-- ============ JOGO ============ -->
+  <section id="jogo" class="oculto">
+    <div class="barraJogo">
+      <span id="andamento">Alvo 10 · soma 0 de 6</span>
+      <span class="pontos">Pontos: <b id="placar">0</b></span>
+    </div>
+
+    <p class="alvo">Some <b id="vAlvo">10</b> de cima para baixo &nbsp;·&nbsp; próximo: <b id="vProx">—</b></p>
+
+    <div class="arena">
+      <canvas id="quadro" width="300" height="540"></canvas>
+      <canvas id="piscina" width="130" height="540"></canvas>
+    </div>
+
+    <div class="controles">
+      <button id="btEsq" aria-label="mover para a esquerda">◀</button>
+      <button id="btBaixo" aria-label="descer">▼</button>
+      <button id="btDir" aria-label="mover para a direita">▶</button>
+      <button id="btSoltar" class="meio">Soltar</button>
+      <button id="btDescartar">Descartar</button>
+      <button id="btPausa" class="largo secundario">Pausar</button>
+    </div>
+
+    <p class="recado" id="recado">Escolha a coluna onde o número ajuda a fechar a soma.</p>
+
+    <div class="acoes">
+      <button class="secundario" id="btEncerrar">Encerrar e ver o boletim</button>
+    </div>
+  </section>
+
+  <!-- ============ BOLETIM ============ -->
+  <section id="boletim" class="oculto">
+    <h1>Boletim da partida</h1>
+    <p class="sub">Professor: registre este resultado antes de liberar o próximo estudante.</p>
+
+    <div class="boletim">
+      <div class="campo"><span>Estudante</span><span id="bNome">—</span></div>
+      <div class="campo"><span>Data e hora</span><span id="bData">—</span></div>
+      <div class="campo"><span>Modo apoio</span><span id="bApoio">—</span></div>
+      <div class="campo"><span>Situação</span><span id="bSituacao">—</span></div>
+      <div class="campo"><span>Alvo alcançado</span><span id="bFase">—</span></div>
+      <div class="campo"><span>Tempo de jogo</span><span id="bTempo">—</span></div>
+      <div class="campo"><span>Somas fechadas</span><span id="bSomas">—</span></div>
+      <div class="campo"><span>Blocos eliminados</span><span id="bBlocos">—</span></div>
+      <div class="campo"><span>Números descartados</span><span id="bDescartes">—</span></div>
+      <div class="campo">
+        <span>Pontuação final</span>
+        <span><span class="nota" id="bPontos">0</span><br><span class="conceito" id="bConceito"></span></span>
+      </div>
+    </div>
+
+    <h2 style="font-size:19px;margin:26px 0 0">Desempenho por alvo</h2>
+    <table id="tabela">
+      <thead><tr><th>Alvo</th><th>Somas fechadas</th><th>Blocos eliminados</th><th>Situação</th></tr></thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="acoes"><button class="secundario" onclick="window.print()">Imprimir boletim</button></div>
+
+    <div class="trava">
+      <p>Arraste até o fim para liberar a partida do próximo estudante.</p>
+      <input type="range" id="slider" min="0" max="100" value="0" step="1">
+    </div>
+  </section>
+
+</main>
+
+<script>
+/* ============ fases ============
+   rows precisa comportar a soma do alvo a partir do topo:
+   alvo ÷ média do número + folga                                   */
+const FASES = [
+  {alvo:10,  cols:7, rows:10, ms:820, agua:1.05, sacola:[1,1,2,2,3,3,4,4,5,5,6,6,7,8,9]},
+  {alvo:20,  cols:7, rows:12, ms:740, agua:1.25, sacola:[1,2,3,4,5,6,7,8,9]},
+  {alvo:50,  cols:7, rows:15, ms:660, agua:1.50, sacola:[2,3,4,5,5,6,6,7,7,8,8,9,9]},
+  {alvo:100, cols:7, rows:20, ms:580, agua:1.75, sacola:[3,4,5,6,7,7,8,8,9,9,9]}
+];
+const SOMAS_PARA_PASSAR = 6;
+const ALT_CANVAS = 540;
+const BAIXA_POR_SOMA = 15, SOBE_POR_DESCARTE = 6;
+
+/* ============ utilitários ============ */
+const $ = id => document.getElementById(id);
+const mmss = s => String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
+
+/* ============ estado ============ */
+let faseIdx = 0, faseInicial = 0, grade = [], cols = 7, rows = 10, cel = 40;
+let atualNum = null, atualCol = 0, atualLin = 0, proxNum = null;
+let pontos = 0, somasTotal = 0, blocosTotal = 0, descartes = 0, somasFase = 0, blocosFase = 0, segundos = 0;
+let agua = 12, acumulado = 0, ultimo = 0, rodando = false, pausado = false, terminou = false;
+let anim = null, cron = null, registro = [], efeitos = [], recadoTimer = null;
+
+const cq = $("quadro").getContext("2d");
+const cp = $("piscina").getContext("2d");
+
+/* ============ capa ============ */
+$("opcFase").addEventListener("click", e => {
+  const bt = e.target.closest(".opcao"); if(!bt) return;
+  $("opcFase").querySelectorAll(".opcao").forEach(b => b.classList.remove("ativa"));
+  bt.classList.add("ativa");
+  faseInicial = Number(bt.dataset.fase);
+});
+
+$("btComecar").addEventListener("click", () => {
+  if($("nome").value.trim() === ""){ $("aviso").classList.remove("oculto"); $("nome").focus(); return; }
+  $("aviso").classList.add("oculto");
+  $("capa").classList.add("oculto");
+  $("jogo").classList.remove("oculto");
+  iniciar();
+});
+
+function iniciar(){
+  pontos = 0; somasTotal = 0; blocosTotal = 0; descartes = 0; segundos = 0;
+  terminou = false; pausado = false; registro = [];
+  faseIdx = faseInicial;
+  montarFase(true);
+
+  clearInterval(cron);
+  cron = setInterval(() => { if(rodando && !pausado && !terminou) segundos++; }, 1000);
+
+  ultimo = performance.now();
+  cancelAnimationFrame(anim);
+  anim = requestAnimationFrame(laco);
+}
+
+function montarFase(primeira){
+  const f = FASES[faseIdx];
+  cols = f.cols; rows = f.rows;
+  cel = Math.floor(ALT_CANVAS / rows);
+  $("quadro").width = cols*cel;
+  $("quadro").height = rows*cel;
+  $("piscina").height = rows*cel;
+  $("piscina").width = Math.round(rows*cel*0.26);
+
+  grade = Array.from({length:rows}, () => new Array(cols).fill(null));
+  somasFase = 0; blocosFase = 0;
+  agua = primeira ? 12 : Math.max(0, agua - 25);
+  acumulado = 0; efeitos = [];
+  proxNum = sortear();
+  nascer();
+  rodando = true;
+  $("vAlvo").textContent = f.alvo;
+  atualizarTopo();
+  dizer(primeira ? "Escolha a coluna onde o número ajuda a fechar a soma."
+                 : "Novo alvo: some " + f.alvo + " do topo para baixo.", "bom");
+}
+
+function sortear(){
+  const s = FASES[faseIdx].sacola;
+  return s[Math.floor(Math.random()*s.length)];
+}
+
+function nascer(){
+  atualNum = proxNum;
+  proxNum = sortear();
+  atualLin = 0;
+  $("vProx").textContent = proxNum;
+  if(grade[0][atualCol] !== null){
+    const livres = [];
+    for(let c=0;c<cols;c++) if(grade[0][c] === null) livres.push(c);
+    if(livres.length === 0){ fim("A pilha chegou ao topo"); return; }
+    atualCol = livres[Math.floor(Math.random()*livres.length)];
+  }
+}
+
+function atualizarTopo(){
+  $("andamento").textContent = "Alvo " + FASES[faseIdx].alvo + " · soma " + somasFase + " de " + SOMAS_PARA_PASSAR;
+  $("placar").textContent = pontos;
+}
+function dizer(txt, tipo){
+  const r = $("recado"); r.textContent = txt; r.className = "recado" + (tipo ? " "+tipo : "");
+  clearTimeout(recadoTimer);
+  recadoTimer = setTimeout(() => { if(!terminou) r.className = "recado"; }, 2800);
+}
+
+/* ============ jogadas ============ */
+function livre(c, l){ return c >= 0 && c < cols && l < rows && grade[l][c] === null; }
+function mover(d){
+  if(!rodando || pausado || terminou || atualNum === null) return;
+  if(livre(atualCol + d, atualLin)) atualCol += d;
+}
+function descer(){
+  if(!rodando || pausado || terminou || atualNum === null) return;
+  if(livre(atualCol, atualLin + 1)) atualLin++;
+  else fixar();
+  acumulado = 0;
+}
+function soltar(){
+  if(!rodando || pausado || terminou || atualNum === null) return;
+  while(livre(atualCol, atualLin + 1)) atualLin++;
+  fixar();
+  acumulado = 0;
+}
+function descartar(){
+  if(!rodando || pausado || terminou || atualNum === null) return;
+  descartes++;
+  agua = Math.min(100, agua + SOBE_POR_DESCARTE);
+  dizer("Número descartado. A piscina subiu " + SOBE_POR_DESCARTE + ".", "erro");
+  nascer();
+  acumulado = 0;
+}
+
+function fixar(){
+  const col = atualCol;
+  grade[atualLin][atualCol] = atualNum;
+  atualNum = null;
+  conferirColuna(col);
+  if(!terminou) nascer();
+}
+
+/* topo da coluna: primeira linha preenchida de cima para baixo */
+function topoDe(c){
+  for(let l=0;l<rows;l++) if(grade[l][c] !== null) return l;
+  return -1;
+}
+
+/* soma acumulada do topo para baixo; elimina o maior trecho que fecha o alvo */
+function conferirColuna(c){
+  const alvo = FASES[faseIdx].alvo;
+  let seguiu = true;
+
+  while(seguiu){
+    seguiu = false;
+    const t = topoDe(c);
+    if(t < 0) break;
+
+    let soma = 0, melhor = -1;
+    for(let l = t; l < rows && grade[l][c] !== null; l++){
+      soma += grade[l][c];
+      if(soma === alvo) melhor = l;      /* guarda o trecho mais longo que fecha */
+      if(soma > alvo) break;
+    }
+
+    if(melhor >= 0){
+      const quantos = melhor - t + 1;
+      for(let l = t; l <= melhor; l++) grade[l][c] = null;
+      somasTotal++; somasFase++;
+      blocosTotal += quantos; blocosFase += quantos;
+      pontos += alvo + (quantos - 2) * 5;
+      agua = Math.max(0, agua - BAIXA_POR_SOMA);
+      efeitos.push({c:c, l:t, txt:"= " + alvo, t:0});
+      dizer(quantos + " blocos somaram " + alvo + ". A piscina desceu.", "bom");
+      seguiu = true;                      /* pode encadear com o que ficou por baixo */
+    }
+  }
+
+  atualizarTopo();
+  if(somasFase >= SOMAS_PARA_PASSAR) passarDeFase();
+  if(agua >= 100) fim("A piscina encheu");
+}
+
+function passarDeFase(){
+  registro.push({alvo:FASES[faseIdx].alvo, somas:somasFase, blocos:blocosFase, situacao:"Concluído"});
+  pontos += FASES[faseIdx].alvo;
+  if(faseIdx === FASES.length - 1){ fim("Todos os alvos concluídos"); return; }
+  faseIdx++;
+  rodando = false;
+  dizer("Alvo concluído. Preparando o próximo…", "bom");
+  setTimeout(() => { if(!terminou) montarFase(false); }, 1300);
+}
+
+/* ============ laço ============ */
+function laco(agora){
+  if(terminou) return;
+  const dt = Math.min(60, agora - ultimo);
+  ultimo = agora;
+
+  if(rodando && !pausado){
+    acumulado += dt;
+    if(acumulado >= FASES[faseIdx].ms){ acumulado = 0; descer(); }
+    agua = Math.min(100, agua + FASES[faseIdx].agua * dt/1000);
+    if(agua >= 100) fim("A piscina encheu");
+  }
+  efeitos = efeitos.filter(e => (e.t += dt) < 900);
+
+  desenharQuadro();
+  desenharPiscina(agora);
+  anim = requestAnimationFrame(laco);
+}
+
+/* ============ desenho do quadro ============ */
+function pastilha(x, y, num, caindo){
+  cq.fillStyle = "#FFFFFF";
+  cq.fillRect(x+1, y+1, cel-2, cel-2);
+  cq.strokeStyle = "#153A5B";
+  cq.lineWidth = caindo ? 3 : 1.6;
+  cq.strokeRect(x+1.5, y+1.5, cel-3, cel-3);
+  cq.fillStyle = "#153A5B";
+  cq.font = "bold " + Math.floor(cel*0.55) + "px 'Courier New', monospace";
+  cq.textAlign = "center"; cq.textBaseline = "middle";
+  cq.fillText(String(num), x + cel/2, y + cel/2 + 1);
+}
+
+function desenharQuadro(){
+  const L = cols*cel, A = rows*cel, alvo = FASES[faseIdx].alvo;
+  cq.clearRect(0,0,L,A);
+
+  if(atualNum !== null){
+    cq.fillStyle = "rgba(31,79,216,.07)";
+    cq.fillRect(atualCol*cel, 0, cel, A);
+  }
+
+  cq.strokeStyle = "#E7EFF7"; cq.lineWidth = 1;
+  for(let c=1;c<cols;c++){ cq.beginPath(); cq.moveTo(c*cel+.5,0); cq.lineTo(c*cel+.5,A); cq.stroke(); }
+  for(let l=1;l<rows;l++){ cq.beginPath(); cq.moveTo(0,l*cel+.5); cq.lineTo(L,l*cel+.5); cq.stroke(); }
+
+  for(let l=0;l<rows;l++) for(let c=0;c<cols;c++)
+    if(grade[l][c] !== null) pastilha(c*cel, l*cel, grade[l][c], false);
+
+  if(atualNum !== null) pastilha(atualCol*cel, atualLin*cel, atualNum, true);
+
+  /* modo apoio: soma acumulada do topo para baixo, em cada coluna */
+  if($("apoio").checked){
+    cq.font = "bold " + Math.max(9, Math.floor(cel*0.27)) + "px Trebuchet MS, sans-serif";
+    cq.textAlign = "left"; cq.textBaseline = "top";
+    for(let c=0;c<cols;c++){
+      const t = topoDe(c);
+      if(t < 0) continue;
+      let soma = 0;
+      for(let l = t; l < rows && grade[l][c] !== null; l++){
+        soma += grade[l][c];
+        if(soma > alvo) break;
+        cq.fillStyle = soma === alvo ? "#1E7A4C" : "#8FA3B5";
+        cq.fillText(String(soma), c*cel + 3, l*cel + 3);
+      }
+    }
+  }
+
+  /* efeito da soma fechada */
+  for(const e of efeitos){
+    const p = 1 - e.t/900;
+    cq.fillStyle = "rgba(30,122,76," + p + ")";
+    cq.font = "bold " + Math.floor(cel*0.5) + "px Trebuchet MS, sans-serif";
+    cq.textAlign = "center"; cq.textBaseline = "middle";
+    cq.fillText(e.txt, e.c*cel + cel/2, e.l*cel + cel/2 - (1-p)*26);
+  }
+
+  if(pausado){
+    cq.fillStyle = "rgba(247,249,251,.9)";
+    cq.fillRect(0, A/2-36, L, 72);
+    cq.fillStyle = "#153A5B";
+    cq.font = "bold 26px Trebuchet MS, sans-serif";
+    cq.textAlign = "center"; cq.textBaseline = "middle";
+    cq.fillText("PAUSA", L/2, A/2);
+  }
+}
+
+/* ============ desenho da piscina ============ */
+function desenharPiscina(agora){
+  const W = $("piscina").width, H = $("piscina").height;
+  cp.clearRect(0,0,W,H);
+
+  cp.strokeStyle = "#E3EEF7"; cp.lineWidth = 1;
+  for(let y=20;y<H;y+=20){ cp.beginPath(); cp.moveTo(0,y+.5); cp.lineTo(W,y+.5); cp.stroke(); }
+  for(let x=20;x<W;x+=20){ cp.beginPath(); cp.moveTo(x+.5,0); cp.lineTo(x+.5,H); cp.stroke(); }
+
+  const nivel = H - (agua/100)*H;
+  const perigo = agua > 72;
+  const alt = (agora/1000) % 1.4 < 0.7;
+  const bx = W/2, esc = H/540;
+  const Y = v => v*esc;
+
+  cp.strokeStyle = "#153A5B"; cp.lineWidth = Math.max(2.5, 4*esc); cp.lineCap = "round";
+  cp.beginPath();
+  cp.moveTo(bx, Y(400)); cp.lineTo(bx-16*esc, Y(468)); cp.moveTo(bx, Y(400)); cp.lineTo(bx+16*esc, Y(468));
+  cp.stroke();
+  cp.beginPath(); cp.moveTo(bx, Y(262)); cp.lineTo(bx, Y(400)); cp.stroke();
+
+  const ey = alt ? Y(242) : Y(296), dy = alt ? Y(296) : Y(242);
+  cp.beginPath();
+  cp.moveTo(bx, Y(292)); cp.lineTo(bx-30*esc, ey); cp.lineTo(bx-44*esc, ey+10*esc);
+  cp.moveTo(bx, Y(292)); cp.lineTo(bx+30*esc, dy); cp.lineTo(bx+44*esc, dy+10*esc);
+  cp.stroke();
+
+  cp.fillStyle = "#FFFFFF";
+  cp.beginPath(); cp.arc(bx, Y(222), 30*esc, 0, 7); cp.fill(); cp.stroke();
+  cp.fillStyle = "#153A5B";
+  cp.beginPath(); cp.arc(bx-10*esc, Y(216), 3.4*esc, 0, 7); cp.fill();
+  cp.beginPath(); cp.arc(bx+10*esc, Y(216), 3.4*esc, 0, 7); cp.fill();
+  cp.lineWidth = Math.max(2, 3*esc);
+  cp.beginPath();
+  if(perigo) cp.arc(bx, Y(240), 8*esc, Math.PI, 0);
+  else cp.arc(bx, Y(230), 10*esc, 0.15*Math.PI, 0.85*Math.PI);
+  cp.stroke();
+
+  cp.fillStyle = "#FFE066"; cp.strokeStyle = "#153A5B"; cp.lineWidth = 2;
+  cp.beginPath(); cp.rect(bx-42*esc, Y(150), 84*esc, 34*esc); cp.fill(); cp.stroke();
+  cp.beginPath(); cp.moveTo(bx-6*esc, Y(184)); cp.lineTo(bx+2*esc, Y(196)); cp.lineTo(bx+10*esc, Y(184)); cp.fill(); cp.stroke();
+  cp.fillStyle = "#153A5B";
+  cp.font = "bold " + Math.max(12, Math.floor(20*esc)) + "px Trebuchet MS, sans-serif";
+  cp.textAlign = "center"; cp.textBaseline = "middle";
+  cp.fillText(alt ? "six" : "seven", bx, Y(167));
+
+  const onda = x => Math.sin((x + agora/6)/22)*3.5;
+  cp.fillStyle = perigo ? "rgba(198,47,42,.30)" : "rgba(47,159,191,.42)";
+  cp.beginPath(); cp.moveTo(0, nivel + onda(0));
+  for(let x=0;x<=W;x+=8) cp.lineTo(x, nivel + onda(x));
+  cp.lineTo(W,H); cp.lineTo(0,H); cp.closePath(); cp.fill();
+  cp.strokeStyle = perigo ? "#C62F2A" : "#2F9FBF"; cp.lineWidth = 2.5;
+  cp.beginPath(); cp.moveTo(0, nivel + onda(0));
+  for(let x=0;x<=W;x+=8) cp.lineTo(x, nivel + onda(x));
+  cp.stroke();
+
+  cp.fillStyle = perigo ? "#C62F2A" : "#153A5B";
+  cp.font = "bold " + Math.max(12, Math.floor(15*esc)) + "px 'Courier New', monospace";
+  cp.textAlign = "center"; cp.textBaseline = "middle";
+  cp.fillText(Math.round(agua) + "%", W/2, Y(26));
+}
+
+/* ============ controles ============ */
+function segurar(bt, acao){
+  let t1 = null, t2 = null;
+  const ini = e => { e.preventDefault(); acao(); t1 = setTimeout(() => { t2 = setInterval(acao, 90); }, 280); };
+  const fimT = () => { clearTimeout(t1); clearInterval(t2); };
+  bt.addEventListener("pointerdown", ini);
+  ["pointerup","pointerleave","pointercancel"].forEach(ev => bt.addEventListener(ev, fimT));
+}
+segurar($("btEsq"), () => mover(-1));
+segurar($("btDir"), () => mover(1));
+segurar($("btBaixo"), descer);
+$("btSoltar").addEventListener("click", soltar);
+$("btDescartar").addEventListener("click", descartar);
+$("btPausa").addEventListener("click", () => {
+  if(terminou) return;
+  pausado = !pausado;
+  $("btPausa").textContent = pausado ? "Continuar" : "Pausar";
+});
+
+document.addEventListener("keydown", e => {
+  if($("jogo").classList.contains("oculto") || terminou) return;
+  if(["ArrowLeft","ArrowRight","ArrowDown"," "].indexOf(e.key) >= 0) e.preventDefault();
+  if(e.key === "ArrowLeft") mover(-1);
+  else if(e.key === "ArrowRight") mover(1);
+  else if(e.key === "ArrowDown") descer();
+  else if(e.key === " ") soltar();
+  else if(e.key.toLowerCase() === "d") descartar();
+  else if(e.key.toLowerCase() === "p") $("btPausa").click();
+});
+document.addEventListener("visibilitychange", () => {
+  if(document.hidden && !terminou && !pausado && !$("jogo").classList.contains("oculto")) $("btPausa").click();
+});
+
+/* ============ fim ============ */
+$("btEncerrar").addEventListener("click", () => fim("Encerrado pelo jogador"));
+
+function fim(motivo){
+  if(terminou) return;
+  terminou = true; rodando = false;
+  clearInterval(cron);
+  cancelAnimationFrame(anim);
+
+  const ultimoReg = registro[registro.length-1];
+  if(!ultimoReg || ultimoReg.alvo !== FASES[faseIdx].alvo || ultimoReg.situacao !== "Concluído"){
+    registro.push({alvo:FASES[faseIdx].alvo, somas:somasFase, blocos:blocosFase, situacao:motivo});
+  }
+
+  $("jogo").classList.add("oculto");
+  $("boletim").classList.remove("oculto");
+
+  const agora = new Date();
+  $("bNome").textContent = $("nome").value.trim();
+  $("bData").textContent = agora.toLocaleDateString("pt-BR") + " às " + agora.toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"});
+  $("bApoio").textContent = $("apoio").checked ? "ligado (somas visíveis)" : "desligado";
+  $("bSituacao").textContent = motivo;
+  $("bFase").textContent = "somar " + FASES[faseIdx].alvo;
+  $("bTempo").textContent = mmss(segundos);
+  $("bSomas").textContent = somasTotal;
+  $("bBlocos").textContent = blocosTotal;
+  $("bDescartes").textContent = descartes;
+  $("bPontos").textContent = pontos;
+
+  const media = somasTotal > 0 ? blocosTotal/somasTotal : 0;
+  let conceito;
+  if(motivo === "Todos os alvos concluídos") conceito = "Chegou ao alvo 100 e salvou o Seis-Sete";
+  else if(somasTotal >= 10 && media >= 3) conceito = "Monta somas longas: decompõe bem o alvo";
+  else if(somasTotal >= 10) conceito = "Fecha somas com agilidade, quase sempre em dois blocos";
+  else if(somasTotal >= 4) conceito = "Está pegando a ideia da soma exata";
+  else conceito = "Retomar composição e decomposição do alvo";
+  $("bConceito").textContent = conceito;
+
+  const corpo = $("tabela").querySelector("tbody");
+  corpo.innerHTML = "";
+  registro.forEach(item => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = "<td>somar "+item.alvo+"</td><td>"+item.somas+"</td><td>"+item.blocos+"</td><td>"+item.situacao+"</td>";
+    corpo.appendChild(tr);
+  });
+
+  $("slider").value = 0;
+}
+
+/* ============ trava para a próxima partida ============ */
+$("slider").addEventListener("change", e => {
+  if(Number(e.target.value) >= 100){
+    $("boletim").classList.add("oculto");
+    $("capa").classList.remove("oculto");
+    $("nome").value = "";
+    $("nome").focus();
+  } else {
+    e.target.value = 0;
+  }
+});
+</script>
+</body>
+</html>
