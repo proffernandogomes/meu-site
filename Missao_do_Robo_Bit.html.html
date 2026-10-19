@@ -105,7 +105,7 @@ svg{display:block}
 
 /* tabuleiro: quadrado, o maior que couber na área disponível */
 .boardhold{flex:1 1 0;min-height:0;container-type:size;display:grid;place-items:start center}
-.boardwrap{--lab:.95rem;--max:calc(400px + var(--lab) + 2px);width:min(100cqw,100cqh,var(--max));height:min(100cqw,100cqh,var(--max));display:grid;grid-template-columns:var(--lab) minmax(0,1fr);grid-template-rows:var(--lab) minmax(0,1fr);gap:2px}
+.boardwrap{--lab:.95rem;--max:calc(300px + var(--lab) + 2px);width:min(100cqw,100cqh,var(--max));height:min(100cqw,100cqh,var(--max));display:grid;grid-template-columns:var(--lab) minmax(0,1fr);grid-template-rows:var(--lab) minmax(0,1fr);gap:2px}
 .cols,.rows{display:grid;font-family:var(--f-mono);font-size:.66rem;color:var(--ink-2);text-align:center}
 .cols{grid-column:2;grid-row:1;align-items:end}
 .rows{grid-column:1;grid-row:2;align-items:center}
@@ -245,7 +245,7 @@ svg{display:block}
 /* retrato (tablet em pé): tabuleiro em cima, blocos e programa lado a lado embaixo */
 @media (orientation:portrait){
   .game{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:6px;justify-content:stretch}
-  .boardhold{flex:none;height:min(calc(100vw - 20px),430px)}
+  .boardhold{flex:none;height:min(calc(100vw - 20px),330px)}
   .legend,.tip{display:none}
   .speed>span:first-child{display:none}
 }
