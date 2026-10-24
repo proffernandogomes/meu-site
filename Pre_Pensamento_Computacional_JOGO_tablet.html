@@ -1,0 +1,842 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Pensamento Computacional – Pré</title>
+<style>
+:root{--bg:#eaf4ff;--ink:#1f2937;--blue:#2a6fdb;--red:#e63946;--yel:#f4c20d;--grn:#2a9d4b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;font-family:'Nunito','Carlito','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink);overflow:hidden;-webkit-user-select:none;user-select:none;touch-action:manipulation;-webkit-touch-callout:none}
+button{font-family:inherit;cursor:pointer;border:0;touch-action:manipulation}
+#app{height:100%;display:flex;flex-direction:column}
+.screen{display:none;flex:1;min-height:0;flex-direction:column}
+.screen.on{display:flex}
+
+/* ---------- menu ---------- */
+.mhead{padding:14px 22px 8px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.mhead h1{margin:0;font-size:clamp(22px,3.4vw,34px);color:var(--blue);line-height:1.05}
+.mhead h1 small{display:block;font-size:.5em;color:#546;font-weight:600}
+.mhead .sp{flex:1}
+.total{background:#fff;border-radius:999px;padding:8px 16px;font-weight:800;font-size:20px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 0 #cfe0f7}
+.chip{background:#fff;border-radius:999px;padding:9px 16px;font-weight:700;font-size:16px;color:#345;box-shadow:0 2px 0 #cfe0f7;display:flex;align-items:center;gap:8px}
+.chip.off{opacity:.55}
+.chip i{width:18px;height:18px;border-radius:50%;border:3px solid var(--blue);display:inline-block}
+.chip:not(.off) i{background:var(--blue)}
+.mbody{flex:1;overflow:auto;padding:4px 22px 24px;-webkit-overflow-scrolling:touch}
+.sec{margin:12px 0 8px;font-size:20px;font-weight:800;color:#345;display:flex;align-items:center;gap:10px}
+.sec b{background:var(--c);color:#fff;border-radius:999px;padding:2px 12px;font-size:16px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.tile{background:#fff;border-radius:20px;padding:12px 14px;text-align:left;display:flex;flex-direction:column;gap:6px;min-height:104px;box-shadow:0 4px 0 var(--c);border:3px solid var(--c);color:var(--ink)}
+.tile:active{transform:translateY(3px);box-shadow:0 1px 0 var(--c)}
+.tile .n{width:38px;height:38px;border-radius:50%;background:var(--c);color:#fff;font-weight:800;font-size:20px;display:flex;align-items:center;justify-content:center}
+.tile .t{font-weight:800;font-size:17px;line-height:1.1;flex:1}
+.stars{display:flex;gap:3px}
+.stars svg{width:24px;height:24px}
+.reset{margin:18px auto 0;display:block;background:transparent;color:#789;font-size:14px;text-decoration:underline;padding:8px}
+
+/* ---------- jogo ---------- */
+.top{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#fff;box-shadow:0 2px 0 #d6e6fa}
+.ib{width:54px;height:54px;border-radius:16px;background:#e8f1ff;display:flex;align-items:center;justify-content:center;flex:none}
+.ib:active{background:#cfe0ff}
+.ib svg{width:30px;height:30px}
+.ib[disabled]{opacity:.35}
+.ttl{flex:1;display:flex;align-items:center;gap:10px;font-weight:800;font-size:clamp(18px,2.6vw,26px);min-width:0}
+.ttl .num{flex:none;width:42px;height:42px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px}
+.ttl span.tx{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.instr{display:flex;align-items:center;gap:12px;padding:10px 14px 4px}
+.instr p{margin:0;font-size:clamp(18px,2.7vw,28px);font-weight:700;line-height:1.15;flex:1}
+main{flex:1;min-height:0;padding:6px 14px;display:flex}
+#stagewrap{flex:1;min-height:0;min-width:0;display:flex;align-items:center;justify-content:center}
+#stage{width:100%;height:100%;background:#fff;border-radius:22px;box-shadow:0 4px 0 #cfe0f7;touch-action:none;display:block}
+#stage text{pointer-events:none}
+.bar{display:flex;align-items:center;gap:12px;padding:8px 14px 12px;min-height:92px}
+.pal{flex:1;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
+.pbtn{width:74px;height:74px;border-radius:18px;background:#fff;box-shadow:0 4px 0 #cfe0f7;border:4px solid transparent;display:flex;align-items:center;justify-content:center;padding:0}
+.pbtn svg{width:100%;height:100%}
+.pbtn.sel{border-color:var(--blue);background:#e0efff;transform:translateY(-3px)}
+.btns{display:flex;gap:10px;margin-left:auto}
+.btn{height:66px;min-width:150px;padding:0 24px;border-radius:20px;background:var(--grn);color:#fff;font-size:24px;font-weight:800;box-shadow:0 5px 0 #1d7a38;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 #1d7a38}
+.btn.sec{background:#fff;color:#345;box-shadow:0 5px 0 #cfe0f7;min-width:110px;font-size:20px}
+.btn.sec:active{box-shadow:0 1px 0 #cfe0f7}
+.btn.blue{background:var(--blue);box-shadow:0 5px 0 #1b4fa3}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.toast{position:fixed;left:50%;top:132px;transform:translateX(-50%) translateY(-20px);background:#1f2937;color:#fff;padding:14px 26px;border-radius:999px;font-size:22px;font-weight:800;opacity:0;pointer-events:none;transition:.25s;max-width:92vw;text-align:center;z-index:5}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.bad{background:#c0392b}
+.toast.good{background:#1d7a38}
+
+/* ---------- vitoria ---------- */
+.win{position:fixed;inset:0;background:rgba(20,40,80,.55);display:none;align-items:center;justify-content:center;z-index:10}
+.win.on{display:flex}
+.card{background:#fff;border-radius:32px;padding:28px 34px;text-align:center;max-width:min(92vw,560px);box-shadow:0 10px 0 rgba(0,0,0,.12);animation:pop .4s cubic-bezier(.2,1.6,.4,1)}
+.card h2{margin:0 0 6px;font-size:clamp(30px,5vw,44px);color:var(--blue)}
+.card p{margin:0 0 10px;font-size:20px;color:#456}
+.big{display:flex;justify-content:center;gap:8px;margin:6px 0 16px}
+.big svg{width:96px;height:96px}
+.big svg.in{animation:starin .6s cubic-bezier(.2,1.8,.4,1) both}
+.big svg:nth-child(2).in{animation-delay:.18s}.big svg:nth-child(3).in{animation-delay:.36s}
+.cbtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes starin{from{transform:scale(0) rotate(-120deg)}to{transform:scale(1) rotate(0)}}
+.conf{position:fixed;top:-20px;width:14px;height:20px;border-radius:3px;z-index:11;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(112vh) rotate(720deg)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.shake{animation:shake .4s}
+
+/* ---------- corrida a dois ---------- */
+.racebtn{display:flex;align-items:center;gap:14px;width:100%;margin:8px 0 2px;padding:14px 20px;border-radius:22px;background:linear-gradient(90deg,#2a6fdb,#e68a00);color:#fff;font-size:clamp(20px,3vw,26px);font-weight:800;box-shadow:0 5px 0 rgba(0,0,0,.18);text-align:left}
+.racebtn:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
+.racebtn small{display:block;font-size:.62em;font-weight:600;opacity:.95}
+.racebtn svg{width:40px;height:44px;flex:none}
+.rcols{display:flex;gap:16px;flex-wrap:wrap}
+.rcol{flex:1;min-width:300px;background:#fff;border-radius:24px;padding:14px;border:4px solid var(--pc);box-shadow:0 4px 0 var(--pc)}
+.rcol h3{margin:0 0 10px;font-size:22px;color:var(--pc)}
+.rcol h3 span{font-weight:700;color:#456;font-size:.8em}
+.ranims{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.ranim{background:#f4f8ff;border-radius:16px;padding:6px 2px 4px;border:4px solid transparent;display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:800;font-size:14px;color:var(--ink)}
+.ranim svg{width:100%;max-width:74px;height:auto}
+.ranim.sel{border-color:var(--pc);background:#fff;transform:translateY(-3px);box-shadow:0 4px 0 var(--pc)}
+.ranim.off{opacity:.3;pointer-events:none}
+.rrow{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:18px 0 8px}
+.rn{background:#fff;border:4px solid #cfe0f7;border-radius:18px;padding:10px 18px;font-size:18px;font-weight:800;color:#345}
+.rn small{display:block;font-size:.75em;font-weight:600}
+.rn.sel{border-color:var(--blue);background:#e0efff;color:var(--blue)}
+.rgo{display:block;margin:10px auto 0}
+.rtrack{--tk:28px;flex:1;min-width:0}
+.rtrack.lg{--tk:56px;width:min(80vw,480px);margin:6px auto 14px}
+.rlane{display:flex;align-items:center;gap:8px;margin:3px 0}
+.rbar{position:relative;flex:1;height:calc(var(--tk)*.72);background:#e8f1ff;border-radius:999px;border:3px solid transparent}
+.rlane.act .rbar{border-color:var(--pc);background:#fff}
+.rlane.l0{--pc:#2a6fdb}.rlane.l1{--pc:#e68a00}
+.rtk{position:absolute;top:50%;margin-top:calc(var(--tk)/-2);width:var(--tk);height:var(--tk);transition:left 1.1s cubic-bezier(.3,1.35,.5,1)}
+.rtk svg{width:100%;height:100%;display:block}
+.rfl{position:absolute;right:6px;top:50%;margin-top:-11px;width:16px;height:22px;opacity:.85}
+.rtrack.lg .rfl{width:22px;height:28px;margin-top:-14px}
+.rsc{min-width:30px;text-align:center;font-weight:800;color:var(--pc);font-size:calc(var(--tk)*.66)}
+#rhead{display:none}
+.race #rhead{display:flex;flex:1;align-items:center;gap:12px;min-width:0}
+.race .ttl,.race #bPrev,.race #bNext{display:none}
+.rchip{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--pc);border-radius:999px;padding:2px 16px 2px 4px;font-weight:800;font-size:clamp(16px,2.3vw,22px);white-space:nowrap;color:var(--pc);flex:none}
+.rchip svg{width:46px;height:46px}
+.win.dark{background:rgba(20,40,80,.9)}
+.rtime{flex:none;background:#fff;border-radius:16px;padding:3px 12px;font-weight:800;font-size:13px;line-height:1.15;text-align:center;border:3px solid #cfd8dc;color:#456;min-width:92px}
+.rtime b{display:block;font-size:20px}
+.rtime.b2{border-color:#2a9d4b;color:#1d7a38}.rtime.b1{border-color:#e68a00;color:#b36200}
+.rbig svg{width:150px;height:150px}
+.rcard h2{margin-bottom:4px}
+</style>
+</head>
+<body>
+<div id="app">
+
+<section id="menu" class="screen on">
+  <div class="mhead">
+    <h1>Pensamento Computacional<small>Jogos de lógica para o Pré · 20 atividades</small></h1>
+    <div class="sp"></div>
+    <button class="chip" id="tgVoice"><i></i>Voz</button>
+    <button class="chip" id="tgSnd"><i></i>Sons</button>
+    <button class="chip" id="tgFull">Tela cheia</button>
+    <div class="total" id="total"></div>
+  </div>
+  <div class="mbody" id="mbody"></div>
+</section>
+
+<section id="game" class="screen">
+  <header class="top">
+    <button class="ib" id="bHome" aria-label="Menu"><svg viewBox="0 0 32 32"><path d="M4 16 L16 5 L28 16 V28 H19 V19 H13 V28 H4 Z" fill="#2a6fdb"/></svg></button>
+    <div class="ttl"><span class="num" id="gnum">1</span><span class="tx" id="gtitle"></span></div>
+    <div id="rhead"></div><button class="ib" id="bPrev" aria-label="Anterior"><svg viewBox="0 0 32 32"><path d="M20 5 L8 16 L20 27 Z" fill="#2a6fdb"/></svg></button>
+    <button class="ib" id="bNext" aria-label="Próxima"><svg viewBox="0 0 32 32"><path d="M12 5 L24 16 L12 27 Z" fill="#2a6fdb"/></svg></button>
+  </header>
+  <div class="instr">
+    <button class="ib" id="bSay" aria-label="Ouvir"><svg viewBox="0 0 32 32"><path d="M4 12 H10 L18 5 V27 L10 20 H4 Z" fill="#2a6fdb"/><path d="M22 10 Q27 16 22 22" fill="none" stroke="#2a6fdb" stroke-width="3" stroke-linecap="round"/><path d="M25 6 Q32 16 25 26" fill="none" stroke="#2a6fdb" stroke-width="3" stroke-linecap="round"/></svg></button>
+    <p id="itext"></p>
+  </div>
+  <main><div id="stagewrap"></div></main>
+  <footer class="bar">
+    <div class="pal" id="pal"></div>
+    <div class="btns">
+      <button class="btn sec" id="bReset">Limpar</button>
+      <button class="btn blue" id="bDemo" style="display:none">▶ Ver</button>
+      <button class="btn" id="bGo">Conferir</button>
+    </div>
+  </footer>
+</section>
+<section id="rsetup" class="screen">
+  <div class="mhead">
+    <button class="ib" id="rsBack" aria-label="Menu"><svg viewBox="0 0 32 32"><path d="M4 16 L16 5 L28 16 V28 H19 V19 H13 V28 H4 Z" fill="#2a6fdb"/></svg></button>
+    <h1>Corrida a dois<small>Um tablet, dois jogadores · cada um escolhe um bichinho</small></h1>
+  </div>
+  <div class="mbody" id="rsbody"></div>
+</section>
+</div>
+
+<div class="win dark" id="rturn"><div class="card rcard" id="rtCard">
+  <div class="rbig" id="rtBig"></div>
+  <h2 id="rtT"></h2>
+  <p id="rtS"></p>
+  <button class="btn" id="rtGo">Vamos!</button>
+</div></div>
+<div class="win" id="rwin"><div class="card rcard">
+  <h2 id="rwT"></h2>
+  <p id="rwP"></p>
+  <p id="rwTime" style="font-weight:800;color:#345"></p>
+  <div class="big" id="rwStars"></div>
+  <div class="rtrack lg" id="rwTrack"></div>
+  <button class="btn" id="rwNext">Passar a vez ▶</button>
+</div></div>
+<div class="win dark" id="rend"><div class="card rcard">
+  <div class="rbig" id="reBig"></div>
+  <h2 id="reT"></h2>
+  <p id="reP"></p>
+  <div class="rtrack lg" id="reTrack"></div>
+  <div class="cbtns"><button class="btn sec" id="reMenu">Menu</button><button class="btn" id="reNew">Nova corrida</button></div>
+</div></div>
+<div class="toast" id="toast"></div>
+<div class="win" id="win"><div class="card">
+  <h2 id="wt">Muito bem!</h2>
+  <p id="wp">Você ganhou</p>
+  <div class="big" id="wstars"></div>
+  <div class="cbtns">
+    <button class="btn sec" id="wMenu">Menu</button>
+    <button class="btn sec" id="wAgain">Jogar de novo</button>
+    <button class="btn" id="wNext">Próxima ▶</button>
+  </div>
+</div></div>
+
+<script>
+(()=>{
+'use strict';
+const R="#e63946",B="#2a6fdb",Y="#f4c20d",G="#2a9d4b",K="#222222",W="#ffffff";
+const FONT="'Nunito','Carlito','DejaVu Sans',system-ui,sans-serif";
+const NS='http://www.w3.org/2000/svg';
+const $=s=>document.querySelector(s);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const S={voice:store.get('pcpre-voice',true),snd:store.get('pcpre-snd',true),stars:store.get('pcpre-stars',{})};
+
+/* ---------------- sons ---------------- */
+let ac=null;
+function tone(f,t=0,d=.15,type='sine',v=.14){
+  if(!S.snd)return;
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+    if(ac.state==='suspended')ac.resume();
+    const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;o.connect(g);g.connect(ac.destination);
+    const t0=ac.currentTime+t;g.gain.setValueAtTime(v,t0);g.gain.exponentialRampToValueAtTime(.001,t0+d);o.start(t0);o.stop(t0+d+.02);
+  }catch(e){}
+}
+const sPop=()=>tone(660,0,.08,'sine',.12);
+const sBad=()=>{tone(220,0,.18,'sawtooth',.08);tone(170,.15,.25,'sawtooth',.08)};
+const sGood=()=>[523,659,784,1047].forEach((f,i)=>tone(f,i*.12,.25,'triangle',.16));
+function say(t){
+  if(!S.voice)return;
+  try{const u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';u.rate=.9;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}
+}
+
+/* ---------------- primitivas SVG ---------------- */
+const txt=(x,y,s,size=16,anchor='middle',fill=K,weight='bold')=>`<text x="${x}" y="${y}" font-family="${FONT}" font-size="${size}" font-weight="${weight}" text-anchor="${anchor}" fill="${fill}">${s}</text>`;
+const circle=(cx,cy,d,fill,stroke=K,sw=2.5)=>`<circle cx="${cx}" cy="${cy}" r="${d/2}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
+const square=(cx,cy,d,fill,stroke=K,sw=2.5)=>`<rect x="${cx-d/2}" y="${cy-d/2}" width="${d}" height="${d}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/>`;
+const triangle=(cx,cy,d,fill,stroke=K,sw=2.5)=>`<polygon points="${cx},${cy-d/2} ${cx+d/2},${cy+d/2} ${cx-d/2},${cy+d/2}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/>`;
+const star=(cx,cy,d,fill,stroke=K,sw=2.5)=>{const ro=d/2,ri=d/4.2;let p=[];for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r=i%2?ri:ro;p.push((cx+r*Math.cos(a)).toFixed(1)+','+(cy+r*Math.sin(a)).toFixed(1))}return `<polygon points="${p.join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/>`};
+const SHC={circle:B,square:R,triangle:G,star:Y};
+const shape=(k,cx,cy,d,fill)=>({circle,square,triangle,star})[k](cx,cy,d,fill);
+const box=(x,y,w,h,rx=8,dash=false,fill=W,sw=2.5)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" fill="${fill}" stroke="#333" stroke-width="${sw}"${dash?' stroke-dasharray="6 5"':''}/>`;
+const arrow=(d,cx,cy,s=1,fill=K)=>`<g transform="translate(${cx},${cy}) rotate(${{R:0,D:90,L:180,U:270}[d]}) scale(${s})"><polygon points="-16,-6 3,-6 3,-14 20,0 3,14 3,6 -16,6" fill="${fill}"/></g>`;
+const line=(x1,y1,x2,y2,c='#333',w=2.5)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`;
+const dot=(x,y,r=5)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#fff" stroke="#333" stroke-width="2.5"/>`;
+const robotInner=(s=1)=>{let g=`<g transform="scale(${s})">`;
+  g+=`<line x1="0" y1="-22" x2="0" y2="-15" stroke="${K}" stroke-width="3"/><circle cx="0" cy="-25" r="4" fill="${R}" stroke="${K}" stroke-width="2"/>`;
+  g+=`<rect x="-24" y="-8" width="5" height="12" rx="2" fill="#78909c" stroke="${K}" stroke-width="2"/><rect x="19" y="-8" width="5" height="12" rx="2" fill="#78909c" stroke="${K}" stroke-width="2"/>`;
+  g+=`<rect x="-20" y="-15" width="40" height="32" rx="8" fill="#b0bec5" stroke="${K}" stroke-width="2.5"/>`;
+  for(const ex of [-8,8])g+=`<circle cx="${ex}" cy="-3" r="5.5" fill="#fff" stroke="${K}" stroke-width="2"/><circle cx="${ex}" cy="-3" r="2" fill="${K}"/>`;
+  return g+`<line x1="-8" y1="9" x2="8" y2="9" stroke="${K}" stroke-width="2.5" stroke-linecap="round"/></g>`};
+const rock=(cx,cy)=>{const p=[[-21,13],[-15,-9],[1,-19],[17,-9],[22,13]].map(([a,b])=>`${cx+a},${cy+b}`).join(' ');
+  return `<polygon points="${p}" fill="#9e9e9e" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/>${line(cx-6,cy-4,cx+4,cy+4,'#616161',2)}`};
+const basket=(cx,cy,c)=>`<path d="M${cx-30},${cy-30} Q${cx},${cy-62} ${cx+30},${cy-30}" fill="none" stroke="${K}" stroke-width="3"/><polygon points="${cx-38},${cy-24} ${cx+38},${cy-24} ${cx+28},${cy+30} ${cx-28},${cy+30}" fill="${c}" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/>`;
+const tower=(cx,floor,n,size)=>{const cols=[R,B,Y,G,R,B];let s='';for(let i=0;i<n;i++)s+=square(cx,floor-size/2-i*size,size,cols[i%6],K,2);return s};
+const apples=(x,y,n)=>{let s='';for(let i=0;i<n;i++){const cx=x+i*33;s+=circle(cx,y,28,R,K,2.2)+`<ellipse cx="${cx+5}" cy="${y-16}" rx="6" ry="3.5" fill="${G}" stroke="${K}" stroke-width="1.5" transform="rotate(-30 ${cx+5} ${y-16})"/>`}return s};
+const leaves=(cx,y)=>`<ellipse cx="${cx-13}" cy="${y}" rx="11" ry="6" fill="${G}" stroke="${K}" stroke-width="2" transform="rotate(-25 ${cx-13} ${y})"/><ellipse cx="${cx+13}" cy="${y}" rx="11" ry="6" fill="${G}" stroke="${K}" stroke-width="2" transform="rotate(25 ${cx+13} ${y})"/>`;
+const panelBg=(x,w=86)=>box(x,12,w,150,10,false,W,2.5)+`<rect x="${x+1.5}" y="127" width="${w-3}" height="33" fill="#a1887f"/>`;
+const arrowCards=(seq,y,x0,wc=50,step=58)=>seq.map((d,i)=>box(x0+i*step,y,wc,wc,8)+arrow(d,x0+i*step+wc/2,y+wc/2,1)).join('');
+const trafficLight=(cx,cy,lit)=>{let s=box(cx-24,cy-56,48,112,12,false,'#37474f',2.5);const c={r:R,y:Y,g:G};[['r',-34],['y',0],['g',34]].forEach(([k,o])=>s+=circle(cx,cy+o,26,k===lit?c[k]:'#cfd8dc',K,2));return s};
+const stopSign=(cx,cy,r=36)=>{let p=[];for(let i=0;i<8;i++){const a=Math.PI/8+i*Math.PI/4;p.push((cx+r*Math.cos(a)).toFixed(1)+','+(cy+r*Math.sin(a)).toFixed(1))}return `<polygon points="${p.join(' ')}" fill="${R}" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/>`+txt(cx,cy+7,'PARE',20,'middle','#fff')};
+const goSign=(cx,cy,r=36)=>circle(cx,cy,2*r,G)+arrow('R',cx,cy-8,1.1,'#fff')+txt(cx,cy+22,'ANDE',15,'middle','#fff');
+
+const DIRS={R:[1,0],L:[-1,0],U:[0,-1],D:[0,1]};
+const NEXTDIR={R:'D',D:'L',L:'U',U:'R'};
+
+/* ---------------- coordenadas ---------------- */
+function svgPt(svg,e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;const m=svg.getScreenCTM();return m?p.matrixTransform(m.inverse()):{x:0,y:0}}
+
+/* =====================================================================
+   FEATURES
+   ===================================================================== */
+
+/* ---- Slots: casas para preencher com itens da paleta ---- */
+function Slots(cfg){
+  const val={...(cfg.init||{})};const ids=cfg.slots.map(s=>s.id);
+  let selS=null,tool=null,hl=null,bad={},g,ctx,svg;
+  const firstEmpty=()=>cfg.cycle?null:(ids.find(i=>val[i]==null)??null);
+  const one=s=>{const v=val[s.id],sel=selS===s.id||hl===s.id;
+    let h=`<rect class="slot" data-id="${s.id}" x="${s.x}" y="${s.y}" width="${s.w}" height="${s.h}" rx="8" fill="${bad[s.id]?'#ffe1e1':sel?'#e0efff':W}" stroke="${bad[s.id]?R:sel?B:'#444'}" stroke-width="${sel||bad[s.id]?4:2.5}"${v==null?' stroke-dasharray="6 5"':''}/>`;
+    if(v!=null)h+=`<g pointer-events="none">${cfg.draw(v,s.x+s.w/2,s.y+s.h/2,s)}</g>`;return h};
+  const draw=()=>{g.innerHTML=cfg.slots.map(one).join('')};
+  const f={
+    pal:cfg.cycle?null:cfg.pal,
+    svg(){selS=firstEmpty();return cfg.slots.map(one).join('')},
+    attach(_svg,_g,_ctx){svg=_svg;g=_g;ctx=_ctx;
+      g.addEventListener('pointerdown',e=>{const el=e.target.closest('.slot');if(!el||ctx.locked())return;e.preventDefault();const id=el.dataset.id;
+        if(cfg.cycle){val[id]=NEXTDIR[val[id]];sPop();draw();return}
+        if(tool!=null){val[id]=tool;sPop();selS=null;draw();return}
+        selS=id;sPop();draw();});
+      ctx.palSel(null)},
+    onPal(key){sPop();
+      if(selS!=null){val[selS]=key;selS=firstEmpty();ctx.palSel(null);tool=null;draw()}
+      else{tool=tool===key?null:key;ctx.palSel(tool)}},
+    check(){if(ids.some(i=>val[i]==null))return{incomplete:true};
+      const wrong=ids.filter(i=>cfg.ans&&val[i]!==cfg.ans[i]);return{ok:!wrong.length,wrong}},
+    async clearWrong(w){bad={};w.forEach(i=>bad[i]=true);draw();g.classList.add('shake');await sleep(700);g.classList.remove('shake');
+      w.forEach(i=>delete val[i]);bad={};selS=firstEmpty();tool=null;ctx.palSel(null);draw()},
+    reset(){ids.forEach(i=>delete val[i]);Object.assign(val,cfg.init||{});bad={};tool=null;selS=firstEmpty();ctx&&ctx.palSel(null);g&&draw()},
+    values(){return ids.map(i=>val[i]??null)},
+    setHl(i){hl=i==null?null:ids[i%ids.length];if(g)draw()},
+    solve(){ids.forEach(i=>val[i]=cfg.ans?cfg.ans[i]:cfg.solution[ids.indexOf(i)]);draw()}
+  };
+  return f;
+}
+
+/* ---- Toggles: tocar para marcar (X ou círculo) ---- */
+function Toggles(cfg){
+  const sel=new Set();let bad=new Set(),g,ctx;
+  const mark=(it,isBad)=>{const c=isBad?'#999':(cfg.mark==='x'?R:'#f97316');
+    if(cfg.mark==='x'){const px=it.w*.18,py=it.h*.18;return line(it.x+px,it.y+py,it.x+it.w-px,it.y+it.h-py,c,6)+line(it.x+it.w-px,it.y+py,it.x+px,it.y+it.h-py,c,6)}
+    return `<rect x="${it.x-3}" y="${it.y-3}" width="${it.w+6}" height="${it.h+6}" rx="14" fill="none" stroke="${c}" stroke-width="5"/>`};
+  const one=it=>`<g class="tg" data-id="${it.id}"><rect x="${it.x}" y="${it.y}" width="${it.w}" height="${it.h}" fill="#fff" fill-opacity="0.01"/>${sel.has(it.id)?mark(it,bad.has(it.id)):''}</g>`;
+  const draw=()=>{g.innerHTML=cfg.items.map(one).join('')};
+  return{
+    svg(){return cfg.items.map(one).join('')},
+    attach(_s,_g,_c){g=_g;ctx=_c;g.addEventListener('pointerdown',e=>{const el=e.target.closest('.tg');if(!el||ctx.locked())return;e.preventDefault();
+      const it=cfg.items.find(i=>i.id===el.dataset.id);
+      if(sel.has(it.id))sel.delete(it.id);else{if(cfg.radio)cfg.items.filter(o=>o.g===it.g).forEach(o=>sel.delete(o.id));sel.add(it.id)}
+      sPop();draw()})},
+    check(){
+      if(cfg.need==='group'){const gs=[...new Set(cfg.items.map(i=>i.g))];for(const gg of gs)if(!cfg.items.some(i=>i.g===gg&&sel.has(i.id)))return{incomplete:true}}
+      else if(!sel.size)return{incomplete:true};
+      const wrong=cfg.items.filter(i=>sel.has(i.id)!==i.ok).map(i=>i.id);return{ok:!wrong.length,wrong}},
+    async clearWrong(w){bad=new Set(w);draw();g.classList.add('shake');await sleep(700);g.classList.remove('shake');w.forEach(i=>sel.delete(i));bad=new Set();draw()},
+    reset(){sel.clear();bad=new Set();g&&draw()},
+    solve(){sel.clear();cfg.items.filter(i=>i.ok).forEach(i=>sel.add(i.id));draw()}
+  };
+}
+
+/* ---- Links: arrastar o dedo para ligar ---- */
+function Links(cfg){
+  const pairs={};let g,svg,ctx,drag=null,bad=new Set();
+  const cols=[B,R,G,'#f59e0b'];
+  const inz=(z,p)=>p.x>=z[0]&&p.x<=z[0]+z[2]&&p.y>=z[1]&&p.y<=z[1]+z[3];
+  const hit=(arr,p)=>arr.find(n=>inz(n.zone,p));
+  const draw=()=>{let h='';cfg.left.forEach((l,i)=>{const r=pairs[l.id];if(!r)return;const rn=cfg.right.find(x=>x.id===r);
+      h+=line(l.dot[0],l.dot[1],rn.dot[0],rn.dot[1],bad.has(l.id)?'#999':cols[i%4],6)});
+    if(drag)h+=line(drag.x1,drag.y1,drag.x2,drag.y2,'#667',5);g.innerHTML=h};
+  return{
+    svg(){return ''},
+    attach(_s,_g,_c){svg=_s;g=_g;ctx=_c;
+      svg.addEventListener('pointerdown',e=>{if(ctx.locked())return;const p=svgPt(svg,e);
+        let side='l',n=hit(cfg.left,p);if(!n){side='r';n=hit(cfg.right,p)}if(!n)return;
+        e.preventDefault();try{svg.setPointerCapture(e.pointerId)}catch(_){}
+        drag={side,n,x1:n.dot[0],y1:n.dot[1],x2:p.x,y2:p.y};sPop();draw()});
+      svg.addEventListener('pointermove',e=>{if(!drag)return;const p=svgPt(svg,e);drag.x2=p.x;drag.y2=p.y;draw()});
+      const end=e=>{if(!drag)return;const p=svgPt(svg,e);const other=hit(drag.side==='l'?cfg.right:cfg.left,p);
+        if(other){const l=drag.side==='l'?drag.n:other,r=drag.side==='l'?other:drag.n;
+          for(const k of Object.keys(pairs))if(k===l.id||pairs[k]===r.id)delete pairs[k];pairs[l.id]=r.id;sPop()}
+        drag=null;draw()};
+      svg.addEventListener('pointerup',end);svg.addEventListener('pointercancel',end)},
+    check(){if(cfg.left.some(l=>!pairs[l.id]))return{incomplete:true};
+      const wrong=cfg.left.filter(l=>pairs[l.id]!==cfg.ans[l.id]).map(l=>l.id);return{ok:!wrong.length,wrong}},
+    async clearWrong(w){bad=new Set(w);draw();g.classList.add('shake');await sleep(700);g.classList.remove('shake');w.forEach(i=>delete pairs[i]);bad=new Set();draw()},
+    reset(){for(const k of Object.keys(pairs))delete pairs[k];bad=new Set();drag=null;g&&draw()},
+    solve(){Object.assign(pairs,cfg.ans);draw()}
+  };
+}
+
+/* ---- Paint: pintar com a cor escolhida ---- */
+function Paint(cfg){
+  const fill={};let tool=cfg.pal[0].key,g,ctx,bad=new Set();
+  const one=t=>`<g class="pt" data-id="${t.id}">${t.draw(fill[t.id]||W,bad.has(t.id))}</g>`;
+  const draw=()=>{g.innerHTML=cfg.targets.map(one).join('')};
+  return{
+    pal:cfg.pal,
+    svg(){return cfg.targets.map(one).join('')},
+    attach(_s,_g,_c){g=_g;ctx=_c;ctx.palSel(tool);
+      g.addEventListener('pointerdown',e=>{const el=e.target.closest('.pt');if(!el||ctx.locked())return;e.preventDefault();
+        const id=el.dataset.id,t=cfg.targets.find(x=>x.id===id);fill[id]=tool;sPop();el.innerHTML=t.draw(tool,false)})},
+    onPal(k){tool=k;sPop();ctx.palSel(k)},
+    check(){if(cfg.targets.some(t=>t.ans!==W&&!fill[t.id]))return{incomplete:true};
+      const wrong=cfg.targets.filter(t=>(fill[t.id]||W)!==t.ans).map(t=>t.id);return{ok:!wrong.length,wrong}},
+    async clearWrong(w){bad=new Set(w);draw();g.classList.add('shake');await sleep(700);g.classList.remove('shake');w.forEach(i=>delete fill[i]);bad=new Set();draw()},
+    reset(){for(const k of Object.keys(fill))delete fill[k];bad=new Set();tool=cfg.pal[0].key;if(g){ctx.palSel(tool);draw()}},
+    solve(){cfg.targets.forEach(t=>fill[t.id]=t.ans);draw()}
+  };
+}
+
+/* ---- Prog: grade, robô e execução das setas ---- */
+function Prog(cfg){
+  const {x0,y0,cell,start}=cfg;let g,robot,trail,pos;
+  const cc=(c,r)=>[x0+cell*(c+.5),y0+cell*(r+.5)];
+  const setPos=(x,y)=>{pos=[x,y];robot.setAttribute('transform',`translate(${x},${y})`)};
+  const tween=(to,ms)=>new Promise(res=>{const from=pos.slice(),t0=performance.now();
+    const step=t=>{const k=Math.min(1,(t-t0)/ms),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;setPos(from[0]+(to[0]-from[0])*e,from[1]+(to[1]-from[1])*e);k<1?requestAnimationFrame(step):res()};requestAnimationFrame(step)});
+  const isRock=(c,r)=>(cfg.rocks||[]).some(([a,b])=>a===c&&b===r);
+  const api={
+    cc,
+    svg(){let s='';for(let r=0;r<3;r++)for(let c=0;c<3;c++)s+=`<rect x="${x0+c*cell}" y="${y0+r*cell}" width="${cell}" height="${cell}" fill="${cfg.end&&cfg.end[0]===c&&cfg.end[1]===r?'#f3f9ff':W}" stroke="#333" stroke-width="2.5"/>`;
+      (cfg.rocks||[]).forEach(([c,r])=>s+=rock(...cc(c,r)));
+      if(cfg.star)s+=star(...cc(...cfg.star),36,Y);
+      s+='<g class="trail"></g>';const [sx,sy]=cc(...start);
+      s+=`<g class="robot" transform="translate(${sx},${sy})">${robotInner(cell>=60?1.05:.95)}</g>`;return s},
+    attach(_s,_g){g=_g;robot=g.querySelector('.robot');trail=g.querySelector('.trail');pos=cc(...start)},
+    reset(){if(!g)return;trail.innerHTML='';setPos(...cc(...start))},
+    async animate(moves,onStep){api.reset();await sleep(250);let [c,r]=start;
+      for(let i=0;i<moves.length;i++){onStep&&onStep(i);const [dc,dr]=DIRS[moves[i]],nc=c+dc,nr=r+dr;
+        const out=nc<0||nc>2||nr<0||nr>2;
+        if(out||isRock(nc,nr)){const [fx,fy]=cc(c,r),[tx,ty]=out?[fx+dc*cell*.45,fy+dr*cell*.45]:cc(nc,nr);
+          await tween([fx+(tx-fx)*.6,fy+(ty-fy)*.6],260);sBad();await tween([fx,fy],260);onStep&&onStep(null);return{ok:false,reason:out?'out':'rock'}}
+        const [px,py]=cc(c,r);trail.insertAdjacentHTML('beforeend',`<circle cx="${px}" cy="${py+cell*.3}" r="5" fill="#9ec5ff"/>`);
+        await tween(cc(nc,nr),480);tone(520+i*70,0,.1,'sine',.1);c=nc;r=nr;await sleep(120)}
+      onStep&&onStep(null);
+      const ok=cfg.star?(c===cfg.star[0]&&r===cfg.star[1]):true;return{ok,reason:ok?'ok':'far',end:[c,r]}}
+  };
+  return api;
+}
+
+/* =====================================================================
+   ATIVIDADES
+   ===================================================================== */
+const A=[];
+const def=(title,instr,build)=>A.push({title,instr,build});
+const numPal=arr=>arr.map(n=>({key:String(n),svg:txt(0,15,n,44)}));
+const numDraw=(k,cx,cy,s)=>txt(cx,cy+s.h*.3,k,s.h*.78);
+const colPal=cols=>cols.map(c=>({key:c,svg:circle(0,0,46,c)}));
+const arrPal=()=>['U','L','R','D'].map(d=>({key:d,svg:arrow(d,0,0,1.5)}));
+const arrDraw=(k,cx,cy)=>arrow(k,cx,cy,1);
+
+/* 1 */ def('Padrão de cores','Continue o padrão. Toque na cor que vem depois.',()=>{
+  const rows=[[R,B,R,B,null,null],[G,G,Y,G,G,null],[R,B,B,R,B,null]],ansL=[R,B,Y,B];let bg='',slots=[],ans={},n=0;
+  rows.forEach((row,ri)=>{const y=55+ri*80;row.forEach((c,i)=>{const x=28+i*49;if(c)bg+=circle(x,y,38,c);else{const id='s'+n;slots.push({id,x:x-19,y:y-19,w:38,h:38});ans[id]=ansL[n++]}})});
+  return{bg,feats:[Slots({slots,ans,pal:colPal([R,B,Y,G]),draw:(k,cx,cy,s)=>circle(cx,cy,s.w-6,k)})]}});
+
+/* 2 */ def('Padrão de formas','Qual forma vem depois? Toque na forma certa.',()=>{
+  const rows=[['circle','square','circle','square',null,null],['triangle','triangle','star','triangle','triangle',null],['circle','triangle','square','circle','triangle',null]],ansL=['circle','square','star','square'];
+  let bg='',slots=[],ans={},n=0;
+  rows.forEach((row,ri)=>{const y=55+ri*80;row.forEach((k,i)=>{const x=28+i*49;if(k)bg+=shape(k,x,y,38,SHC[k]);else{const id='s'+n;slots.push({id,x:x-19,y:y-19,w:38,h:38});ans[id]=ansL[n++]}})});
+  const pal=['circle','square','triangle','star'].map(k=>({key:k,svg:shape(k,0,0,44,SHC[k])}));
+  return{bg,feats:[Slots({slots,ans,pal,draw:(k,cx,cy,s)=>shape(k,cx,cy,s.w-8,SHC[k])})]}});
+
+/* 3 */ def('Da semente à flor','Coloque os números 1, 2 e 3 na ordem em que a planta cresce.',()=>{
+  const xs=[8,107,206],cxs=xs.map(x=>x+43);let bg=xs.map(x=>panelBg(x)).join('');
+  let cx=cxs[0];bg+=line(cx,128,cx,55,G,5)+leaves(cx,100);
+  for(let k=0;k<6;k++){const a=k*Math.PI/3;bg+=`<circle cx="${(cx+16*Math.cos(a)).toFixed(1)}" cy="${(50+16*Math.sin(a)).toFixed(1)}" r="11" fill="#ff8fab" stroke="${K}" stroke-width="2"/>`}
+  bg+=circle(cx,50,18,Y,K,2);
+  cx=cxs[1];bg+=`<ellipse cx="${cx}" cy="132" rx="11" ry="7" fill="#4e342e" stroke="${K}" stroke-width="2"/>`;
+  cx=cxs[2];bg+=line(cx,128,cx,98,G,5)+leaves(cx,96);
+  const slots=cxs.map((x,i)=>({id:'s'+i,x:x-26,y:182,w:52,h:52})),ans={s0:'3',s1:'1',s2:'2'};
+  return{bg,feats:[Slots({slots,ans,pal:numPal([1,2,3]),draw:numDraw})]}});
+
+/* 4 */ def('A torre que cresce','Cada torre ganha 1 bloco. Qual é a próxima? Toque nela.',()=>{
+  let bg='';const floor=118;[40,100,160].forEach((x,i)=>bg+=tower(x,floor,i+1,24));
+  bg+=box(212,floor-68,56,56,8,true)+txt(240,floor-28,'?',40)+line(8,floor+2,292,floor+2,'#888',2);
+  const opts=[[55,2],[150,6],[245,4]];const items=[];
+  opts.forEach(([x,n],i)=>{bg+=box(x-38,138,76,124,10,true,W,2)+tower(x,252,n,16);items.push({id:'o'+i,x:x-38,y:138,w:76,h:124,g:'a',ok:n===4})});
+  return{bg,feats:[Toggles({items,mark:'ring',radio:true,need:'group'})]}});
+
+/* 5 */ def('Qual é diferente?','Toque no X da figura que é diferente. Faça isso nas duas filas.',()=>{
+  let bg='';const xs=[45,115,185,255],items=[];
+  xs.forEach((x,i)=>{bg+=i===2?square(x,75,44,R):circle(x,75,44,R);items.push({id:'a'+i,x:x-26,y:49,w:52,h:52,g:'a',ok:i===2})});
+  xs.forEach((x,i)=>{bg+=triangle(x,195,46,i===1?Y:B);items.push({id:'b'+i,x:x-26,y:169,w:52,h:52,g:'b',ok:i===1})});
+  bg+=line(10,135,290,135,'#aaa',2);
+  return{bg,feats:[Toggles({items,mark:'x',radio:true,need:'group'})]}});
+
+/* 6 */ def('Cada cor na sua cesta','Passe o dedo ligando cada figura à cesta da mesma cor.',()=>{
+  let bg='';const its=[['circle',R,45],['square',B,110],['triangle',R,175],['star',B,240]],left=[],ans={};
+  its.forEach(([k,c,y],i)=>{bg+=shape(k,50,y,44,c)+dot(88,y);left.push({id:'l'+i,zone:[10,y-30,100,60],dot:[88,y]});ans['l'+i]=c===R?'r0':'r1'});
+  bg+=basket(235,85,R)+basket(235,205,B)+dot(190,85)+dot(190,205);
+  const right=[{id:'r0',zone:[180,25,112,110],dot:[190,85]},{id:'r1',zone:[180,145,112,110],dot:[190,205]}];
+  return{bg,feats:[Links({left,right,ans})]}});
+
+/* 7 */ def('Do menor ao maior','Escreva 1 para o menor, 2 para o médio e 3 para o maior.',()=>{
+  let bg='';const xs=[60,150,240],slots=[],ans={};
+  [44,76,60].forEach((d,i)=>{bg+=star(xs[i],55,d,Y);slots.push({id:'a'+i,x:xs[i]-17,y:98,w:34,h:34});ans['a'+i]=String([1,3,2][i])});
+  bg+=line(10,142,290,142,'#aaa',2);
+  [70,40,56].forEach((d,i)=>{bg+=line(xs[i],185+d/2,xs[i],232,'#555',2)+circle(xs[i],185,d,R);slots.push({id:'b'+i,x:xs[i]-17,y:236,w:34,h:30});ans['b'+i]=String([3,1,2][i])});
+  return{bg,feats:[Slots({slots,ans,pal:numPal([1,2,3]),draw:numDraw})]}});
+
+/* 8 */ def('Caça aos triângulos','Toque nos triângulos para marcar X. Depois escolha quantos são.',()=>{
+  let bg='';const xs=[45,115,185,255],items=[];
+  const r1=[['circle',R],['triangle',B],['square',G],['triangle',R]],r2=[['triangle',Y],['star',B],['circle',Y],['triangle',G]];
+  [[r1,55,'a'],[r2,135,'b']].forEach(([row,y,p])=>row.forEach(([k,c],i)=>{bg+=shape(k,xs[i],y,46,c);items.push({id:p+i,x:xs[i]-26,y:y-26,w:52,h:52,ok:k==='triangle'})}));
+  bg+=txt(95,238,'Quantos?',22);
+  return{bg,feats:[Toggles({items,mark:'x',need:'any'}),Slots({slots:[{id:'q',x:165,y:212,w:52,h:46}],ans:{q:'4'},pal:numPal([1,2,3,4,5,6]),draw:numDraw})]}});
+
+/* 9 */ def('Quantas maçãs?','Passe o dedo ligando cada grupo de maçãs ao número certo.',()=>{
+  let bg='';const groups=[3,1,4,2],nums=[2,4,1,3],ys=[40,105,170,235],left=[],right=[],ans={};
+  ys.forEach((y,i)=>{bg+=apples(24,y,groups[i])+dot(168,y);left.push({id:'l'+i,zone:[8,y-30,170,60],dot:[168,y]})});
+  ys.forEach((y,i)=>{bg+=dot(214,y)+box(236,y-27,54,54,10)+txt(263,y+15,nums[i],42);right.push({id:'r'+i,zone:[196,y-30,96,60],dot:[214,y]})});
+  groups.forEach((n,i)=>ans['l'+i]='r'+nums.indexOf(n));
+  return{bg,feats:[Links({left,right,ans})]}});
+
+/* 10 */ def('Antes, depois e entre','Qual número falta? Escolha o número certo.',()=>{
+  const rows=[[1,2,null,4,5],[2,3,4,null],[null,2,3,4]],ys=[20,100,180],ansL=['3','5','1'];let bg='',slots=[],ans={},n=0;
+  rows.forEach((row,ri)=>{const x0=(300-(row.length*56-12))/2;row.forEach((v,i)=>{const x=x0+i*56;
+    if(v==null){const id='s'+n;slots.push({id,x,y:ys[ri],w:44,h:56});ans[id]=ansL[n++]}else bg+=box(x,ys[ri],44,56,8)+txt(x+22,ys[ri]+40,v,36)})});
+  return{bg,feats:[Slots({slots,ans,pal:numPal([1,2,3,4,5,6]),draw:numDraw})]}});
+
+/* 11 */ def('Onde tem mais?','Toque no grupo que tem mais. Faça isso nas duas linhas.',()=>{
+  let bg='';const fr=[[12,8,'a',false],[158,8,'a',true],[12,148,'b',true],[158,148,'b',false]],items=[];
+  fr.forEach(([x,y,gr,ok],i)=>{bg+=box(x,y,130,112,12);items.push({id:'f'+i,x,y,w:130,h:112,g:gr,ok})});
+  [[40,40],[95,35],[68,88]].forEach(([x,y])=>bg+=star(x,y,30,Y,K,2));
+  [[185,36],[240,36],[212,66],[185,94],[250,92]].forEach(([x,y])=>bg+=star(x,y,30,Y,K,2));
+  [[40,178],[105,178],[45,228],[105,228]].forEach(([x,y])=>bg+=circle(x,y,28,B,K,2));
+  [[195,185],[250,225]].forEach(([x,y])=>bg+=circle(x,y,28,B,K,2));
+  return{bg,feats:[Toggles({items,mark:'ring',radio:true,need:'group'})]}});
+
+/* 12 */ def('A casa de formas','Toque numa cor e depois na forma. Triângulo vermelho, quadrado azul, retângulo amarelo, círculo verde.',()=>{
+  const bg=triangle(30,25,26,R)+square(30,65,24,B)+`<rect x="16" y="95" width="28" height="18" fill="${Y}" stroke="${K}" stroke-width="2.5"/>`+circle(30,140,26,G);
+  const T=[
+    {id:'wall',ans:B,draw:(f,b)=>square(150,200,120,f,b?R:K)},
+    {id:'roof',ans:R,draw:(f,b)=>triangle(150,105,140,f,b?R:K)},
+    {id:'win',ans:B,draw:(f,b)=>square(112,185,28,f,b?R:K)},
+    {id:'door',ans:Y,draw:(f,b)=>`<rect x="150" y="200" width="32" height="60" fill="${f}" stroke="${b?R:K}" stroke-width="2.5"/>`},
+    {id:'sun',ans:G,draw:(f,b)=>circle(250,50,44,f,b?R:K)}];
+  return{bg,feats:[Paint({targets:T,pal:colPal([R,B,Y,G])})]}});
+
+/* 13 */ def('Siga as setas','O robô segue as setas. Toque no quadradinho onde ele vai parar.',()=>{
+  const P=Prog({x0:66,y0:6,cell:56,start:[0,0]});const items=[];
+  for(let r=0;r<3;r++)for(let c=0;c<3;c++)items.push({id:`c${c}${r}`,x:66+c*56+3,y:6+r*56+3,w:50,h:50,g:'c',ok:c===2&&r===2});
+  const bg=arrowCards(['D','D','R','R'],200,38);
+  return{bg,feats:[P,Toggles({items,mark:'ring',radio:true,need:'any'})],demo:['D','D','R','R'],prog:P,afterOk:true}});
+
+/* 14 */ def('Escreva o caminho','Escolha as setas para o robô chegar na estrela. Depois toque em Executar.',()=>{
+  const P=Prog({x0:66,y0:6,cell:56,start:[0,2],star:[2,1]});
+  const slots=[0,1,2].map(i=>({id:'s'+i,x:59+i*64,y:200,w:54,h:54}));
+  const S=Slots({slots,solution:['R','R','U'],pal:arrPal(),draw:arrDraw});
+  return{bg:'',feats:[P,S],prog:P,slots:S,run:true}});
+
+/* 15 */ def('Ache o erro','Uma seta está errada. Toque nela para girar. Depois toque em Executar.',()=>{
+  const P=Prog({x0:66,y0:6,cell:56,start:[0,2],star:[2,0]});
+  const slots=[0,1,2,3].map(i=>({id:'s'+i,x:38+i*58,y:200,w:50,h:50}));
+  const S=Slots({slots,cycle:true,init:{s0:'R',s1:'R',s2:'U',s3:'L'},solution:['R','R','U','U'],draw:arrDraw});
+  return{bg:'',feats:[P,S],prog:P,slots:S,run:true}});
+
+/* 16 */ def('Repita o caminho','Escolha 2 setas. O robô repete as setas 2 vezes até a estrela.',()=>{
+  const P=Prog({x0:8,y0:20,cell:62,start:[0,2],star:[2,0]});
+  const bg=txt(246,40,'REPITA',16)+box(198,52,96,62,10)+circle(246,160,52,W,K,3)+txt(246,172,'2×',32)+txt(246,215,'vezes',14,'middle','#555','normal');
+  const slots=[{id:'s0',x:203,y:63,w:40,h:40},{id:'s1',x:249,y:63,w:40,h:40}];
+  const S=Slots({slots,solution:['U','R'],pal:arrPal(),draw:arrDraw});
+  return{bg,feats:[P,S],prog:P,slots:S,run:true,rep:2}});
+
+/* 17 */ def('Se… então','SE está chovendo, ENTÃO uso o quê? Passe o dedo ligando o clima ao que combina.',()=>{
+  let bg='';const cx=62,cy=62;
+  [[-22,6,20],[0,-8,25],[24,4,21],[6,12,18]].forEach(([dx,dy,r])=>bg+=`<circle cx="${cx+dx}" cy="${cy+dy}" r="${r}" fill="#cfd8dc" stroke="${K}" stroke-width="2.5"/>`);
+  bg+=`<rect x="${cx-44}" y="${cy+6}" width="90" height="22" fill="#cfd8dc"/>`;
+  [-26,-6,14,34].forEach(dx=>bg+=line(cx+dx,cy+38,cx+dx-5,cy+54,B,4));
+  const sx=62,sy=200;for(let k=0;k<8;k++){const a=k*Math.PI/4;bg+=line(sx+30*Math.cos(a),sy+30*Math.sin(a),sx+44*Math.cos(a),sy+44*Math.sin(a),'#f59e0b',4)}
+  bg+=circle(sx,sy,44,Y);
+  const ux=242,uy=198;
+  bg+=`<path d="M${ux-42},${uy} A42,42 0 0 1 ${ux+42},${uy} Z" fill="${R}" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/><path d="M${ux},${uy} L${ux},${uy+38} Q${ux},${uy+50} ${ux-10},${uy+46}" fill="none" stroke="${K}" stroke-width="3.5" stroke-linecap="round"/>`;
+  const gx=242,gy=70;bg+=circle(gx-24,gy,36,K)+circle(gx+24,gy,36,K)+line(gx-6,gy-2,gx+6,gy-2,K,4)+line(gx-42,gy-6,gx-56,gy-14,K,4)+line(gx+42,gy-6,gx+56,gy-14,K,4)
+    +`<ellipse cx="${gx-31}" cy="${gy-8}" rx="6" ry="3" fill="#fff" opacity=".7"/><ellipse cx="${gx+17}" cy="${gy-8}" rx="6" ry="3" fill="#fff" opacity=".7"/>`;
+  bg+=dot(122,72)+dot(122,200)+dot(165,70)+dot(165,198);
+  const left=[{id:'rain',zone:[8,12,125,125],dot:[122,72]},{id:'sun',zone:[8,145,125,120],dot:[122,200]}];
+  const right=[{id:'glasses',zone:[155,12,140,115],dot:[165,70]},{id:'umb',zone:[155,140,140,125],dot:[165,198]}];
+  return{bg,feats:[Links({left,right,ans:{rain:'umb',sun:'glasses'}})]}});
+
+/* 18 */ def('O semáforo','Olhe a luz do semáforo. Toque no que a pessoa deve fazer.',()=>{
+  let bg=trafficLight(42,70,'r')+goSign(135,70)+stopSign(235,70)+trafficLight(42,195,'g')+stopSign(135,195)+goSign(235,195)+line(10,133,290,133,'#aaa',2);
+  const items=[{id:'a0',x:95,y:30,w:80,h:80,g:'a',ok:false},{id:'a1',x:195,y:30,w:80,h:80,g:'a',ok:true},{id:'b0',x:95,y:155,w:80,h:80,g:'b',ok:false},{id:'b1',x:195,y:155,w:80,h:80,g:'b',ok:true}];
+  return{bg,feats:[Toggles({items,mark:'ring',radio:true,need:'group'})]}});
+
+/* 19 */ def('Copie o desenho','Pinte o quadro da direita igual ao modelo.',()=>{
+  const PIX={'0,0':B,'2,0':B,'1,1':Y,'0,2':R,'1,2':R,'2,2':R};
+  let bg=txt(78,28,'Modelo',18)+txt(222,28,'Copie aqui',18);
+  for(let r=0;r<3;r++)for(let c=0;c<3;c++)bg+=`<rect x="${18+c*40}" y="${42+r*40}" width="40" height="40" fill="${PIX[c+','+r]||W}" stroke="#333" stroke-width="2.5"/>`;
+  bg+=line(150,60,150,150,'#bbb',2);
+  const T=[];for(let r=0;r<3;r++)for(let c=0;c<3;c++)T.push({id:`p${c}${r}`,ans:PIX[c+','+r]||W,draw:(f,b)=>`<rect x="${162+c*40}" y="${42+r*40}" width="40" height="40" fill="${f}" stroke="${b?R:'#333'}" stroke-width="${b?4:2.5}"/>`});
+  const eraser={key:W,svg:circle(0,0,46,W)+line(-14,-14,14,14,'#999',4)+line(14,-14,-14,14,'#999',4)};
+  return{bg,feats:[Paint({targets:T,pal:[...colPal([R,Y,B]),eraser]})]}});
+
+/* 20 */ def('Desafio: desvie das pedras','Escolha as setas para o robô chegar na estrela sem bater nas pedras. Depois toque em Executar.',()=>{
+  const P=Prog({x0:66,y0:6,cell:56,start:[0,2],star:[2,0],rocks:[[1,1],[1,0]]});
+  const slots=[0,1,2,3].map(i=>({id:'s'+i,x:31+i*62,y:200,w:52,h:52}));
+  const S=Slots({slots,solution:['R','R','U','U'],pal:arrPal(),draw:arrDraw});
+  return{bg:'',feats:[P,S],prog:P,slots:S,run:true}});
+
+const SEC=[['Padrões e sequências',0,4,'#2a6fdb'],['Classificar e comparar',4,8,'#e68a00'],['Quantidades e formas',8,12,'#2a9d4b'],['Algoritmos: o robô',12,16,'#8e44ad'],['Se… então, copiar e desafio',16,20,'#e63946']];
+
+/* =====================================================================
+   MOTOR
+   ===================================================================== */
+const starSvg=(on,sz)=>`<svg viewBox="-14 -14 28 28" width="${sz||24}" height="${sz||24}">${star(0,0,26,on?Y:'#dfe6ee',on?'#c98f00':'#b8c3cf',1.6)}</svg>`;
+let cur=-1,a=null,feats=[],attempts=0,busy=false,toastT=null;
+const ctx={locked:()=>busy||$('#win').classList.contains('on'),palSel(k){document.querySelectorAll('#pal .pbtn').forEach(b=>b.classList.toggle('sel',k!=null&&b.dataset.k===k))}};
+
+function toast(msg,kind=''){const t=$('#toast');t.textContent=msg;t.className='toast on '+kind;clearTimeout(toastT);toastT=setTimeout(()=>t.className='toast',2400)}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id))}
+
+function buildMenu(){
+  const tot=Object.values(S.stars).reduce((s,n)=>s+n,0);
+  $('#total').innerHTML=starSvg(true,28)+`<span>${tot} / 60</span>`;
+  $('#tgVoice').classList.toggle('off',!S.voice);$('#tgSnd').classList.toggle('off',!S.snd);
+  let h=`<button class="racebtn" id="bRace">${FLAG}<span>Corrida a dois<small>1 tablet, 2 jogadores: cada um escolhe um bichinho e disputa pontos</small></span></button>`;
+  SEC.forEach(([name,from,to,c])=>{h+=`<div class="sec" style="--c:${c}"><b>${from+1}–${to}</b>${name}</div><div class="tiles">`;
+    for(let i=from;i<to;i++){const n=S.stars[i]||0;h+=`<button class="tile" data-i="${i}" style="--c:${c}"><div class="n">${i+1}</div><div class="t">${A[i].title}</div><div class="stars">${[1,2,3].map(k=>starSvg(k<=n)).join('')}</div></button>`}
+    h+='</div>'});
+  h+='<button class="reset" id="bClear">Apagar as estrelas</button>';
+  $('#mbody').innerHTML=h;
+}
+
+function open(i){
+  if(i<0||i>=A.length){buildMenu();show('menu');cur=-1;return}
+  cur=i;attempts=0;busy=false;const d=A[i];a=d.build();feats=a.feats;
+  $('#gnum').textContent=i+1;$('#gtitle').textContent=d.title;$('#itext').textContent=d.instr;
+  $('#bPrev').disabled=i===0;
+  const svg=document.createElementNS(NS,'svg');svg.id='stage';svg.setAttribute('viewBox','0 0 300 270');svg.setAttribute('preserveAspectRatio','xMidYMid meet');
+  svg.innerHTML=`<g>${a.bg||''}</g>`+feats.map((f,k)=>`<g id="f${k}">${f.svg()}</g>`).join('');
+  $('#stagewrap').replaceChildren(svg);
+  const palF=feats.find(f=>f.pal);const pal=$('#pal');
+  pal.innerHTML=palF?palF.pal.map(p=>`<button class="pbtn" data-k="${p.key}"><svg viewBox="-30 -30 60 60">${p.svg}</svg></button>`).join(''):'';
+  pal.onpointerdown=e=>{const b=e.target.closest('.pbtn');if(!b||ctx.locked())return;e.preventDefault();palF.onPal(b.dataset.k)};
+  show('game');
+  feats.forEach((f,k)=>f.attach(svg,svg.querySelector('#f'+k),ctx));
+  $('#bGo').textContent=a.run?'▶ Executar':'Conferir';
+  $('#bDemo').style.display=a.demo?'':'none';
+  setBtns(true);
+  say(d.instr);
+}
+
+function setBtns(on){['#bGo','#bReset','#bDemo'].forEach(s=>{$(s).disabled=!on})}
+
+async function win(){
+  if(race)return raceWin(attempts===0?3:attempts===1?2:1);
+  const stars=attempts===0?3:attempts===1?2:1;
+  if(stars>(S.stars[cur]||0)){S.stars[cur]=stars;store.set('pcpre-stars',S.stars)}
+  sGood();
+  const praise=['Muito bem!','Isso mesmo!','Parabéns!','Você é demais!','Arrasou!'];
+  $('#wt').textContent=praise[Math.floor(Math.random()*praise.length)];
+  $('#wp').textContent=stars===3?'Acertou de primeira!':'Você conseguiu!';
+  $('#wstars').innerHTML=[1,2,3].map(k=>starSvg(k<=stars,96).replace('<svg',k<=stars?'<svg class="in"':'<svg')).join('');
+  $('#wNext').style.display=cur<A.length-1?'':'none';
+  $('#win').classList.add('on');
+  const cols=[R,B,Y,G,'#ff8fab'];
+  for(let k=0;k<46;k++){const c=document.createElement('div');c.className='conf';c.style.left=Math.random()*100+'vw';c.style.background=cols[k%5];
+    c.style.animationDuration=(2+Math.random()*2)+'s';c.style.animationDelay=(Math.random()*.5)+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),4800)}
+  say('Muito bem!');
+}
+
+async function check(){
+  if(busy)return;
+  if(a.run)return runProg();
+  let incomplete=false;const res=feats.map(f=>f.check?f.check():{ok:true});
+  if(res.some(r=>r.incomplete)){toast('Falta responder! Complete tudo.','');return}
+  if(res.every(r=>r.ok)){
+    if(a.afterOk){busy=true;setBtns(false);await a.prog.animate(a.demo);busy=false;setBtns(true)}
+    return win()}
+  attempts++;busy=true;sBad();toast('Quase! Tente de novo. O que está certo fica.','bad');
+  for(let k=0;k<feats.length;k++)if(res[k]&&!res[k].ok&&res[k].wrong&&res[k].wrong.length)await feats[k].clearWrong(res[k].wrong);
+  busy=false;
+}
+
+async function runProg(){
+  const sl=a.slots;let m=sl.values();
+  if(m.some(x=>x==null)){toast('Escolha todas as setas primeiro!','');return}
+  if(a.rep)m=Array.from({length:a.rep},()=>m).flat();
+  busy=true;setBtns(false);
+  const r=await a.prog.animate(m,i=>sl.setHl(i));
+  if(r.ok){busy=false;setBtns(true);return win()}
+  attempts++;
+  toast(r.reason==='rock'?'Ops! O robô bateu na pedra.':r.reason==='out'?'Ops! O robô saiu do quadro.':'O robô não chegou na estrela. Tente de novo!','bad');
+  await sleep(1100);a.prog.reset();busy=false;setBtns(true);
+}
+
+async function demo(){if(busy)return;busy=true;setBtns(false);await a.prog.animate(a.demo);await sleep(500);a.prog.reset();busy=false;setBtns(true)}
+
+/* ---------------- eventos ---------------- */
+$('#mbody').addEventListener('click',e=>{
+  const t=e.target.closest('.tile');if(t){sPop();open(+t.dataset.i);return}
+  if(e.target.id==='bClear'){if(confirm('Apagar todas as estrelas?')){S.stars={};store.set('pcpre-stars',S.stars);buildMenu()}}
+});
+$('#tgVoice').onclick=()=>{S.voice=!S.voice;store.set('pcpre-voice',S.voice);buildMenu();if(S.voice)say('Voz ligada')};
+$('#tgSnd').onclick=()=>{S.snd=!S.snd;store.set('pcpre-snd',S.snd);buildMenu();sPop()};
+$('#tgFull').onclick=()=>{try{const d=document.documentElement;if(document.fullscreenElement)document.exitFullscreen();else (d.requestFullscreen||d.webkitRequestFullscreen).call(d)}catch(e){}};
+$('#bHome').onclick=()=>{if(race){raceQuit();return}try{speechSynthesis.cancel()}catch(e){}open(-1)};
+$('#bPrev').onclick=()=>open(cur-1);
+$('#bNext').onclick=()=>open(cur<A.length-1?cur+1:-1);
+$('#bSay').onclick=()=>{const v=S.voice;S.voice=true;say(A[cur].instr);S.voice=v};
+$('#bReset').onclick=()=>{if(busy)return;feats.forEach(f=>f.reset&&f.reset());sPop()};
+$('#bGo').onclick=check;
+$('#bDemo').onclick=demo;
+$('#wMenu').onclick=()=>{$('#win').classList.remove('on');open(-1)};
+$('#wAgain').onclick=()=>{$('#win').classList.remove('on');open(cur)};
+$('#wNext').onclick=()=>{$('#win').classList.remove('on');open(cur+1)};
+
+const animal=(k,cx,cy,s=1)=>{let g=`<g transform="translate(${cx},${cy}) scale(${s})">`;
+  const eyes=(y=-3,dx=8)=>[-dx,dx].map(x=>`<circle cx="${x}" cy="${y}" r="3.2" fill="${K}"/>`).join('');
+  if(k==='gato'){
+    g+=`<polygon points="-19,-8 -21,-27 -5,-17" fill="#f6a54a" stroke="${K}" stroke-width="2.2" stroke-linejoin="round"/><polygon points="19,-8 21,-27 5,-17" fill="#f6a54a" stroke="${K}" stroke-width="2.2" stroke-linejoin="round"/>`;
+    g+=`<circle r="21" fill="#f6a54a" stroke="${K}" stroke-width="2.4"/>${eyes()}<polygon points="-3.5,4 3.5,4 0,8" fill="#e57399"/>`;
+    g+=line(-8,8,-22,5,K,1.6)+line(-8,11,-22,12,K,1.6)+line(8,8,22,5,K,1.6)+line(8,11,22,12,K,1.6);
+  }else if(k==='cao'){
+    g+=`<ellipse cx="-20" cy="-2" rx="8" ry="15" fill="#7b4f2b" stroke="${K}" stroke-width="2.2" transform="rotate(12 -20 -2)"/><ellipse cx="20" cy="-2" rx="8" ry="15" fill="#7b4f2b" stroke="${K}" stroke-width="2.2" transform="rotate(-12 20 -2)"/>`;
+    g+=`<circle r="20" fill="#d7b38a" stroke="${K}" stroke-width="2.4"/>${eyes(-5)}<ellipse cx="0" cy="7" rx="9" ry="7" fill="#f3dcc0" stroke="${K}" stroke-width="1.6"/><ellipse cx="0" cy="4" rx="4" ry="3" fill="${K}"/>`;
+  }else if(k==='coelho'){
+    g+=`<ellipse cx="-8" cy="-27" rx="6" ry="17" fill="#fff" stroke="${K}" stroke-width="2.2"/><ellipse cx="8" cy="-27" rx="6" ry="17" fill="#fff" stroke="${K}" stroke-width="2.2"/><ellipse cx="-8" cy="-26" rx="2.6" ry="11" fill="#ffb3c6"/><ellipse cx="8" cy="-26" rx="2.6" ry="11" fill="#ffb3c6"/>`;
+    g+=`<circle r="19" fill="#f4f4f4" stroke="${K}" stroke-width="2.4"/>${eyes(-3,7)}<polygon points="-3,4 3,4 0,8" fill="#e57399"/>`+line(0,8,0,12,K,1.6);
+  }else if(k==='peixe'){
+    g+=`<polygon points="14,0 30,-13 30,13" fill="#0288d1" stroke="${K}" stroke-width="2.2" stroke-linejoin="round"/><ellipse cx="-2" cy="0" rx="20" ry="14" fill="#4fc3f7" stroke="${K}" stroke-width="2.4"/><circle cx="-10" cy="-3" r="3.2" fill="${K}"/><path d="M-2,-14 Q4,-22 10,-12" fill="#0288d1" stroke="${K}" stroke-width="2"/><path d="M-16,4 Q-12,8 -8,5" fill="none" stroke="${K}" stroke-width="1.8"/>`;
+  }
+  return g+'</g>'};
+
+
+/* ================= Corrida a dois ================= */
+const FLAG='<svg viewBox="0 0 20 24"><line x1="4" y1="2" x2="4" y2="23" stroke="#333" stroke-width="2.5" stroke-linecap="round"/><path d="M4 2H19L14.5 8L19 14H4Z" fill="#e63946" stroke="#333" stroke-width="1.5" stroke-linejoin="round"/></svg>';
+const PC=['#2a6fdb','#e68a00'];
+const RAC=[{k:'coelha',n:'coelha',a:'a',de:'da'},{k:'gato',n:'gato',a:'o',de:'do'},{k:'cachorro',n:'cachorro',a:'o',de:'do'},{k:'coruja',n:'coruja',a:'a',de:'da'},
+  {k:'raposa',n:'raposa',a:'a',de:'da'},{k:'sapo',n:'sapo',a:'o',de:'do'},{k:'pinguim',n:'pinguim',a:'o',de:'do'},{k:'peixe',n:'peixe',a:'o',de:'do'}];
+const rinfo=k=>RAC.find(r=>r.k===k);
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const racerG=k=>{
+  if(k==='coelha')return animal('coelho',0,12,.72)+`<polygon points="0,24 -9,19 -9,29" fill="#ec407a" stroke="${K}" stroke-width="1.5" stroke-linejoin="round"/><polygon points="0,24 9,19 9,29" fill="#ec407a" stroke="${K}" stroke-width="1.5" stroke-linejoin="round"/><circle cx="0" cy="24" r="3" fill="#f48fb1" stroke="${K}" stroke-width="1.2"/>`;
+  if(k==='gato')return animal('gato',0,3,1.1);
+  if(k==='cachorro')return animal('cao',0,3,1.15);
+  if(k==='peixe')return animal('peixe',-3,0,1.05);
+  const sw=`stroke="${K}" stroke-width="2.2" stroke-linejoin="round"`;
+  if(k==='coruja')return `<g transform="translate(0,2)"><polygon points="-18,-12 -22,-28 -6,-19" fill="#8d6e63" ${sw}/><polygon points="18,-12 22,-28 6,-19" fill="#8d6e63" ${sw}/><ellipse rx="22" ry="25" fill="#8d6e63" ${sw}/><ellipse cy="9" rx="13" ry="14" fill="#d7b99a"/><circle cx="-9" cy="-6" r="9" fill="#fff" ${sw}/><circle cx="9" cy="-6" r="9" fill="#fff" ${sw}/><circle cx="-9" cy="-6" r="3.8" fill="${K}"/><circle cx="9" cy="-6" r="3.8" fill="${K}"/><polygon points="-4,0 4,0 0,8" fill="#f6a54a" stroke="${K}" stroke-width="1.6" stroke-linejoin="round"/></g>`;
+  if(k==='raposa')return `<g transform="translate(0,3)"><polygon points="-20,-8 -23,-31 -4,-18" fill="#e8731c" ${sw}/><polygon points="20,-8 23,-31 4,-18" fill="#e8731c" ${sw}/><circle r="21" fill="#e8731c" ${sw}/><ellipse cy="10" rx="14" ry="9" fill="#fff"/><circle cx="-8" cy="-4" r="3.2" fill="${K}"/><circle cx="8" cy="-4" r="3.2" fill="${K}"/><ellipse cy="8" rx="4" ry="3" fill="${K}"/></g>`;
+  if(k==='sapo')return `<g transform="translate(0,4)"><circle cx="-12" cy="-12" r="10" fill="#6abf4b" ${sw}/><circle cx="12" cy="-12" r="10" fill="#6abf4b" ${sw}/><ellipse cy="4" rx="26" ry="19" fill="#6abf4b" ${sw}/><circle cx="-12" cy="-12" r="6.5" fill="#fff"/><circle cx="12" cy="-12" r="6.5" fill="#fff"/><circle cx="-12" cy="-11" r="3.2" fill="${K}"/><circle cx="12" cy="-11" r="3.2" fill="${K}"/><path d="M-15,8 Q0,22 15,8" fill="none" stroke="${K}" stroke-width="2.4" stroke-linecap="round"/><circle cx="-19" cy="5" r="3.4" fill="#ff8fab"/><circle cx="19" cy="5" r="3.4" fill="#ff8fab"/></g>`;
+  if(k==='pinguim')return `<g transform="translate(0,1)"><ellipse cx="-20" cy="4" rx="5" ry="14" fill="#37474f" ${sw} transform="rotate(12 -20 4)"/><ellipse cx="20" cy="4" rx="5" ry="14" fill="#37474f" ${sw} transform="rotate(-12 20 4)"/><ellipse cx="-9" cy="26" rx="8" ry="3.4" fill="#f6a54a" ${sw}/><ellipse cx="9" cy="26" rx="8" ry="3.4" fill="#f6a54a" ${sw}/><ellipse rx="19" ry="25" fill="#37474f" ${sw}/><ellipse cy="7" rx="11" ry="17" fill="#fff"/><circle cx="-7" cy="-12" r="4.2" fill="#fff"/><circle cx="7" cy="-12" r="4.2" fill="#fff"/><circle cx="-7" cy="-12" r="2" fill="${K}"/><circle cx="7" cy="-12" r="2" fill="${K}"/><polygon points="-5,-6 5,-6 0,2" fill="#f6a54a" stroke="${K}" stroke-width="1.6" stroke-linejoin="round"/></g>`;
+  return '';
+};
+const racerSvg=k=>`<svg viewBox="-34 -34 68 68">${racerG(k)}</svg>`;
+
+let race=null,setup={p:[null,null],n:10};
+const TF=40,TO=90;
+const bonusFor=t=>t<=TF?2:t<=TO?1:0;
+const rConf=()=>{const cols=[R,B,Y,G,'#ff8fab'];for(let k=0;k<46;k++){const c=document.createElement('div');c.className='conf';c.style.left=Math.random()*100+'vw';c.style.background=cols[k%5];
+  c.style.animationDuration=(2+Math.random()*2)+'s';c.style.animationDelay=(Math.random()*.5)+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),4800)}};
+
+function buildSetup(){
+  let h='<div class="rcols">';
+  [0,1].forEach(p=>{
+    h+=`<div class="rcol" style="--pc:${PC[p]}"><h3>Jogador ${p+1} <span>· escolha seu bichinho</span></h3><div class="ranims">`;
+    RAC.forEach(r=>{const sel=setup.p[p]===r.k,off=setup.p[1-p]===r.k;
+      h+=`<button class="ranim${sel?' sel':''}${off?' off':''}" data-p="${p}" data-k="${r.k}">${racerSvg(r.k)}<span>${cap(r.n)}</span></button>`});
+    h+='</div></div>'});
+  h+='</div><div class="rrow">'+[5,10].map(n=>`<button class="rn${setup.n===n?' sel':''}" data-n="${n}">${n===5?'Corrida curta':'Corrida completa'}<small>${n} rodadas</small></button>`).join('')+'</div>';
+  h+=`<p style="text-align:center;color:#456;font-size:16px;margin:8px 0">Pontos: acerto (1 a 3) + rapidez. Respondeu em até ${TF} s: +2. Até ${TO} s: +1.</p>`;
+  h+=`<button class="btn rgo" id="rsGo" ${setup.p[0]&&setup.p[1]?'':'disabled'}>Largar!</button>`;
+  $('#rsbody').innerHTML=h;
+}
+function raceSetup(){setup.p=[null,null];buildSetup();show('rsetup')}
+
+const rTurn=t=>{const r=Math.floor(t/2),j=t%2,p=(j+(r%2))%2;return{r,p,act:2*race.pairs[r]+((p+r)%2)}};
+function trackHtml(){
+  return race.pl.map((p,i)=>`<div class="rlane l${i}${race.cur===i?' act':''}"><div class="rbar"><span class="rfl">${FLAG}</span><div class="rtk" data-i="${i}" style="left:calc((100% - var(--tk)) * ${Math.min(1,p.shown/race.max)})">${racerSvg(p.k)}</div></div><b class="rsc">${p.pts}</b></div>`).join('');
+}
+function renderTrack(el,animate){
+  el.innerHTML=trackHtml();
+  const go=()=>{race.pl.forEach((p,i)=>{const tk=el.querySelector(`.rtk[data-i="${i}"]`);if(tk)tk.style.left=`calc((100% - var(--tk)) * ${Math.min(1,p.pts/race.max)})`;p.shown=p.pts});};
+  if(animate)setTimeout(go,350);else go();
+}
+function raceHead(){
+  const p=race.cur,r=rinfo(race.pl[p].k);
+  $('#rhead').innerHTML=`<div class="rchip" style="--pc:${PC[p]}">${racerSvg(r.k)}<span>Vez ${r.de} ${r.n}</span></div><div class="rtime" id="rtime"></div><div class="rtrack" id="rhTrack"></div>`;
+  renderTrack($('#rhTrack'),false);timeChip();
+}
+function timeChip(){const el=$('#rtime');if(!el||!race)return;const b=bonusFor(race.el);
+  el.className='rtime b'+b;el.innerHTML=`<b>${Math.floor(race.el)} s</b>rapidez +${b}`}
+function tick(){if(!race||race.cur<0||!$('#game').classList.contains('race'))return;
+  if(busy||$('#win').classList.contains('on')||$('#rwin').classList.contains('on')||$('#rturn').classList.contains('on'))return;
+  race.el+=.25;timeChip()}
+function startRace(k0,k1,n){
+  race={pl:[{k:k0,pts:0,shown:0},{k:k1,pts:0,shown:0}],pairs:n===5?[0,2,4,6,8]:[0,1,2,3,4,5,6,7,8,9],t:0,cur:0,rounds:n,max:n*5,el:0,tm:null};
+  raceIntro();
+}
+function raceIntro(){
+  const {r,p}=rTurn(race.t);race.cur=p;const info=rinfo(race.pl[p].k);
+  $('#rtBig').innerHTML=racerSvg(info.k);
+  $('#rtCard').style.border=`10px solid ${PC[p]}`;
+  $('#rtT').textContent=`Agora é a vez ${info.de} ${info.n}!`;$('#rtT').style.color=PC[p];
+  $('#rtS').textContent=`Rodada ${r+1} de ${race.rounds} · responda rápido: até ${TF} s vale +2 pontos`;
+  $('#rturn').classList.add('on');
+  say(`Agora é a vez ${info.de} ${info.n}!`);
+}
+function raceStartTurn(){
+  $('#rturn').classList.remove('on');
+  const {act}=rTurn(race.t);
+  race.el=0;clearInterval(race.tm);race.tm=setInterval(tick,250);
+  $('#game').classList.add('race');raceHead();open(act);
+}
+function raceWin(stars){
+  const p=race.cur,info=rinfo(race.pl[p].k);clearInterval(race.tm);
+  const secs=Math.round(race.el),bonus=attempts<=1?bonusFor(race.el):0,total=stars+bonus;race.pl[p].pts+=total;
+  sGood();rConf();
+  $('#rwT').textContent=`Muito bem, ${cap(info.n)}!`;
+  $('#rwP').textContent=`${stars} de acerto + ${bonus} de rapidez = +${total} ponto${total>1?'s':''} para ${info.a} ${info.n}`;
+  $('#rwTime').textContent=`Tempo de resposta: ${secs} segundo${secs===1?'':'s'}`;
+  $('#rwStars').innerHTML=[1,2,3].map(k=>starSvg(k<=stars,84).replace('<svg',k<=stars?'<svg class="in"':'<svg')).join('');
+  $('#rwNext').textContent=race.t>=race.rounds*2-1?'Ver o resultado':'Passar a vez ▶';
+  renderTrack($('#rwTrack'),true);
+  $('#rwin').classList.add('on');
+  say(`Muito bem! ${total} ponto${total>1?'s':''} para ${info.a} ${info.n}!`);
+}
+function raceNext(){
+  $('#rwin').classList.remove('on');race.t++;
+  if(race.t>=race.rounds*2)return raceEnd();
+  raceIntro();
+}
+function raceEnd(){
+  $('#game').classList.remove('race');race.cur=-1;
+  const [a0,a1]=race.pl,tie=a0.pts===a1.pts,w=a0.pts>a1.pts?0:1;
+  if(tie){
+    $('#reBig').innerHTML=racerSvg(a0.k)+racerSvg(a1.k);
+    $('#reT').textContent='Empate! Os dois são campeões!';$('#reT').style.color=B;
+    $('#reP').textContent=`${a0.pts} a ${a1.pts} pontos`;
+  }else{
+    const info=rinfo(race.pl[w].k);
+    $('#reBig').innerHTML=racerSvg(info.k);
+    $('#reT').textContent=`${cap(info.a)} ${info.n} venceu a corrida!`;$('#reT').style.color=PC[w];
+    $('#reP').textContent=`${race.pl[w].pts} a ${race.pl[1-w].pts} pontos`;
+  }
+  race.pl.forEach(p=>p.shown=p.pts);renderTrack($('#reTrack'),false);
+  $('#rend').classList.add('on');rConf();setTimeout(rConf,1200);
+  say(tie?'Empate! Os dois são campeões!':`${cap(rinfo(race.pl[w].k).a)} ${rinfo(race.pl[w].k).n} venceu a corrida! Parabéns!`);
+}
+function raceQuit(){
+  if(!confirm('Sair da corrida? A pontuação será perdida.'))return;
+  if(race)clearInterval(race.tm);
+  try{speechSynthesis.cancel()}catch(e){}
+  race=null;$('#game').classList.remove('race');open(-1);
+}
+$('#mbody').addEventListener('click',e=>{if(e.target.closest('#bRace')){sPop();raceSetup()}});
+$('#rsbody').addEventListener('click',e=>{
+  const an=e.target.closest('.ranim');if(an){setup.p[+an.dataset.p]=an.dataset.k;sPop();buildSetup();return}
+  const n=e.target.closest('.rn');if(n){setup.n=+n.dataset.n;sPop();buildSetup();return}
+  if(e.target.closest('#rsGo')){sPop();startRace(setup.p[0],setup.p[1],setup.n)}
+});
+$('#rsBack').onclick=()=>open(-1);
+$('#rtGo').onclick=raceStartTurn;
+$('#rwNext').onclick=raceNext;
+$('#reMenu').onclick=()=>{$('#rend').classList.remove('on');race=null;open(-1)};
+$('#reNew').onclick=()=>{$('#rend').classList.remove('on');race=null;raceSetup()};
+
+buildMenu();
+window.__game={race:{startRace,get state(){return race}},A,open,check,get feats(){return feats},get a(){return a},get cur(){return cur},S,
+  solveAndCheck:async()=>{feats.forEach(f=>f.solve&&f.solve());await check()}};
+})();
+</script>
+</body>
+</html>

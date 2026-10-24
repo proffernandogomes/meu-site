@@ -1,0 +1,945 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Pensamento Computacional – 4º ano</title>
+<style>
+:root{--bg:#eaf4ff;--ink:#1f2937;--blue:#2a6fdb;--red:#e63946;--yel:#f4c20d;--grn:#2a9d4b}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;font-family:'Nunito','Carlito','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--ink);overflow:hidden;-webkit-user-select:none;user-select:none;touch-action:manipulation;-webkit-touch-callout:none}
+button{font-family:inherit;cursor:pointer;border:0;touch-action:manipulation}
+#app{height:100%;display:flex;flex-direction:column}
+.screen{display:none;flex:1;min-height:0;flex-direction:column}
+.screen.on{display:flex}
+
+/* ---------- menu ---------- */
+.mhead{padding:14px 22px 8px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.mhead h1{margin:0;font-size:clamp(22px,3.4vw,34px);color:var(--blue);line-height:1.05}
+.mhead h1 small{display:block;font-size:.5em;color:#546;font-weight:600}
+.mhead .sp{flex:1}
+.total{background:#fff;border-radius:999px;padding:8px 16px;font-weight:800;font-size:20px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 0 #cfe0f7}
+.chip{background:#fff;border-radius:999px;padding:9px 16px;font-weight:700;font-size:16px;color:#345;box-shadow:0 2px 0 #cfe0f7;display:flex;align-items:center;gap:8px}
+.chip.off{opacity:.55}
+.chip i{width:18px;height:18px;border-radius:50%;border:3px solid var(--blue);display:inline-block}
+.chip:not(.off) i{background:var(--blue)}
+.mbody{flex:1;overflow:auto;padding:4px 22px 24px;-webkit-overflow-scrolling:touch}
+.sec{margin:12px 0 8px;font-size:20px;font-weight:800;color:#345;display:flex;align-items:center;gap:10px}
+.sec b{background:var(--c);color:#fff;border-radius:999px;padding:2px 12px;font-size:16px}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px}
+.tile{background:#fff;border-radius:20px;padding:12px 14px;text-align:left;display:flex;flex-direction:column;gap:6px;min-height:104px;box-shadow:0 4px 0 var(--c);border:3px solid var(--c);color:var(--ink)}
+.tile:active{transform:translateY(3px);box-shadow:0 1px 0 var(--c)}
+.tile .n{width:38px;height:38px;border-radius:50%;background:var(--c);color:#fff;font-weight:800;font-size:20px;display:flex;align-items:center;justify-content:center}
+.tile .t{font-weight:800;font-size:17px;line-height:1.1;flex:1}
+.stars{display:flex;gap:3px}
+.stars svg{width:24px;height:24px}
+.reset{margin:18px auto 0;display:block;background:transparent;color:#789;font-size:14px;text-decoration:underline;padding:8px}
+
+/* ---------- jogo ---------- */
+.top{display:flex;align-items:center;gap:10px;padding:8px 12px;background:#fff;box-shadow:0 2px 0 #d6e6fa}
+.ib{width:54px;height:54px;border-radius:16px;background:#e8f1ff;display:flex;align-items:center;justify-content:center;flex:none}
+.ib:active{background:#cfe0ff}
+.ib svg{width:30px;height:30px}
+.ib[disabled]{opacity:.35}
+.ttl{flex:1;display:flex;align-items:center;gap:10px;font-weight:800;font-size:clamp(18px,2.6vw,26px);min-width:0}
+.ttl .num{flex:none;width:42px;height:42px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:22px}
+.ttl span.tx{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.instr{display:flex;align-items:center;gap:12px;padding:10px 14px 4px}
+.instr p{margin:0;font-size:clamp(18px,2.7vw,28px);font-weight:700;line-height:1.15;flex:1}
+main{flex:1;min-height:0;padding:6px 14px;display:flex}
+#stagewrap{flex:1;min-height:0;min-width:0;display:flex;align-items:center;justify-content:center}
+#stage{width:100%;height:100%;background:#fff;border-radius:22px;box-shadow:0 4px 0 #cfe0f7;touch-action:none;display:block}
+#stage text{pointer-events:none}
+.bar{display:flex;align-items:center;gap:12px;padding:8px 14px 12px;min-height:92px}
+.pal{flex:1;display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
+.pbtn{width:74px;height:74px;border-radius:18px;background:#fff;box-shadow:0 4px 0 #cfe0f7;border:4px solid transparent;display:flex;align-items:center;justify-content:center;padding:0}
+.pbtn svg{width:100%;height:100%}
+.pal.sm .pbtn{width:58px;height:58px;border-radius:14px;border-width:3px}
+.pbtn.sel{border-color:var(--blue);background:#e0efff;transform:translateY(-3px)}
+.btns{display:flex;gap:10px;margin-left:auto}
+.btn{height:66px;min-width:150px;padding:0 24px;border-radius:20px;background:var(--grn);color:#fff;font-size:24px;font-weight:800;box-shadow:0 5px 0 #1d7a38;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 #1d7a38}
+.btn.sec{background:#fff;color:#345;box-shadow:0 5px 0 #cfe0f7;min-width:110px;font-size:20px}
+.btn.sec:active{box-shadow:0 1px 0 #cfe0f7}
+.btn.blue{background:var(--blue);box-shadow:0 5px 0 #1b4fa3}
+.btn[disabled]{opacity:.5;pointer-events:none}
+.toast{position:fixed;left:50%;top:132px;transform:translateX(-50%) translateY(-20px);background:#1f2937;color:#fff;padding:14px 26px;border-radius:999px;font-size:22px;font-weight:800;opacity:0;pointer-events:none;transition:.25s;max-width:92vw;text-align:center;z-index:5}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.bad{background:#c0392b}
+.toast.good{background:#1d7a38}
+
+/* ---------- vitoria ---------- */
+.win{position:fixed;inset:0;background:rgba(20,40,80,.55);display:none;align-items:center;justify-content:center;z-index:10}
+.win.on{display:flex}
+.card{background:#fff;border-radius:32px;padding:28px 34px;text-align:center;max-width:min(92vw,560px);box-shadow:0 10px 0 rgba(0,0,0,.12);animation:pop .4s cubic-bezier(.2,1.6,.4,1)}
+.card h2{margin:0 0 6px;font-size:clamp(30px,5vw,44px);color:var(--blue)}
+.card p{margin:0 0 10px;font-size:20px;color:#456}
+.big{display:flex;justify-content:center;gap:8px;margin:6px 0 16px}
+.big svg{width:96px;height:96px}
+.big svg.in{animation:starin .6s cubic-bezier(.2,1.8,.4,1) both}
+.big svg:nth-child(2).in{animation-delay:.18s}.big svg:nth-child(3).in{animation-delay:.36s}
+.cbtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes starin{from{transform:scale(0) rotate(-120deg)}to{transform:scale(1) rotate(0)}}
+.conf{position:fixed;top:-20px;width:14px;height:20px;border-radius:3px;z-index:11;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(112vh) rotate(720deg)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.shake{animation:shake .4s}
+
+/* ---------- corrida a dois ---------- */
+.racebtn{display:flex;align-items:center;gap:14px;width:100%;margin:8px 0 2px;padding:14px 20px;border-radius:22px;background:linear-gradient(90deg,#2a6fdb,#e68a00);color:#fff;font-size:clamp(20px,3vw,26px);font-weight:800;box-shadow:0 5px 0 rgba(0,0,0,.18);text-align:left}
+.racebtn:active{transform:translateY(4px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
+.racebtn small{display:block;font-size:.62em;font-weight:600;opacity:.95}
+.racebtn svg{width:40px;height:44px;flex:none}
+.rcols{display:flex;gap:16px;flex-wrap:wrap}
+.rcol{flex:1;min-width:300px;background:#fff;border-radius:24px;padding:14px;border:4px solid var(--pc);box-shadow:0 4px 0 var(--pc)}
+.rcol h3{margin:0 0 10px;font-size:22px;color:var(--pc)}
+.rcol h3 span{font-weight:700;color:#456;font-size:.8em}
+.ranims{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.ranim{background:#f4f8ff;border-radius:16px;padding:6px 2px 4px;border:4px solid transparent;display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:800;font-size:14px;color:var(--ink)}
+.ranim svg{width:100%;max-width:74px;height:auto}
+.ranim.sel{border-color:var(--pc);background:#fff;transform:translateY(-3px);box-shadow:0 4px 0 var(--pc)}
+.ranim.off{opacity:.3;pointer-events:none}
+.rrow{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:18px 0 8px}
+.rn{background:#fff;border:4px solid #cfe0f7;border-radius:18px;padding:10px 18px;font-size:18px;font-weight:800;color:#345}
+.rn small{display:block;font-size:.75em;font-weight:600}
+.rn.sel{border-color:var(--blue);background:#e0efff;color:var(--blue)}
+.rgo{display:block;margin:10px auto 0}
+.rtrack{--tk:28px;flex:1;min-width:0}
+.rtrack.lg{--tk:56px;width:min(80vw,480px);margin:6px auto 14px}
+.rlane{display:flex;align-items:center;gap:8px;margin:3px 0}
+.rbar{position:relative;flex:1;height:calc(var(--tk)*.72);background:#e8f1ff;border-radius:999px;border:3px solid transparent}
+.rlane.act .rbar{border-color:var(--pc);background:#fff}
+.rlane.l0{--pc:#2a6fdb}.rlane.l1{--pc:#e68a00}
+.rtk{position:absolute;top:50%;margin-top:calc(var(--tk)/-2);width:var(--tk);height:var(--tk);transition:left 1.1s cubic-bezier(.3,1.35,.5,1)}
+.rtk svg{width:100%;height:100%;display:block}
+.rfl{position:absolute;right:6px;top:50%;margin-top:-11px;width:16px;height:22px;opacity:.85}
+.rtrack.lg .rfl{width:22px;height:28px;margin-top:-14px}
+.rsc{min-width:30px;text-align:center;font-weight:800;color:var(--pc);font-size:calc(var(--tk)*.66)}
+#rhead{display:none}
+.race #rhead{display:flex;flex:1;align-items:center;gap:12px;min-width:0}
+.race .ttl,.race #bPrev,.race #bNext{display:none}
+.rchip{display:flex;align-items:center;gap:8px;background:#fff;border:4px solid var(--pc);border-radius:999px;padding:2px 16px 2px 4px;font-weight:800;font-size:clamp(16px,2.3vw,22px);white-space:nowrap;color:var(--pc);flex:none}
+.rchip svg{width:46px;height:46px}
+.win.dark{background:rgba(20,40,80,.9)}
+.rtime{flex:none;background:#fff;border-radius:16px;padding:3px 12px;font-weight:800;font-size:13px;line-height:1.15;text-align:center;border:3px solid #cfd8dc;color:#456;min-width:92px}
+.rtime b{display:block;font-size:20px}
+.rtime.b2{border-color:#2a9d4b;color:#1d7a38}.rtime.b1{border-color:#e68a00;color:#b36200}
+.rbig svg{width:150px;height:150px}
+.rcard h2{margin-bottom:4px}
+</style>
+</head>
+<body>
+<div id="app">
+
+<section id="menu" class="screen on">
+  <div class="mhead">
+    <h1>Pensamento Computacional<small>Jogos de lógica para o 4º ano · 20 atividades</small></h1>
+    <div class="sp"></div>
+    <button class="chip" id="tgVoice"><i></i>Voz</button>
+    <button class="chip" id="tgSnd"><i></i>Sons</button>
+    <button class="chip" id="tgFull">Tela cheia</button>
+    <div class="total" id="total"></div>
+  </div>
+  <div class="mbody" id="mbody"></div>
+</section>
+
+<section id="game" class="screen">
+  <header class="top">
+    <button class="ib" id="bHome" aria-label="Menu"><svg viewBox="0 0 32 32"><path d="M4 16 L16 5 L28 16 V28 H19 V19 H13 V28 H4 Z" fill="#2a6fdb"/></svg></button>
+    <div class="ttl"><span class="num" id="gnum">1</span><span class="tx" id="gtitle"></span></div>
+    <div id="rhead"></div><button class="ib" id="bPrev" aria-label="Anterior"><svg viewBox="0 0 32 32"><path d="M20 5 L8 16 L20 27 Z" fill="#2a6fdb"/></svg></button>
+    <button class="ib" id="bNext" aria-label="Próxima"><svg viewBox="0 0 32 32"><path d="M12 5 L24 16 L12 27 Z" fill="#2a6fdb"/></svg></button>
+  </header>
+  <div class="instr">
+    <button class="ib" id="bSay" aria-label="Ouvir"><svg viewBox="0 0 32 32"><path d="M4 12 H10 L18 5 V27 L10 20 H4 Z" fill="#2a6fdb"/><path d="M22 10 Q27 16 22 22" fill="none" stroke="#2a6fdb" stroke-width="3" stroke-linecap="round"/><path d="M25 6 Q32 16 25 26" fill="none" stroke="#2a6fdb" stroke-width="3" stroke-linecap="round"/></svg></button>
+    <p id="itext"></p>
+  </div>
+  <main><div id="stagewrap"></div></main>
+  <footer class="bar">
+    <div class="pal" id="pal"></div>
+    <div class="btns">
+      <button class="btn sec" id="bReset">Limpar</button>
+      <button class="btn blue" id="bDemo" style="display:none">▶ Ver</button>
+      <button class="btn" id="bGo">Conferir</button>
+    </div>
+  </footer>
+</section>
+<section id="rsetup" class="screen">
+  <div class="mhead">
+    <button class="ib" id="rsBack" aria-label="Menu"><svg viewBox="0 0 32 32"><path d="M4 16 L16 5 L28 16 V28 H19 V19 H13 V28 H4 Z" fill="#2a6fdb"/></svg></button>
+    <h1>Corrida a dois<small>Um tablet, dois jogadores · cada um escolhe um bichinho</small></h1>
+  </div>
+  <div class="mbody" id="rsbody"></div>
+</section>
+</div>
+
+<div class="win dark" id="rturn"><div class="card rcard" id="rtCard">
+  <div class="rbig" id="rtBig"></div>
+  <h2 id="rtT"></h2>
+  <p id="rtS"></p>
+  <button class="btn" id="rtGo">Vamos!</button>
+</div></div>
+<div class="win" id="rwin"><div class="card rcard">
+  <h2 id="rwT"></h2>
+  <p id="rwP"></p>
+  <p id="rwTime" style="font-weight:800;color:#345"></p>
+  <div class="big" id="rwStars"></div>
+  <div class="rtrack lg" id="rwTrack"></div>
+  <button class="btn" id="rwNext">Passar a vez ▶</button>
+</div></div>
+<div class="win dark" id="rend"><div class="card rcard">
+  <div class="rbig" id="reBig"></div>
+  <h2 id="reT"></h2>
+  <p id="reP"></p>
+  <div class="rtrack lg" id="reTrack"></div>
+  <div class="cbtns"><button class="btn sec" id="reMenu">Menu</button><button class="btn" id="reNew">Nova corrida</button></div>
+</div></div>
+<div class="toast" id="toast"></div>
+<div class="win" id="win"><div class="card">
+  <h2 id="wt">Muito bem!</h2>
+  <p id="wp">Você ganhou</p>
+  <div class="big" id="wstars"></div>
+  <div class="cbtns">
+    <button class="btn sec" id="wMenu">Menu</button>
+    <button class="btn sec" id="wAgain">Jogar de novo</button>
+    <button class="btn" id="wNext">Próxima ▶</button>
+  </div>
+</div></div>
+
+<script>
+(()=>{
+'use strict';
+const R="#e63946",B="#2a6fdb",Y="#f4c20d",G="#2a9d4b",K="#222222",W="#ffffff";
+const FONT="'Nunito','Carlito','DejaVu Sans',system-ui,sans-serif";
+const NS='http://www.w3.org/2000/svg';
+const $=s=>document.querySelector(s);
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const store={get(k,d){try{const v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const S={voice:store.get('pc4-voice',true),snd:store.get('pc4-snd',true),stars:store.get('pc4-stars',{})};
+
+/* ---------------- sons ---------------- */
+let ac=null;
+function tone(f,t=0,d=.15,type='sine',v=.14){
+  if(!S.snd)return;
+  try{ac=ac||new (window.AudioContext||window.webkitAudioContext)();
+    if(ac.state==='suspended')ac.resume();
+    const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=f;o.connect(g);g.connect(ac.destination);
+    const t0=ac.currentTime+t;g.gain.setValueAtTime(v,t0);g.gain.exponentialRampToValueAtTime(.001,t0+d);o.start(t0);o.stop(t0+d+.02);
+  }catch(e){}
+}
+const sPop=()=>tone(660,0,.08,'sine',.12);
+const sBad=()=>{tone(220,0,.18,'sawtooth',.08);tone(170,.15,.25,'sawtooth',.08)};
+const sGood=()=>[523,659,784,1047].forEach((f,i)=>tone(f,i*.12,.25,'triangle',.16));
+function say(t){
+  if(!S.voice)return;
+  try{const u=new SpeechSynthesisUtterance(t);u.lang='pt-BR';u.rate=.9;speechSynthesis.cancel();speechSynthesis.speak(u)}catch(e){}
+}
+
+/* ---------------- primitivas SVG ---------------- */
+const txt=(x,y,s,size=16,anchor='middle',fill=K,weight='bold')=>`<text x="${x}" y="${y}" font-family="${FONT}" font-size="${size}" font-weight="${weight}" text-anchor="${anchor}" fill="${fill}">${s}</text>`;
+const circle=(cx,cy,d,fill,stroke=K,sw=2.5)=>`<circle cx="${cx}" cy="${cy}" r="${d/2}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}"/>`;
+const square=(cx,cy,d,fill,stroke=K,sw=2.5)=>`<rect x="${cx-d/2}" y="${cy-d/2}" width="${d}" height="${d}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/>`;
+const triangle=(cx,cy,d,fill,stroke=K,sw=2.5)=>`<polygon points="${cx},${cy-d/2} ${cx+d/2},${cy+d/2} ${cx-d/2},${cy+d/2}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/>`;
+const star=(cx,cy,d,fill,stroke=K,sw=2.5)=>{const ro=d/2,ri=d/4.2;let p=[];for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r=i%2?ri:ro;p.push((cx+r*Math.cos(a)).toFixed(1)+','+(cy+r*Math.sin(a)).toFixed(1))}return `<polygon points="${p.join(' ')}" fill="${fill}" stroke="${stroke}" stroke-width="${sw}" stroke-linejoin="round"/>`};
+const SHC={circle:B,square:R,triangle:G,star:Y};
+const shape=(k,cx,cy,d,fill)=>({circle,square,triangle,star})[k](cx,cy,d,fill);
+const box=(x,y,w,h,rx=8,dash=false,fill=W,sw=2.5)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" fill="${fill}" stroke="#333" stroke-width="${sw}"${dash?' stroke-dasharray="6 5"':''}/>`;
+const arrow=(d,cx,cy,s=1,fill=K)=>`<g transform="translate(${cx},${cy}) rotate(${{R:0,D:90,L:180,U:270}[d]}) scale(${s})"><polygon points="-16,-6 3,-6 3,-14 20,0 3,14 3,6 -16,6" fill="${fill}"/></g>`;
+const line=(x1,y1,x2,y2,c='#333',w=2.5)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`;
+const dot=(x,y,r=5)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#fff" stroke="#333" stroke-width="2.5"/>`;
+const robotInner=(s=1)=>{let g=`<g transform="scale(${s})">`;
+  g+=`<line x1="0" y1="-22" x2="0" y2="-15" stroke="${K}" stroke-width="3"/><circle cx="0" cy="-25" r="4" fill="${R}" stroke="${K}" stroke-width="2"/>`;
+  g+=`<rect x="-24" y="-8" width="5" height="12" rx="2" fill="#78909c" stroke="${K}" stroke-width="2"/><rect x="19" y="-8" width="5" height="12" rx="2" fill="#78909c" stroke="${K}" stroke-width="2"/>`;
+  g+=`<rect x="-20" y="-15" width="40" height="32" rx="8" fill="#b0bec5" stroke="${K}" stroke-width="2.5"/>`;
+  for(const ex of [-8,8])g+=`<circle cx="${ex}" cy="-3" r="5.5" fill="#fff" stroke="${K}" stroke-width="2"/><circle cx="${ex}" cy="-3" r="2" fill="${K}"/>`;
+  return g+`<line x1="-8" y1="9" x2="8" y2="9" stroke="${K}" stroke-width="2.5" stroke-linecap="round"/></g>`};
+const rock=(cx,cy,s=1)=>{const p=[[-21,13],[-15,-9],[1,-19],[17,-9],[22,13]].map(([a,b])=>`${(a*s).toFixed(1)},${(b*s).toFixed(1)}`).join(' ');
+  return `<g transform="translate(${cx},${cy})"><polygon points="${p}" fill="#9e9e9e" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/>${line(-6*s,-4*s,4*s,4*s,'#616161',2)}</g>`};
+const basket=(cx,cy,c)=>`<path d="M${cx-30},${cy-30} Q${cx},${cy-62} ${cx+30},${cy-30}" fill="none" stroke="${K}" stroke-width="3"/><polygon points="${cx-38},${cy-24} ${cx+38},${cy-24} ${cx+28},${cy+30} ${cx-28},${cy+30}" fill="${c}" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/>`;
+const tower=(cx,floor,n,size)=>{const cols=[R,B,Y,G,R,B];let s='';for(let i=0;i<n;i++)s+=square(cx,floor-size/2-i*size,size,cols[i%6],K,2);return s};
+const apples=(x,y,n)=>{let s='';for(let i=0;i<n;i++){const cx=x+i*33;s+=circle(cx,y,28,R,K,2.2)+`<ellipse cx="${cx+5}" cy="${y-16}" rx="6" ry="3.5" fill="${G}" stroke="${K}" stroke-width="1.5" transform="rotate(-30 ${cx+5} ${y-16})"/>`}return s};
+const leaves=(cx,y)=>`<ellipse cx="${cx-13}" cy="${y}" rx="11" ry="6" fill="${G}" stroke="${K}" stroke-width="2" transform="rotate(-25 ${cx-13} ${y})"/><ellipse cx="${cx+13}" cy="${y}" rx="11" ry="6" fill="${G}" stroke="${K}" stroke-width="2" transform="rotate(25 ${cx+13} ${y})"/>`;
+const panelBg=(x,w=86)=>box(x,12,w,150,10,false,W,2.5)+`<rect x="${x+1.5}" y="127" width="${w-3}" height="33" fill="#a1887f"/>`;
+const arrowCards=(seq,y,x0,wc=50,step=58)=>seq.map((d,i)=>box(x0+i*step,y,wc,wc,8)+arrow(d,x0+i*step+wc/2,y+wc/2,1)).join('');
+const trafficLight=(cx,cy,lit)=>{let s=box(cx-24,cy-56,48,112,12,false,'#37474f',2.5);const c={r:R,y:Y,g:G};[['r',-34],['y',0],['g',34]].forEach(([k,o])=>s+=circle(cx,cy+o,26,k===lit?c[k]:'#cfd8dc',K,2));return s};
+const stopSign=(cx,cy,r=36)=>{let p=[];for(let i=0;i<8;i++){const a=Math.PI/8+i*Math.PI/4;p.push((cx+r*Math.cos(a)).toFixed(1)+','+(cy+r*Math.sin(a)).toFixed(1))}return `<polygon points="${p.join(' ')}" fill="${R}" stroke="${K}" stroke-width="2.5" stroke-linejoin="round"/>`+txt(cx,cy+7,'PARE',20,'middle','#fff')};
+const goSign=(cx,cy,r=36)=>circle(cx,cy,2*r,G)+arrow('R',cx,cy-8,1.1,'#fff')+txt(cx,cy+22,'ANDE',15,'middle','#fff');
+
+const DIRS={R:[1,0],L:[-1,0],U:[0,-1],D:[0,1]};
+const NEXTDIR={R:'D',D:'L',L:'U',U:'R'};
+
+/* ---------------- coordenadas ---------------- */
+function svgPt(svg,e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;const m=svg.getScreenCTM();return m?p.matrixTransform(m.inverse()):{x:0,y:0}}
+
+/* =====================================================================
+   FEATURES
+   ===================================================================== */
+
+/* ---- Slots: casas para preencher com itens da paleta ---- */
+function Slots(cfg){
+  const val={...(cfg.init||{})};const ids=cfg.slots.map(s=>s.id);
+  let selS=null,tool=null,hl=null,bad={},g,ctx,svg;
+  const firstEmpty=()=>cfg.cycle?null:(ids.find(i=>val[i]==null)??null);
+  const one=s=>{const v=val[s.id],sel=selS===s.id||hl===s.id;
+    let h=`<rect class="slot" data-id="${s.id}" x="${s.x}" y="${s.y}" width="${s.w}" height="${s.h}" rx="8" fill="${bad[s.id]?'#ffe1e1':sel?'#e0efff':W}" stroke="${bad[s.id]?R:sel?B:'#444'}" stroke-width="${sel||bad[s.id]?4:2.5}"${v==null?' stroke-dasharray="6 5"':''}/>`;
+    if(v!=null)h+=`<g pointer-events="none">${cfg.draw(v,s.x+s.w/2,s.y+s.h/2,s)}</g>`;return h};
+  const draw=()=>{g.innerHTML=cfg.slots.map(one).join('')};
+  const f={
+    pal:cfg.cycle?null:cfg.pal,
+    svg(){selS=firstEmpty();return cfg.slots.map(one).join('')},
+    attach(_svg,_g,_ctx){svg=_svg;g=_g;ctx=_ctx;
+      g.addEventListener('pointerdown',e=>{const el=e.target.closest('.slot');if(!el||ctx.locked())return;e.preventDefault();const id=el.dataset.id;
+        if(cfg.cycle){val[id]=NEXTDIR[val[id]];sPop();draw();return}
+        if(tool!=null){val[id]=tool;sPop();selS=null;draw();return}
+        selS=id;sPop();draw();});
+      ctx.palSel(null)},
+    onPal(key){sPop();
+      if(selS!=null){val[selS]=key;selS=firstEmpty();ctx.palSel(null);tool=null;draw()}
+      else{tool=tool===key?null:key;ctx.palSel(tool)}},
+    check(){if(ids.some(i=>val[i]==null))return{incomplete:true};
+      const wrong=ids.filter(i=>cfg.ans&&val[i]!==cfg.ans[i]);return{ok:!wrong.length,wrong}},
+    async clearWrong(w){bad={};w.forEach(i=>bad[i]=true);draw();g.classList.add('shake');await sleep(700);g.classList.remove('shake');
+      w.forEach(i=>delete val[i]);bad={};selS=firstEmpty();tool=null;ctx.palSel(null);draw()},
+    reset(){ids.forEach(i=>delete val[i]);Object.assign(val,cfg.init||{});bad={};tool=null;selS=firstEmpty();ctx&&ctx.palSel(null);g&&draw()},
+    values(){return ids.map(i=>val[i]??null)},
+    setHl(i){hl=i==null?null:ids[i%ids.length];if(g)draw()},
+    solve(){ids.forEach(i=>val[i]=cfg.ans?cfg.ans[i]:cfg.solution[ids.indexOf(i)]);draw()}
+  };
+  return f;
+}
+
+/* ---- Toggles: tocar para marcar (X ou círculo) ---- */
+function Toggles(cfg){
+  const sel=new Set();let bad=new Set(),g,ctx;
+  const mark=(it,isBad)=>{const c=isBad?'#999':(cfg.mark==='x'?R:'#f97316');
+    if(cfg.mark==='x'){const px=it.w*.18,py=it.h*.18;return line(it.x+px,it.y+py,it.x+it.w-px,it.y+it.h-py,c,6)+line(it.x+it.w-px,it.y+py,it.x+px,it.y+it.h-py,c,6)}
+    return `<rect x="${it.x-3}" y="${it.y-3}" width="${it.w+6}" height="${it.h+6}" rx="14" fill="none" stroke="${c}" stroke-width="5"/>`};
+  const one=it=>`<g class="tg" data-id="${it.id}"><rect x="${it.x}" y="${it.y}" width="${it.w}" height="${it.h}" fill="#fff" fill-opacity="0.01"/>${sel.has(it.id)?mark(it,bad.has(it.id)):''}</g>`;
+  const draw=()=>{g.innerHTML=cfg.items.map(one).join('')};
+  return{
+    svg(){return cfg.items.map(one).join('')},
+    attach(_s,_g,_c){g=_g;ctx=_c;g.addEventListener('pointerdown',e=>{const el=e.target.closest('.tg');if(!el||ctx.locked())return;e.preventDefault();
+      const it=cfg.items.find(i=>i.id===el.dataset.id);
+      if(sel.has(it.id))sel.delete(it.id);else{if(cfg.radio)cfg.items.filter(o=>o.g===it.g).forEach(o=>sel.delete(o.id));sel.add(it.id)}
+      sPop();draw()})},
+    check(){
+      if(cfg.need==='group'){const gs=[...new Set(cfg.items.map(i=>i.g))];for(const gg of gs)if(!cfg.items.some(i=>i.g===gg&&sel.has(i.id)))return{incomplete:true}}
+      else if(!sel.size)return{incomplete:true};
+      const wrong=cfg.items.filter(i=>sel.has(i.id)!==i.ok).map(i=>i.id);return{ok:!wrong.length,wrong}},
+    async clearWrong(w){bad=new Set(w);draw();g.classList.add('shake');await sleep(700);g.classList.remove('shake');w.forEach(i=>sel.delete(i));bad=new Set();draw()},
+    reset(){sel.clear();bad=new Set();g&&draw()},
+    solve(){sel.clear();cfg.items.filter(i=>i.ok).forEach(i=>sel.add(i.id));draw()}
+  };
+}
+
+/* ---- Links: arrastar o dedo para ligar ---- */
+function Links(cfg){
+  const pairs={};let g,svg,ctx,drag=null,bad=new Set();
+  const cols=[B,R,G,'#f59e0b'];
+  const inz=(z,p)=>p.x>=z[0]&&p.x<=z[0]+z[2]&&p.y>=z[1]&&p.y<=z[1]+z[3];
+  const hit=(arr,p)=>arr.find(n=>inz(n.zone,p));
+  const draw=()=>{let h='';cfg.left.forEach((l,i)=>{const r=pairs[l.id];if(!r)return;const rn=cfg.right.find(x=>x.id===r);
+      h+=line(l.dot[0],l.dot[1],rn.dot[0],rn.dot[1],bad.has(l.id)?'#999':cols[i%4],6)});
+    if(drag)h+=line(drag.x1,drag.y1,drag.x2,drag.y2,'#667',5);g.innerHTML=h};
+  return{
+    svg(){return ''},
+    attach(_s,_g,_c){svg=_s;g=_g;ctx=_c;
+      svg.addEventListener('pointerdown',e=>{if(ctx.locked())return;const p=svgPt(svg,e);
+        let side='l',n=hit(cfg.left,p);if(!n){side='r';n=hit(cfg.right,p)}if(!n)return;
+        e.preventDefault();try{svg.setPointerCapture(e.pointerId)}catch(_){}
+        drag={side,n,x1:n.dot[0],y1:n.dot[1],x2:p.x,y2:p.y};sPop();draw()});
+      svg.addEventListener('pointermove',e=>{if(!drag)return;const p=svgPt(svg,e);drag.x2=p.x;drag.y2=p.y;draw()});
+      const end=e=>{if(!drag)return;const p=svgPt(svg,e);const other=hit(drag.side==='l'?cfg.right:cfg.left,p);
+        if(other){const l=drag.side==='l'?drag.n:other,r=drag.side==='l'?other:drag.n;
+          for(const k of Object.keys(pairs))if(k===l.id||(!cfg.many&&pairs[k]===r.id))delete pairs[k];pairs[l.id]=r.id;sPop()}
+        drag=null;draw()};
+      svg.addEventListener('pointerup',end);svg.addEventListener('pointercancel',end)},
+    check(){if(cfg.left.some(l=>!pairs[l.id]))return{incomplete:true};
+      const wrong=cfg.left.filter(l=>pairs[l.id]!==cfg.ans[l.id]).map(l=>l.id);return{ok:!wrong.length,wrong}},
+    async clearWrong(w){bad=new Set(w);draw();g.classList.add('shake');await sleep(700);g.classList.remove('shake');w.forEach(i=>delete pairs[i]);bad=new Set();draw()},
+    reset(){for(const k of Object.keys(pairs))delete pairs[k];bad=new Set();drag=null;g&&draw()},
+    solve(){Object.assign(pairs,cfg.ans);draw()}
+  };
+}
+
+/* ---- Paint: pintar com a cor escolhida ---- */
+function Paint(cfg){
+  const fill={};let tool=cfg.pal[0].key,g,ctx,bad=new Set();
+  const one=t=>`<g class="pt" data-id="${t.id}">${t.draw(fill[t.id]||W,bad.has(t.id))}</g>`;
+  const draw=()=>{g.innerHTML=cfg.targets.map(one).join('')};
+  return{
+    pal:cfg.pal,
+    svg(){return cfg.targets.map(one).join('')},
+    attach(_s,_g,_c){g=_g;ctx=_c;ctx.palSel(tool);
+      g.addEventListener('pointerdown',e=>{const el=e.target.closest('.pt');if(!el||ctx.locked())return;e.preventDefault();
+        const id=el.dataset.id,t=cfg.targets.find(x=>x.id===id);fill[id]=tool;sPop();el.innerHTML=t.draw(tool,false)})},
+    onPal(k){tool=k;sPop();ctx.palSel(k)},
+    check(){if(cfg.targets.some(t=>t.ans!==W&&!fill[t.id]))return{incomplete:true};
+      const wrong=cfg.targets.filter(t=>(fill[t.id]||W)!==t.ans).map(t=>t.id);return{ok:!wrong.length,wrong}},
+    async clearWrong(w){bad=new Set(w);draw();g.classList.add('shake');await sleep(700);g.classList.remove('shake');w.forEach(i=>delete fill[i]);bad=new Set();draw()},
+    reset(){for(const k of Object.keys(fill))delete fill[k];bad=new Set();tool=cfg.pal[0].key;if(g){ctx.palSel(tool);draw()}},
+    solve(){cfg.targets.forEach(t=>fill[t.id]=t.ans);draw()}
+  };
+}
+
+/* ---- Digits: escrever números com o teclado ---- */
+function Digits(cfg){
+  const val={};const ids=cfg.fields.map(f=>f.id),F=Object.fromEntries(cfg.fields.map(f=>[f.id,f]));let sel=null,bad={},g,ctx;
+  const first=()=>ids.find(i=>(val[i]||'').length<F[i].ans.length)??null;
+  const one=f=>{const v=val[f.id]||'',on=sel===f.id,b=bad[f.id];
+    let h=`<rect class="slot" data-id="${f.id}" x="${f.x}" y="${f.y}" width="${f.w}" height="${f.h}" rx="8" fill="${b?'#ffe1e1':on?'#e0efff':W}" stroke="${b?R:on?B:'#444'}" stroke-width="${on||b?4:2.5}"${v===''?' stroke-dasharray="6 5"':''}/>`;
+    if(v!==''){const fs=Math.min(f.h*.66,f.w*.92/(Math.max(2,v.length)*.58),cfg.fs||99);h+=`<g pointer-events="none">${txt(f.x+f.w/2,f.y+f.h/2+fs*.35,v,fs)}</g>`}
+    return h};
+  const draw=()=>{g.innerHTML=cfg.fields.map(one).join('')};
+  const keys=['1','2','3','4','5','6','7','8','9','0','bk'];
+  return{
+    pal:keys.map(k=>({key:k,svg:k==='bk'?arrow('L',0,0,1.5):txt(0,15,k,44)})),
+    svg(){sel=first();return cfg.fields.map(one).join('')},
+    attach(_s,_g,_c){g=_g;ctx=_c;
+      g.addEventListener('pointerdown',e=>{const el=e.target.closest('.slot');if(!el||ctx.locked())return;e.preventDefault();sel=el.dataset.id;sPop();draw()})},
+    onPal(k){sPop();if(sel==null)sel=first();if(sel==null)return;let v=val[sel]||'';
+      if(k==='bk'&&v===''){const k0=ids.indexOf(sel);for(let q=k0-1;q>=0;q--)if((val[ids[q]]||'')!==''){sel=ids[q];v=val[sel];break}}
+      if(k==='bk')v=v.slice(0,-1);else if(v.length<F[sel].ans.length)v+=k;
+      val[sel]=v;if(k!=='bk'&&v.length>=F[sel].ans.length){const nx=ids.find(i=>(val[i]||'').length<F[i].ans.length);if(nx!=null)sel=nx}
+      draw()},
+    check(){if(ids.some(i=>!(val[i]||'').length))return{incomplete:true};const wrong=ids.filter(i=>val[i]!==F[i].ans);return{ok:!wrong.length,wrong}},
+    async clearWrong(w){bad={};w.forEach(i=>bad[i]=true);draw();g.classList.add('shake');await sleep(700);g.classList.remove('shake');w.forEach(i=>delete val[i]);bad={};sel=first();draw()},
+    reset(){ids.forEach(i=>delete val[i]);bad={};sel=first();g&&draw()},
+    solve(){ids.forEach(i=>val[i]=F[i].ans);draw()}
+  };
+}
+
+/* ---- Prog: grade n x n, robô, flores e execução das setas ---- */
+function Prog(cfg){
+  const n=cfg.n||3,{x0,y0,cell,start}=cfg,via=cfg.via||[],rs=cell/56;let g,robot,trail,pos,got=new Set();
+  const cc=(c,r)=>[x0+cell*(c+.5),y0+cell*(r+.5)];
+  const setPos=(x,y)=>{pos=[x,y];robot.setAttribute('transform',`translate(${x},${y})`)};
+  const tween=(to,ms)=>new Promise(res=>{const from=pos.slice(),t0=performance.now();
+    const step=t=>{const k=Math.min(1,(t-t0)/ms),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;setPos(from[0]+(to[0]-from[0])*e,from[1]+(to[1]-from[1])*e);k<1?requestAnimationFrame(step):res()};requestAnimationFrame(step)});
+  const isRock=(c,r)=>(cfg.rocks||[]).some(([a,b])=>a===c&&b===r);
+  const isVia=(c,r)=>via.some(([a,b])=>a===c&&b===r);
+  const api={
+    cc,
+    svg(){let s='';for(let r=0;r<n;r++)for(let c=0;c<n;c++)s+=`<rect x="${x0+c*cell}" y="${y0+r*cell}" width="${cell}" height="${cell}" fill="${W}" stroke="#333" stroke-width="2.5"/>`;
+      (cfg.rocks||[]).forEach(([c,r])=>s+=rock(...cc(c,r),rs));
+      via.forEach(([c,r])=>{const [x,y]=cc(c,r);s+=`<g class="fl" data-k="${c},${r}">${flower(x,y,rs*1.15)}</g>`});
+      if(cfg.star)s+=star(...cc(...cfg.star),cell*.66,Y);
+      s+='<g class="trail"></g>';const [sx,sy]=cc(...start);
+      s+=`<g class="robot" transform="translate(${sx},${sy})">${robotInner(Math.min(1.05,rs*.95))}</g>`;return s},
+    attach(_s,_g){g=_g;robot=g.querySelector('.robot');trail=g.querySelector('.trail');pos=cc(...start)},
+    reset(){if(!g)return;trail.innerHTML='';got.clear();g.querySelectorAll('.fl').forEach(e=>e.style.opacity=1);setPos(...cc(...start))},
+    async animate(moves,onStep){api.reset();await sleep(250);let [c,r]=start;
+      for(let i=0;i<moves.length;i++){onStep&&onStep(i);const [dc,dr]=DIRS[moves[i]],nc=c+dc,nr=r+dr;
+        const out=nc<0||nc>=n||nr<0||nr>=n;
+        if(out||isRock(nc,nr)){const [fx,fy]=cc(c,r),[tx,ty]=out?[fx+dc*cell*.45,fy+dr*cell*.45]:cc(nc,nr);
+          await tween([fx+(tx-fx)*.6,fy+(ty-fy)*.6],260);sBad();await tween([fx,fy],260);onStep&&onStep(null);return{ok:false,reason:out?'out':'rock'}}
+        const [px,py]=cc(c,r);trail.insertAdjacentHTML('beforeend',`<circle cx="${px}" cy="${py+cell*.3}" r="${Math.max(3,5*rs)}" fill="#9ec5ff"/>`);
+        await tween(cc(nc,nr),480);tone(520+i*60,0,.1,'sine',.1);c=nc;r=nr;
+        if(isVia(c,r)&&!got.has(c+','+r)){got.add(c+','+r);const el=g.querySelector(`.fl[data-k="${c},${r}"]`);if(el)el.style.opacity=.18;tone(988,0,.14,'triangle',.13)}
+        await sleep(120)}
+      onStep&&onStep(null);
+      const atStar=cfg.star?(c===cfg.star[0]&&r===cfg.star[1]):true,all=got.size===via.length;
+      return{ok:atStar&&all,reason:atStar&&all?'ok':(atStar?'flowers':'far'),end:[c,r]}}
+  };
+  return api;
+}
+
+/* =====================================================================
+   ATIVIDADES
+   ===================================================================== */
+const A=[];
+const def=(title,instr,build)=>A.push({title,instr,build});
+const numPal=arr=>arr.map(n=>({key:String(n),svg:txt(0,15,n,44)}));
+const numDraw=(k,cx,cy,s)=>txt(cx,cy+s.h*.3,k,s.h*.78);
+const colPal=cols=>cols.map(c=>({key:c,svg:circle(0,0,46,c)}));
+const arrPal=()=>['U','L','R','D'].map(d=>({key:d,svg:arrow(d,0,0,1.5)}));
+const arrDraw=(k,cx,cy)=>arrow(k,cx,cy,1);
+
+/* ======= auxiliares comuns (1º e 2º ano) ======= */
+const list=s=>s.split('');
+const numPal2=arr=>arr.map(n=>({key:String(n),svg:txt(0,String(n).length>1?13:15,n,String(n).length>1?36:44)}));
+const numDraw2=(k,cx,cy,s)=>{const fs=Math.min(s.h*.78,s.w*(String(k).length>1?.56:.9));return txt(cx,cy+fs*.35,k,fs)};
+const arrDrawS=(k,cx,cy,s)=>arrow(k,cx,cy,Math.min(1,s.w/38));
+const mixDraw=(k,cx,cy,s)=>DIRS[k]?arrDrawS(k,cx,cy,s):numDraw2(k,cx,cy,s);
+const arrowCardsS=(seq,y,x0,wc,step,sc)=>seq.map((d,i)=>box(x0+i*step,y,wc,wc,7)+arrow(d,x0+i*step+wc/2,y+wc/2,sc)).join('');
+const SYM={gt:'>',lt:'&lt;',eq:'='};
+const symPal=()=>['gt','lt','eq'].map(k=>({key:k,svg:txt(0,15,SYM[k],48)}));
+const symDraw=(k,cx,cy,s)=>txt(cx,cy+s.h*.3,SYM[k],s.h*.85);
+
+function numRows(rows,ys,w=42,h=52,step=48,fs=32){let bg='',slots=[],n=0;
+  rows.forEach((row,ri)=>{const x0=(300-(row.length*step-(step-w)))/2;
+    row.forEach((v,i)=>{const x=x0+i*step;
+      if(v==null){slots.push({id:'s'+n,x,y:ys[ri],w,h});n++}
+      else bg+=box(x,ys[ri],w,h,8)+txt(x+w/2,ys[ri]+h*.72,v,fs)})});
+  return{bg,slots}}
+
+const flower=(cx,cy,s=1)=>{let g=`<g transform="translate(${cx},${cy}) scale(${s})">`;
+  for(let k=0;k<5;k++){const a=-Math.PI/2+k*2*Math.PI/5;g+=`<circle cx="${(9*Math.cos(a)).toFixed(1)}" cy="${(9*Math.sin(a)).toFixed(1)}" r="7" fill="#ff8fab" stroke="${K}" stroke-width="1.8"/>`}
+  return g+`<circle r="6" fill="${Y}" stroke="${K}" stroke-width="1.8"/></g>`};
+
+const animal=(k,cx,cy,s=1)=>{let g=`<g transform="translate(${cx},${cy}) scale(${s})">`;
+  const eyes=(y=-3,dx=8)=>[-dx,dx].map(x=>`<circle cx="${x}" cy="${y}" r="3.2" fill="${K}"/>`).join('');
+  if(k==='gato'){
+    g+=`<polygon points="-19,-8 -21,-27 -5,-17" fill="#f6a54a" stroke="${K}" stroke-width="2.2" stroke-linejoin="round"/><polygon points="19,-8 21,-27 5,-17" fill="#f6a54a" stroke="${K}" stroke-width="2.2" stroke-linejoin="round"/>`;
+    g+=`<circle r="21" fill="#f6a54a" stroke="${K}" stroke-width="2.4"/>${eyes()}<polygon points="-3.5,4 3.5,4 0,8" fill="#e57399"/>`;
+    g+=line(-8,8,-22,5,K,1.6)+line(-8,11,-22,12,K,1.6)+line(8,8,22,5,K,1.6)+line(8,11,22,12,K,1.6);
+  }else if(k==='cao'){
+    g+=`<ellipse cx="-20" cy="-2" rx="8" ry="15" fill="#7b4f2b" stroke="${K}" stroke-width="2.2" transform="rotate(12 -20 -2)"/><ellipse cx="20" cy="-2" rx="8" ry="15" fill="#7b4f2b" stroke="${K}" stroke-width="2.2" transform="rotate(-12 20 -2)"/>`;
+    g+=`<circle r="20" fill="#d7b38a" stroke="${K}" stroke-width="2.4"/>${eyes(-5)}<ellipse cx="0" cy="7" rx="9" ry="7" fill="#f3dcc0" stroke="${K}" stroke-width="1.6"/><ellipse cx="0" cy="4" rx="4" ry="3" fill="${K}"/>`;
+  }else if(k==='coelho'){
+    g+=`<ellipse cx="-8" cy="-27" rx="6" ry="17" fill="#fff" stroke="${K}" stroke-width="2.2"/><ellipse cx="8" cy="-27" rx="6" ry="17" fill="#fff" stroke="${K}" stroke-width="2.2"/><ellipse cx="-8" cy="-26" rx="2.6" ry="11" fill="#ffb3c6"/><ellipse cx="8" cy="-26" rx="2.6" ry="11" fill="#ffb3c6"/>`;
+    g+=`<circle r="19" fill="#f4f4f4" stroke="${K}" stroke-width="2.4"/>${eyes(-3,7)}<polygon points="-3,4 3,4 0,8" fill="#e57399"/>`+line(0,8,0,12,K,1.6);
+  }else if(k==='peixe'){
+    g+=`<polygon points="14,0 30,-13 30,13" fill="#0288d1" stroke="${K}" stroke-width="2.2" stroke-linejoin="round"/><ellipse cx="-2" cy="0" rx="20" ry="14" fill="#4fc3f7" stroke="${K}" stroke-width="2.4"/><circle cx="-10" cy="-3" r="3.2" fill="${K}"/><path d="M-2,-14 Q4,-22 10,-12" fill="#0288d1" stroke="${K}" stroke-width="2"/><path d="M-16,4 Q-12,8 -8,5" fill="none" stroke="${K}" stroke-width="1.8"/>`;
+  }
+  return g+'</g>'};
+const animalPal=ks=>ks.map(k=>({key:k,svg:animal(k,0,2,1.05)}));
+const animalDraw=(k,cx,cy,s)=>animal(k,cx,cy+2,Math.min(1.15,s.w/46));
+
+let vid=0;
+const venn=(cx,cy,hi,s=1)=>{const id='vc'+(vid++),HI='#ffd54f';
+  let g=`<g transform="translate(${cx},${cy}) scale(${s})"><defs><clipPath id="${id}"><circle cx="9" cy="0" r="15"/></clipPath></defs>`;
+  g+=`<rect x="-30" y="-22" width="60" height="44" rx="5" fill="${hi==='none'?HI:'#fff'}" stroke="${K}" stroke-width="2"/>`;
+  if(hi==='red')g+=`<circle cx="-9" r="15" fill="${HI}"/><circle cx="9" r="15" fill="#fff"/>`;
+  else if(hi==='round')g+=`<circle cx="9" r="15" fill="${HI}"/><circle cx="-9" r="15" fill="#fff"/>`;
+  else{g+=`<circle cx="-9" r="15" fill="#fff"/><circle cx="9" r="15" fill="#fff"/>`;if(hi==='both')g+=`<circle cx="-9" r="15" fill="${HI}" clip-path="url(#${id})"/>`}
+  return g+`<circle cx="-9" r="15" fill="none" stroke="${K}" stroke-width="2"/><circle cx="9" r="15" fill="none" stroke="${K}" stroke-width="2"/></g>`};
+
+const gridBg=(x0,y0,cw,ch,nc,nr,f=W)=>{let s='';for(let r=0;r<nr;r++)for(let c=0;c<nc;c++)s+=`<rect x="${x0+c*cw}" y="${y0+r*ch}" width="${cw}" height="${ch}" fill="${f}" stroke="#333" stroke-width="2.5"/>`;return s};
+const eraser={key:W,svg:circle(0,0,46,W)+line(-14,-14,14,14,'#999',4)+line(14,-14,-14,14,'#999',4)};
+
+/* Prog com loop e quebras: ajuda para montar toggles de células */
+const cellToggles=(n,x0,y0,cell,okC,okR)=>{const items=[];for(let r=0;r<n;r++)for(let c=0;c<n;c++)items.push({id:`c${c}_${r}`,x:x0+c*cell+2,y:y0+r*cell+2,w:cell-4,h:cell-4,g:'c',ok:c===okC&&r===okR});return items};
+/* ======= auxiliares 3º–5º ano ======= */
+const racPal=ks=>ks.map(k=>({key:k,svg:`<g transform="scale(.82)">${racerG(k)}</g>`}));
+const racDraw=(k,cx,cy,s)=>`<g transform="translate(${cx},${cy}) scale(${Math.min(1.3,Math.min(s.w,s.h)/64)})">${racerG(k)}</g>`;
+const PREV={R:'U',D:'R',L:'D',U:'L'};
+const arrSlots=(N,y1)=>{const two=N>10,k=two?Math.ceil(N/2):N,step=Math.min(40,Math.floor(292/k)),w=step-5,h=two?Math.min(30,Math.floor((268-y1-6)/2)):30,tot=k*step-(step-w),x0=(300-tot)/2;
+  return Array.from({length:N},(_,i)=>{const r=two?Math.floor(i/k):0,c=two?i%k:i;return{id:'s'+i,x:x0+c*step,y:y1+r*(h+6),w,h}})};
+function robotAct(o){
+  const x0=Math.round((300-o.n*o.cell)/2),y0=4,sol=list(o.sol);
+  const P=Prog({n:o.n,x0,y0,cell:o.cell,start:[0,o.n-1],star:o.star||[o.n-1,0],rocks:o.rocks,via:o.via});
+  const slots=arrSlots(sol.length,y0+o.n*o.cell+6);
+  const cfg={slots,solution:sol,draw:arrDrawS};
+  if(o.bugs){const init={};sol.forEach((d,i)=>init['s'+i]=o.bugs.includes(i)?PREV[d]:d);Object.assign(cfg,{cycle:true,init})}
+  else cfg.pal=arrPal();
+  const S=Slots(cfg);
+  return{bg:'',feats:[P,S],prog:P,slots:S,run:true}}
+const digitsFrom=(slots,ans,fs)=>Digits({fields:slots.map((s,i)=>({...s,ans:String(ans[i])})),fs});
+const code=(lines,x,y,lh=19,fs=15,fill=K)=>lines.map((l,i)=>{const ind=l.match(/^ */)[0].length;return txt(x+ind*6.5,y+i*lh,l.trim(),fs,'start',fill)}).join('');
+const txtFit=(k,cx,cy,s)=>{const fs=Math.min(s.h*.7,s.w*.92/(Math.max(2,String(k).length)*.58));return txt(cx,cy+fs*.35,k,fs)};
+const palTxt=(arr,fs=30)=>arr.map(k=>({key:String(k),svg:txt(0,fs*.35,k,Math.min(fs,52/(Math.max(2,String(k).length)*.55)))}));
+const letPal=ks=>ks.map(k=>({key:k,svg:txt(0,14,k,44)}));
+const letDraw=(k,cx,cy,s)=>txt(cx,cy+s.h*.3,k,s.h*.78);
+const ALF='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const shift=(w,n)=>w.split('').map(c=>ALF[(ALF.indexOf(c)+n+26)%26]).join('');
+const alfStrip=(y)=>{let s='';ALF.split('').forEach((c,i)=>{const r=Math.floor(i/13),cI=i%13;s+=txt(16+cI*21.5,y+r*22,c,15,'middle','#445')});return s};
+const colK='#222222';
+
+/* ======================= 4º ANO ======================= */
+
+/* 1 */ def('Regras escondidas','Cada fila tem uma regra. Descubra e escreva o número que falta.',()=>{
+  const {bg,slots}=numRows([[1,4,9,null,25],[2,3,5,8,null,17],[3,6,11,18,null]],[22,98,174],38,50,43,30);
+  return{bg,feats:[digitsFrom(slots,[16,12,27])]}});
+
+/* 2 */ def('Palitos de fósforo','Veja quantos palitos tem cada figura. Descubra a regra e responda.',()=>{
+  const tri=(x0,yb,n,s=30,h=26)=>{const V=[];for(let j=0;j<=n+1;j++)V.push([x0+j*s/2,j%2?yb-h:yb]);const ed=[];
+    for(let j=0;j<=n;j++)ed.push([j,j+1]);for(let j=0;j<n;j++)ed.push([j,j+2]);
+    return ed.map(([a,b])=>line(V[a][0],V[a][1],V[b][0],V[b][1],'#a1522b',5)).join('')};
+  let bg=tri(16,104,1)+tri(76,104,2)+tri(158,104,3);
+  [['1ª',28,3],['2ª',96,5],['3ª',186,7]].forEach(([t,x,c])=>bg+=txt(x,134,t+' figura',13,'middle','#445')+txt(x,152,c+' palitos',13,'middle','#a1522b'));
+  bg+=txt(150,184,'Quantos palitos terá a:',15,'middle','#445','normal');
+  bg+=txt(70,226,'5ª figura?',17,'middle')+txt(222,226,'10ª figura?',17,'middle');
+  return{bg,feats:[Digits({fields:[{id:'a',x:42,y:236,w:56,h:30,ans:'11'},{id:'b',x:194,y:236,w:56,h:30,ans:'21'}]})]}});
+
+/* 3 */ def('Variáveis com laço','Siga os programas e descubra o valor final de cada letra.',()=>{
+  let x=2,y=5;for(let i=0;i<3;i++){x+=y;y-=1}
+  let a=1;for(let i=0;i<4;i++){a*=2;a+=1}
+  let bg=box(8,8,284,128,12,false,'#f6f9ff')+code(['x ← 2','y ← 5','REPITA 3 VEZES:','   x ← x + y','   y ← y − 1'],22,34,22,16)
+    +txt(190,64,'x =',20,'end')+txt(190,108,'y =',20,'end');
+  bg+=box(8,146,284,114,12,false,'#f6f9ff')+code(['a ← 1','REPITA 4 VEZES:','   a ← a × 2','   a ← a + 1'],22,174,22,16)+txt(190,224,'a =',20,'end');
+  return{bg,feats:[Digits({fields:[{id:'x',x:200,y:42,w:62,h:36,ans:String(x)},{id:'y',x:200,y:86,w:62,h:36,ans:String(y)},{id:'a',x:200,y:200,w:62,h:40,ans:String(a)}]})]}});
+
+/* 4 */ def('Pictograma','Cada estrela vale 5 alunos. Leia o pictograma e responda.',()=>{
+  const d=[['Futebol',5],['Vôlei',3],['Natação',4],['Judô',2]];let bg=box(6,6,288,134,12,false,'#f8fbff');
+  d.forEach(([n,k],i)=>{const y=26+i*26;bg+=txt(16,y+5,n,15,'start')+Array.from({length:k},(_,j)=>star(112+j*28,y,22,Y)).join('')});
+  bg+=star(40,128,16,Y)+txt(54,133,'= 5 alunos',13,'start','#445','normal');
+  const qs=['Quantos alunos escolheram vôlei?','Futebol e judô juntos?','Quantos alunos no total?'],ans=[15,35,70],ys=[150,188,226];
+  const fields=qs.map((q,i)=>{bg+=txt(10,ys[i]+24,q,15,'start');return{id:'q'+i,x:232,y:ys[i],w:58,h:32,ans:String(ans[i])}});
+  return{bg,feats:[Digits({fields})]}});
+
+/* 5 */ def('Sorte e azar','Olhe a jarra de bolinhas. Responda sem olhar dentro dela de novo!',()=>{
+  let bg=`<path d="M92,16 H208 V26 Q222,40 222,62 V104 Q222,116 210,116 H90 Q78,116 78,104 V62 Q78,40 92,26 Z" fill="#eaf6ff" stroke="${K}" stroke-width="2.8" stroke-linejoin="round"/>`;
+  const balls=[R,R,B,R,G,R,B,R,B,R].map((c,i)=>circle(98+(i%5)*26,[44,70,96][0]+Math.floor(i/5)*34,22,c,K,2));
+  bg+=balls.join('');
+  bg+=txt(150,142,'Qual cor é a MAIS provável de sair?',14.5,'middle')+txt(150,206,'Qual cor é IMPOSSÍVEL de sair?',14.5,'middle');
+  const items=[];[[R,1],[B,0],[G,0]].forEach(([c,ok],i)=>{const cx=70+i*80;bg+=circle(cx,172,32,c,K,2.4);items.push({id:'a'+i,x:cx-22,y:150,w:44,h:44,g:'a',ok:!!ok})});
+  [[B,0],[Y,1],[G,0]].forEach(([c,ok],i)=>{const cx=70+i*80;bg+=circle(cx,236,32,c,K,2.4);items.push({id:'b'+i,x:cx-22,y:214,w:44,h:44,g:'b',ok:!!ok})});
+  return{bg,feats:[Toggles({items,mark:'ring',radio:true,need:'group'})]}});
+
+/* 6 */ def('Dois grupos','Complete o diagrama com os dados da turma.',()=>{
+  const cx1=105,cx2=195,cy=84;
+  let bg=`<rect x="6" y="6" width="288" height="154" rx="14" fill="#fff" stroke="#999" stroke-width="2.5"/>`
+   +`<circle cx="${cx1}" cy="${cy}" r="56" fill="${B}" fill-opacity=".14" stroke="${B}" stroke-width="3"/><circle cx="${cx2}" cy="${cy}" r="56" fill="${R}" fill-opacity=".14" stroke="${R}" stroke-width="3"/>`
+   +txt(88,30,'Música',14,'middle',B)+txt(212,30,'Esporte',14,'middle',R)+txt(150,92,'5',26)+txt(150,68,'os dois',11,'middle','#555','normal')+txt(262,128,'nenhum',12,'middle','#777','normal');
+  bg+=txt(150,186,'Gostam de música: 12 alunos',15)+txt(150,208,'Gostam de esporte: 9 alunos',15)+txt(150,230,'Gostam dos dois: 5 · Turma: 20 alunos',15)+txt(150,254,'Escreva só música, só esporte e nenhum.',13,'middle','#667','normal');
+  return{bg,feats:[Digits({fields:[{id:'m',x:60,y:70,w:46,h:36,ans:'7'},{id:'e',x:194,y:70,w:46,h:36,ans:'4'},{id:'n',x:240,y:132,w:46,h:26,ans:'4'}]})]}});
+
+/* 7 */ def('Decimais em ordem','Coloque os números em ordem, do menor para o maior.',()=>{
+  const nums=['0,5','0,25','1,2','0,75','1'],sorted=['0,25','0,5','0,75','1','1,2'];let bg='';
+  nums.forEach((n,i)=>bg+=box(4+i*58.5,24,52,52,8)+txt(30+i*58.5,57,n,n.length>3?19:23));
+  bg+=txt(150,112,'↓  do menor para o maior  ↓',16,'middle','#555','normal');
+  const slots=[],ans={};sorted.forEach((n,i)=>{slots.push({id:'s'+i,x:4+i*58.5,y:128,w:52,h:60});ans['s'+i]=n});
+  return{bg,feats:[Slots({slots,ans,pal:palTxt(nums,34),draw:txtFit})]}});
+
+/* 8 */ def('Casas coloridas','Leia as pistas. Escolha a cor e o bichinho de cada casa.',()=>{
+  const cl=['A casa verde é logo depois da casa do cachorro.','A casa 3 é azul.','O gato mora na casa azul.','A casa 1 é vermelha.'];
+  let bg='';cl.forEach((c,i)=>bg+=txt(10,22+i*21,'• '+c,13.5,'start'));
+  const cols=[R,G,B],an=['cachorro','coelha','gato'],slots=[],ans={};
+  cols.forEach((c,i)=>{const x=16+i*100;bg+=txt(x+34,116,'Casa '+(i+1),16);
+    slots.push({id:'c'+i,x,y:124,w:68,h:44});ans['c'+i]=c;slots.push({id:'a'+i,x,y:176,w:68,h:70});ans['a'+i]=an[i]});
+  bg+=txt(150,264,'de cima: cor · de baixo: bichinho',12,'middle','#667','normal');
+  const pal=[...colPal([R,G,B]),...racPal(['gato','cachorro','coelha'])];
+  return{bg,feats:[Slots({slots,ans,pal,draw:(k,cx,cy,s)=>k.startsWith('#')?circle(cx,cy,Math.min(s.w,s.h)-8,k):racDraw(k,cx,cy,s)})]}});
+
+/* 9 */ def('Sudoku de números','Em cada linha e coluna, os números 1, 2, 3 e 4 aparecem uma só vez. Há poucas dicas!',()=>{
+  const sol=[[2,4,1,3],[1,3,4,2],[4,2,3,1],[3,1,2,4]],giv=[[0,4,0,0],[0,0,4,0],[0,2,0,1],[0,1,0,0]];
+  const x0=46,y0=31,cs=52;let bg=gridBg(x0,y0,cs,cs,4,4),slots=[],ans={};
+  for(let r=0;r<4;r++)for(let c=0;c<4;c++){const cx=x0+cs*(c+.5),cy=y0+cs*(r+.5);
+    if(giv[r][c])bg+=txt(cx,cy+13,giv[r][c],38);else{const id=`s${r}${c}`;slots.push({id,x:cx-21,y:cy-21,w:42,h:42});ans[id]=String(sol[r][c])}}
+  return{bg,feats:[Slots({slots,ans,pal:numPal2([1,2,3,4]),draw:numDraw2})]}});
+
+/* 10 */ def('Código de César','Cada letra foi trocada pela 3ª letra à frente (A virou D). Volte 3 letras e descubra as palavras.',()=>{
+  let bg=alfStrip(18)+txt(150,72,'FDVD = ?   EROD = ?',14,'middle','#667','normal');
+  const words=['CASA','BOLA'],slots=[],ans={};
+  words.forEach((w,wi)=>{const e=shift(w,3),y=88+wi*86;[...e].forEach((ch,i)=>{const x=40+i*56;bg+=box(x,y,46,36,8,false,'#fff3c4')+txt(x+23,y+27,ch,26);slots.push({id:`w${wi}${i}`,x,y:y+42,w:46,h:36});ans[`w${wi}${i}`]=w[i]})});
+  return{bg,feats:[Slots({slots,ans,pal:letPal(['A','B','C','D','E','L','O','S']),draw:letDraw})]}});
+
+/* 11 */ def('Números em binário','Cada cartão vale um número. Toque nos cartões que somam o número pedido.',()=>{
+  const targets=[5,10,13],vals=[8,4,2,1];let bg='';const items=[];
+  targets.forEach((t,r)=>{const y=34+r*78;bg+=txt(60,y+36,'Forme o '+t,19);
+    vals.forEach((v,i)=>{const x=104+i*46;bg+=box(x,y,40,56,8,false,'#fff8e1')+txt(x+20,y+37,v,24);items.push({id:`c${r}${i}`,x,y,w:40,h:56,g:r,ok:(t&v)>0})})});
+  bg+=txt(150,20,'Some os cartões escolhidos.',14,'middle','#667','normal');
+  return{bg,feats:[Toggles({items,mark:'ring',need:'group'})]}});
+
+/* 12 */ def('Imagem comprimida','Cada linha está escrita em código: 2B 3P = 2 brancos e 3 pretos. Pinte a figura.',()=>{
+  const M=['001100','011110','110011','111111','101101','100001'];
+  const rle=r=>{let o=[],i=0;while(i<r.length){let j=i;while(j<r.length&&r[j]===r[i])j++;o.push((j-i)+(r[i]==='1'?'P':'B'));i=j}return o.join(' ')};
+  const x0=128,y0=44,cs=28;let bg=txt(150,22,'B = branco     P = preto',14,'middle','#445','normal')+gridBg(x0,y0,cs,cs,6,6);
+  M.forEach((r,i)=>bg+=txt(10,y0+i*cs+20,rle(r),15,'start',B));
+  const T=[];for(let r=0;r<6;r++)for(let c=0;c<6;c++)T.push({id:`p${c}${r}`,ans:M[r][c]==='1'?colK:W,draw:(f,b)=>`<rect x="${x0+c*cs}" y="${y0+r*cs}" width="${cs}" height="${cs}" fill="${f}" stroke="${b?R:'#333'}" stroke-width="${b?4:2.5}"/>`});
+  return{bg,feats:[Paint({targets:T,pal:[...colPal([colK]),eraser]})]}});
+
+/* 13 */ def('Procedimento ESCADA','Defina a ESCADA e repita. O robô precisa chegar na estrela.',()=>{
+  const P=Prog({n:6,x0:6,y0:10,cell:30,start:[0,5],star:[5,0],rocks:[[3,4],[1,2],[5,3],[2,1],[0,3]]});
+  const bg=txt(248,20,'ESCADA =',15)+txt(248,102,'REPITA',15)+txt(248,168,'vezes ESCADA',12,'middle','#555','normal')+txt(248,194,'DEPOIS',15)
+    +box(200,26,92,46,10);
+  const slots=[{id:'a',x:206,y:30,w:38,h:38},{id:'b',x:248,y:30,w:38,h:38},{id:'n',x:206,y:108,w:40,h:38},{id:'c',x:206,y:200,w:38,h:38},{id:'d',x:248,y:200,w:38,h:38}];
+  const S=Slots({slots,solution:['R','U','4','R','U'],pal:[...arrPal(),...numPal2([2,3,4,5])],draw:mixDraw});
+  let nn=4;
+  const moves=()=>{const v=S.values();if(v.some(x=>x==null))return null;const [a,b,n,c,d]=v;
+    if(!/^[2-5]$/.test(n))return 'No meio vai um número de 2 a 5.';
+    if(![a,b,c,d].every(x=>DIRS[x]))return 'Nas outras caixas vão setas.';
+    nn=+n;return [...Array.from({length:+n},()=>[a,b]).flat(),c,d]};
+  return{bg,feats:[P,S],prog:P,slots:S,run:true,moves,hl:i=>{S.setHl(i==null?null:i>=2*nn?(i-2*nn===0?3:4):(i%2===0?0:1))}}});
+
+/* 14 */ def('Ache a linha errada','Cada programa tem uma linha com erro. Toque nela.',()=>{
+  let bg=box(8,6,284,114,12,false,'#f6f9ff')+txt(18,26,'Quantas rodas têm 6 carros?',14,'start',B)
+    +code(['r ← 0','REPITA 6 VEZES:','   r ← r + 3','MOSTRE r'],20,50,20,15)+txt(282,112,'esperado: 24 · saiu: 18',11,'end','#c0392b','normal');
+  bg+=box(8,130,284,132,12,false,'#f6f9ff')+txt(18,150,'Contagem regressiva de 10 até 1',14,'start',B)
+    +code(['n ← 10','REPITA 10 VEZES:','   MOSTRE n','   n ← n + 1'],20,174,20,15)+txt(282,254,'esperado: 10, 9, 8… · saiu: 10, 11, 12…',11,'end','#c0392b','normal');
+  const items=[];[[0,0],[1,0],[2,1],[3,0]].forEach(([i,ok])=>items.push({id:'a'+i,x:14,y:34+i*20,w:200,h:20,g:'a',ok:!!ok}));
+  [[0,0],[1,0],[2,0],[3,1]].forEach(([i,ok])=>items.push({id:'b'+i,x:14,y:158+i*20,w:200,h:20,g:'b',ok:!!ok}));
+  return{bg,feats:[Toggles({items,mark:'ring',radio:true,need:'group'})]}});
+
+/* 15 */ def('Depure o robô','O programa tem erros. Toque nas setas erradas para girar. Depois toque em Executar.',()=>robotAct({n:6,cell:30,rocks:[[5,2],[0,4],[3,2],[4,3],[1,4],[2,4]],sol:'RRRUULUURRRU',bugs:[3,6,9]}));
+
+/* 16 */ def('Colete as flores','Pegue as 3 flores e chegue na estrela com 14 setas. Desvie das pedras.',()=>robotAct({n:6,cell:30,rocks:[[4,1],[3,4],[2,3],[1,0]],via:[[4,5],[2,1],[3,1]],sol:'RRRRUULULURURR'}));
+
+/* 17 */ def('Divisíveis','Veja se cada número divide certinho por 3, por 5, pelos dois ou por nenhum.',()=>{
+  const nums=[6,10,15,7,12,25],ys=[8,48,88,128,168,208];let bg='';const left=[],ans={};
+  nums.forEach((n,i)=>{bg+=box(14,ys[i],64,34,8)+txt(46,ys[i]+26,n,24)+dot(88,ys[i]+17);left.push({id:'n'+i,zone:[6,ys[i]-3,92,40],dot:[88,ys[i]+17]});ans['n'+i]=n%15===0?'ab':n%3===0?'a':n%5===0?'b':'n'});
+  const RB=[['a','só por 3',B,'#fff'],['b','só por 5',R,'#fff'],['ab','por 3 e por 5',G,'#fff'],['n','por nenhum','#cfd8dc','#333']];
+  const right=[];RB.forEach(([id,t,c,tc],i)=>{const y=6+i*64;bg+=box(176,y,116,54,12,false,c,3)+txt(234,y+33,t,14.5,'middle',tc)+dot(170,y+27);right.push({id,zone:[160,y-4,138,62],dot:[170,y+27]})});
+  return{bg,feats:[Links({left,right,ans,many:true})]}});
+
+/* 18 */ def('Máquina: multiplica e tira','A máquina multiplica por um número e depois tira outro. Descubra e complete.',()=>{
+  const ys=[44,94,144,194,244],ins=[1,2,4,5,8],outs=[1,4,10,null,null];
+  let bg=txt(47,18,'entra',15,'middle','#555','normal')+txt(250,18,'sai',15,'middle','#555','normal');
+  bg+=`<rect x="112" y="26" width="76" height="236" rx="16" fill="#cfd8dc" stroke="${K}" stroke-width="3"/>`;
+  const gear=(cx,cy)=>{let g=circle(cx,cy,34,'#90a4ae',K,2.4)+circle(cx,cy,12,'#cfd8dc',K,2);for(let k=0;k<8;k++){const a=k*Math.PI/4;g+=line(cx+17*Math.cos(a),cy+17*Math.sin(a),cx+23*Math.cos(a),cy+23*Math.sin(a),K,5)}return g};
+  bg+=gear(150,76)+gear(150,214)+txt(150,160,'?',54,'middle','#37474f');
+  const fields=[];
+  ys.forEach((y,i)=>{bg+=box(20,y-19,54,38,8)+txt(47,y+11,ins[i],28)+arrow('R',92,y,.5)+arrow('R',208,y,.5);
+    if(outs[i]==null)fields.push({id:'o'+i,x:222,y:y-21,w:56,h:42,ans:String(3*ins[i]-2)});
+    else bg+=box(222,y-19,56,38,8)+txt(250,y+11,outs[i],28)});
+  return{bg,feats:[Digits({fields})]}});
+
+/* 19 */ def('Mova a figura','Mova cada ponto azul 3 casas para a direita e 2 para cima. Pinte os novos pontos de vermelho.',()=>{
+  const x0=20,y0=14,cs=30,n=6,L='ABCDEF';let bg='';
+  const blue=['A1','B1','B2'];const toXY=p=>[L.indexOf(p[0]),n-Number(p[1])];
+  const bset=new Set(blue.map(p=>toXY(p).join(',')));
+  const red=blue.map(p=>{const [c,r]=toXY(p);return[c+3,r-2].join(',')});const rset=new Set(red);
+  bg+=gridBg(x0,y0,cs,cs,n,n);
+  L.split('').forEach((l,i)=>bg+=txt(x0+cs*(i+.5),y0+n*cs+20,l,17));
+  for(let r=0;r<n;r++)bg+=txt(x0-12,y0+cs*(r+.5)+6,n-r,17);
+  blue.forEach(p=>{const [c,r]=toXY(p);bg+=`<rect x="${x0+c*cs}" y="${y0+r*cs}" width="${cs}" height="${cs}" fill="${B}" stroke="#333" stroke-width="2.5"/>`});
+  bg+=txt(214,34,'Azuis:',15,'start',B)+txt(214,56,'A1',14,'start')+txt(214,76,'B1',14,'start')+txt(214,96,'B2',14,'start')+txt(214,134,'Regra:',15,'start')+txt(214,158,'→ 3',16,'start')+txt(214,182,'↑ 2',16,'start');
+  const T=[];for(let r=0;r<n;r++)for(let c=0;c<n;c++){const k=c+','+r;if(bset.has(k))continue;T.push({id:`p${c}${r}`,ans:rset.has(k)?R:W,draw:(f,b)=>`<rect x="${x0+c*cs}" y="${y0+r*cs}" width="${cs}" height="${cs}" fill="${f}" stroke="${b?R:'#333'}" stroke-width="${b?4:2.5}"/>`})}
+  return{bg,feats:[Paint({targets:T,pal:[...colPal([R]),eraser]})]}});
+
+/* 20 */ def('Desafio final','Pegue as 4 flores, chegue na estrela e desvie das pedras. Use 16 setas.',()=>robotAct({n:6,cell:30,rocks:[[1,1],[2,0],[5,1],[5,3],[0,0],[3,4]],via:[[2,2],[4,4],[5,5],[5,4]],sol:'RRRRRULULLURRUUR'}));
+
+const SEC=[['Regras e padrões',0,4,'#2a6fdb'],['Dados e conjuntos',4,8,'#e68a00'],['Lógica e códigos',8,12,'#2a9d4b'],['Algoritmos: procedimentos',12,16,'#8e44ad'],['Regras, mapas e desafio',16,20,'#e63946']];
+
+
+/* =====================================================================
+   MOTOR
+   ===================================================================== */
+const starSvg=(on,sz)=>`<svg viewBox="-14 -14 28 28" width="${sz||24}" height="${sz||24}">${star(0,0,26,on?Y:'#dfe6ee',on?'#c98f00':'#b8c3cf',1.6)}</svg>`;
+let cur=-1,a=null,feats=[],attempts=0,busy=false,toastT=null;
+const ctx={locked:()=>busy||$('#win').classList.contains('on'),palSel(k){document.querySelectorAll('#pal .pbtn').forEach(b=>b.classList.toggle('sel',k!=null&&b.dataset.k===k))}};
+
+function toast(msg,kind=''){const t=$('#toast');t.textContent=msg;t.className='toast on '+kind;clearTimeout(toastT);toastT=setTimeout(()=>t.className='toast',2400)}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id))}
+
+function buildMenu(){
+  const tot=Object.values(S.stars).reduce((s,n)=>s+n,0);
+  $('#total').innerHTML=starSvg(true,28)+`<span>${tot} / 60</span>`;
+  $('#tgVoice').classList.toggle('off',!S.voice);$('#tgSnd').classList.toggle('off',!S.snd);
+  let h=`<button class="racebtn" id="bRace">${FLAG}<span>Corrida a dois<small>1 tablet, 2 jogadores: cada um escolhe um bichinho e disputa pontos</small></span></button>`;
+  SEC.forEach(([name,from,to,c])=>{h+=`<div class="sec" style="--c:${c}"><b>${from+1}–${to}</b>${name}</div><div class="tiles">`;
+    for(let i=from;i<to;i++){const n=S.stars[i]||0;h+=`<button class="tile" data-i="${i}" style="--c:${c}"><div class="n">${i+1}</div><div class="t">${A[i].title}</div><div class="stars">${[1,2,3].map(k=>starSvg(k<=n)).join('')}</div></button>`}
+    h+='</div>'});
+  h+='<button class="reset" id="bClear">Apagar as estrelas</button>';
+  $('#mbody').innerHTML=h;
+}
+
+function open(i){
+  if(i<0||i>=A.length){buildMenu();show('menu');cur=-1;return}
+  cur=i;attempts=0;busy=false;const d=A[i];a=d.build();feats=a.feats;
+  $('#gnum').textContent=i+1;$('#gtitle').textContent=d.title;$('#itext').textContent=d.instr;
+  $('#bPrev').disabled=i===0;
+  const svg=document.createElementNS(NS,'svg');svg.id='stage';svg.setAttribute('viewBox','0 0 300 270');svg.setAttribute('preserveAspectRatio','xMidYMid meet');
+  svg.innerHTML=`<g>${a.bg||''}</g>`+feats.map((f,k)=>`<g id="f${k}">${f.svg()}</g>`).join('');
+  $('#stagewrap').replaceChildren(svg);
+  const palF=feats.find(f=>f.pal);const pal=$('#pal');pal.className='pal'+(palF&&palF.pal.length>10?' sm':'');
+  pal.innerHTML=palF?palF.pal.map(p=>`<button class="pbtn" data-k="${p.key}"><svg viewBox="-30 -30 60 60">${p.svg}</svg></button>`).join(''):'';
+  pal.onpointerdown=e=>{const b=e.target.closest('.pbtn');if(!b||ctx.locked())return;e.preventDefault();palF.onPal(b.dataset.k)};
+  show('game');
+  feats.forEach((f,k)=>f.attach(svg,svg.querySelector('#f'+k),ctx));
+  $('#bGo').textContent=a.run?'▶ Executar':'Conferir';
+  $('#bDemo').style.display=a.demo?'':'none';
+  setBtns(true);
+  say(d.instr);
+}
+
+function setBtns(on){['#bGo','#bReset','#bDemo'].forEach(s=>{$(s).disabled=!on})}
+
+async function win(){
+  if(race)return raceWin(attempts===0?3:attempts===1?2:1);
+  const stars=attempts===0?3:attempts===1?2:1;
+  if(stars>(S.stars[cur]||0)){S.stars[cur]=stars;store.set('pc4-stars',S.stars)}
+  sGood();
+  const praise=['Muito bem!','Isso mesmo!','Parabéns!','Você é demais!','Arrasou!'];
+  $('#wt').textContent=praise[Math.floor(Math.random()*praise.length)];
+  $('#wp').textContent=stars===3?'Acertou de primeira!':'Você conseguiu!';
+  $('#wstars').innerHTML=[1,2,3].map(k=>starSvg(k<=stars,96).replace('<svg',k<=stars?'<svg class="in"':'<svg')).join('');
+  $('#wNext').style.display=cur<A.length-1?'':'none';
+  $('#win').classList.add('on');
+  const cols=[R,B,Y,G,'#ff8fab'];
+  for(let k=0;k<46;k++){const c=document.createElement('div');c.className='conf';c.style.left=Math.random()*100+'vw';c.style.background=cols[k%5];
+    c.style.animationDuration=(2+Math.random()*2)+'s';c.style.animationDelay=(Math.random()*.5)+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),4800)}
+  say('Muito bem!');
+}
+
+async function check(){
+  if(busy)return;
+  if(a.run)return runProg();
+  let incomplete=false;const res=feats.map(f=>f.check?f.check():{ok:true});
+  if(res.some(r=>r.incomplete)){toast('Falta responder! Complete tudo.','');return}
+  if(res.every(r=>r.ok)){
+    if(a.afterOk){busy=true;setBtns(false);await a.prog.animate(a.demo);busy=false;setBtns(true)}
+    return win()}
+  attempts++;busy=true;sBad();toast('Quase! Tente de novo. O que está certo fica.','bad');
+  for(let k=0;k<feats.length;k++)if(res[k]&&!res[k].ok&&res[k].wrong&&res[k].wrong.length)await feats[k].clearWrong(res[k].wrong);
+  busy=false;
+}
+
+async function runProg(){
+  const sl=a.slots;let m;
+  if(a.moves){m=a.moves();if(typeof m==='string'){toast(m,'');return}}
+  else{m=sl.values();if(a.rep&&!m.some(x=>x==null))m=Array.from({length:a.rep},()=>m).flat()}
+  if(m==null||m.some(x=>x==null)){toast('Escolha todas as setas primeiro!','');return}
+  busy=true;setBtns(false);
+  const r=await a.prog.animate(m,i=>{if(a.hl)a.hl(i);else sl.setHl(i)});
+  if(r.ok){busy=false;setBtns(true);return win()}
+  attempts++;
+  toast(r.reason==='rock'?'Ops! O robô bateu na pedra.':r.reason==='out'?'Ops! O robô saiu do quadro.':r.reason==='flowers'?'Faltou pegar uma flor! Tente de novo.':'O robô não chegou na estrela. Tente de novo!','bad');
+  await sleep(1200);a.prog.reset();busy=false;setBtns(true);
+}
+
+async function demo(){if(busy)return;busy=true;setBtns(false);await a.prog.animate(a.demo);await sleep(500);a.prog.reset();busy=false;setBtns(true)}
+
+/* ---------------- eventos ---------------- */
+$('#mbody').addEventListener('click',e=>{
+  const t=e.target.closest('.tile');if(t){sPop();open(+t.dataset.i);return}
+  if(e.target.id==='bClear'){if(confirm('Apagar todas as estrelas?')){S.stars={};store.set('pc4-stars',S.stars);buildMenu()}}
+});
+$('#tgVoice').onclick=()=>{S.voice=!S.voice;store.set('pc4-voice',S.voice);buildMenu();if(S.voice)say('Voz ligada')};
+$('#tgSnd').onclick=()=>{S.snd=!S.snd;store.set('pc4-snd',S.snd);buildMenu();sPop()};
+$('#tgFull').onclick=()=>{try{const d=document.documentElement;if(document.fullscreenElement)document.exitFullscreen();else (d.requestFullscreen||d.webkitRequestFullscreen).call(d)}catch(e){}};
+$('#bHome').onclick=()=>{if(race){raceQuit();return}try{speechSynthesis.cancel()}catch(e){}open(-1)};
+$('#bPrev').onclick=()=>open(cur-1);
+$('#bNext').onclick=()=>open(cur<A.length-1?cur+1:-1);
+$('#bSay').onclick=()=>{const v=S.voice;S.voice=true;say(A[cur].instr);S.voice=v};
+$('#bReset').onclick=()=>{if(busy)return;feats.forEach(f=>f.reset&&f.reset());sPop()};
+$('#bGo').onclick=check;
+$('#bDemo').onclick=demo;
+$('#wMenu').onclick=()=>{$('#win').classList.remove('on');open(-1)};
+$('#wAgain').onclick=()=>{$('#win').classList.remove('on');open(cur)};
+$('#wNext').onclick=()=>{$('#win').classList.remove('on');open(cur+1)};
+
+
+/* ================= Corrida a dois ================= */
+const FLAG='<svg viewBox="0 0 20 24"><line x1="4" y1="2" x2="4" y2="23" stroke="#333" stroke-width="2.5" stroke-linecap="round"/><path d="M4 2H19L14.5 8L19 14H4Z" fill="#e63946" stroke="#333" stroke-width="1.5" stroke-linejoin="round"/></svg>';
+const PC=['#2a6fdb','#e68a00'];
+const RAC=[{k:'coelha',n:'coelha',a:'a',de:'da'},{k:'gato',n:'gato',a:'o',de:'do'},{k:'cachorro',n:'cachorro',a:'o',de:'do'},{k:'coruja',n:'coruja',a:'a',de:'da'},
+  {k:'raposa',n:'raposa',a:'a',de:'da'},{k:'sapo',n:'sapo',a:'o',de:'do'},{k:'pinguim',n:'pinguim',a:'o',de:'do'},{k:'peixe',n:'peixe',a:'o',de:'do'}];
+const rinfo=k=>RAC.find(r=>r.k===k);
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+const racerG=k=>{
+  if(k==='coelha')return animal('coelho',0,12,.72)+`<polygon points="0,24 -9,19 -9,29" fill="#ec407a" stroke="${K}" stroke-width="1.5" stroke-linejoin="round"/><polygon points="0,24 9,19 9,29" fill="#ec407a" stroke="${K}" stroke-width="1.5" stroke-linejoin="round"/><circle cx="0" cy="24" r="3" fill="#f48fb1" stroke="${K}" stroke-width="1.2"/>`;
+  if(k==='gato')return animal('gato',0,3,1.1);
+  if(k==='cachorro')return animal('cao',0,3,1.15);
+  if(k==='peixe')return animal('peixe',-3,0,1.05);
+  const sw=`stroke="${K}" stroke-width="2.2" stroke-linejoin="round"`;
+  if(k==='coruja')return `<g transform="translate(0,2)"><polygon points="-18,-12 -22,-28 -6,-19" fill="#8d6e63" ${sw}/><polygon points="18,-12 22,-28 6,-19" fill="#8d6e63" ${sw}/><ellipse rx="22" ry="25" fill="#8d6e63" ${sw}/><ellipse cy="9" rx="13" ry="14" fill="#d7b99a"/><circle cx="-9" cy="-6" r="9" fill="#fff" ${sw}/><circle cx="9" cy="-6" r="9" fill="#fff" ${sw}/><circle cx="-9" cy="-6" r="3.8" fill="${K}"/><circle cx="9" cy="-6" r="3.8" fill="${K}"/><polygon points="-4,0 4,0 0,8" fill="#f6a54a" stroke="${K}" stroke-width="1.6" stroke-linejoin="round"/></g>`;
+  if(k==='raposa')return `<g transform="translate(0,3)"><polygon points="-20,-8 -23,-31 -4,-18" fill="#e8731c" ${sw}/><polygon points="20,-8 23,-31 4,-18" fill="#e8731c" ${sw}/><circle r="21" fill="#e8731c" ${sw}/><ellipse cy="10" rx="14" ry="9" fill="#fff"/><circle cx="-8" cy="-4" r="3.2" fill="${K}"/><circle cx="8" cy="-4" r="3.2" fill="${K}"/><ellipse cy="8" rx="4" ry="3" fill="${K}"/></g>`;
+  if(k==='sapo')return `<g transform="translate(0,4)"><circle cx="-12" cy="-12" r="10" fill="#6abf4b" ${sw}/><circle cx="12" cy="-12" r="10" fill="#6abf4b" ${sw}/><ellipse cy="4" rx="26" ry="19" fill="#6abf4b" ${sw}/><circle cx="-12" cy="-12" r="6.5" fill="#fff"/><circle cx="12" cy="-12" r="6.5" fill="#fff"/><circle cx="-12" cy="-11" r="3.2" fill="${K}"/><circle cx="12" cy="-11" r="3.2" fill="${K}"/><path d="M-15,8 Q0,22 15,8" fill="none" stroke="${K}" stroke-width="2.4" stroke-linecap="round"/><circle cx="-19" cy="5" r="3.4" fill="#ff8fab"/><circle cx="19" cy="5" r="3.4" fill="#ff8fab"/></g>`;
+  if(k==='pinguim')return `<g transform="translate(0,1)"><ellipse cx="-20" cy="4" rx="5" ry="14" fill="#37474f" ${sw} transform="rotate(12 -20 4)"/><ellipse cx="20" cy="4" rx="5" ry="14" fill="#37474f" ${sw} transform="rotate(-12 20 4)"/><ellipse cx="-9" cy="26" rx="8" ry="3.4" fill="#f6a54a" ${sw}/><ellipse cx="9" cy="26" rx="8" ry="3.4" fill="#f6a54a" ${sw}/><ellipse rx="19" ry="25" fill="#37474f" ${sw}/><ellipse cy="7" rx="11" ry="17" fill="#fff"/><circle cx="-7" cy="-12" r="4.2" fill="#fff"/><circle cx="7" cy="-12" r="4.2" fill="#fff"/><circle cx="-7" cy="-12" r="2" fill="${K}"/><circle cx="7" cy="-12" r="2" fill="${K}"/><polygon points="-5,-6 5,-6 0,2" fill="#f6a54a" stroke="${K}" stroke-width="1.6" stroke-linejoin="round"/></g>`;
+  return '';
+};
+const racerSvg=k=>`<svg viewBox="-34 -34 68 68">${racerG(k)}</svg>`;
+
+let race=null,setup={p:[null,null],n:10};
+const TF=90,TO=180;
+const bonusFor=t=>t<=TF?2:t<=TO?1:0;
+const rConf=()=>{const cols=[R,B,Y,G,'#ff8fab'];for(let k=0;k<46;k++){const c=document.createElement('div');c.className='conf';c.style.left=Math.random()*100+'vw';c.style.background=cols[k%5];
+  c.style.animationDuration=(2+Math.random()*2)+'s';c.style.animationDelay=(Math.random()*.5)+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),4800)}};
+
+function buildSetup(){
+  let h='<div class="rcols">';
+  [0,1].forEach(p=>{
+    h+=`<div class="rcol" style="--pc:${PC[p]}"><h3>Jogador ${p+1} <span>· escolha seu bichinho</span></h3><div class="ranims">`;
+    RAC.forEach(r=>{const sel=setup.p[p]===r.k,off=setup.p[1-p]===r.k;
+      h+=`<button class="ranim${sel?' sel':''}${off?' off':''}" data-p="${p}" data-k="${r.k}">${racerSvg(r.k)}<span>${cap(r.n)}</span></button>`});
+    h+='</div></div>'});
+  h+='</div><div class="rrow">'+[5,10].map(n=>`<button class="rn${setup.n===n?' sel':''}" data-n="${n}">${n===5?'Corrida curta':'Corrida completa'}<small>${n} rodadas</small></button>`).join('')+'</div>';
+  h+=`<p style="text-align:center;color:#456;font-size:16px;margin:8px 0">Pontos: acerto (1 a 3) + rapidez. Respondeu em até ${TF} s: +2. Até ${TO} s: +1.</p>`;
+  h+=`<button class="btn rgo" id="rsGo" ${setup.p[0]&&setup.p[1]?'':'disabled'}>Largar!</button>`;
+  $('#rsbody').innerHTML=h;
+}
+function raceSetup(){setup.p=[null,null];buildSetup();show('rsetup')}
+
+const rTurn=t=>{const r=Math.floor(t/2),j=t%2,p=(j+(r%2))%2;return{r,p,act:2*race.pairs[r]+((p+r)%2)}};
+function trackHtml(){
+  return race.pl.map((p,i)=>`<div class="rlane l${i}${race.cur===i?' act':''}"><div class="rbar"><span class="rfl">${FLAG}</span><div class="rtk" data-i="${i}" style="left:calc((100% - var(--tk)) * ${Math.min(1,p.shown/race.max)})">${racerSvg(p.k)}</div></div><b class="rsc">${p.pts}</b></div>`).join('');
+}
+function renderTrack(el,animate){
+  el.innerHTML=trackHtml();
+  const go=()=>{race.pl.forEach((p,i)=>{const tk=el.querySelector(`.rtk[data-i="${i}"]`);if(tk)tk.style.left=`calc((100% - var(--tk)) * ${Math.min(1,p.pts/race.max)})`;p.shown=p.pts});};
+  if(animate)setTimeout(go,350);else go();
+}
+function raceHead(){
+  const p=race.cur,r=rinfo(race.pl[p].k);
+  $('#rhead').innerHTML=`<div class="rchip" style="--pc:${PC[p]}">${racerSvg(r.k)}<span>Vez ${r.de} ${r.n}</span></div><div class="rtime" id="rtime"></div><div class="rtrack" id="rhTrack"></div>`;
+  renderTrack($('#rhTrack'),false);timeChip();
+}
+function timeChip(){const el=$('#rtime');if(!el||!race)return;const b=bonusFor(race.el);
+  el.className='rtime b'+b;el.innerHTML=`<b>${Math.floor(race.el)} s</b>rapidez +${b}`}
+function tick(){if(!race||race.cur<0||!$('#game').classList.contains('race'))return;
+  if(busy||$('#win').classList.contains('on')||$('#rwin').classList.contains('on')||$('#rturn').classList.contains('on'))return;
+  race.el+=.25;timeChip()}
+function startRace(k0,k1,n){
+  race={pl:[{k:k0,pts:0,shown:0},{k:k1,pts:0,shown:0}],pairs:n===5?[0,2,4,6,8]:[0,1,2,3,4,5,6,7,8,9],t:0,cur:0,rounds:n,max:n*5,el:0,tm:null};
+  raceIntro();
+}
+function raceIntro(){
+  const {r,p}=rTurn(race.t);race.cur=p;const info=rinfo(race.pl[p].k);
+  $('#rtBig').innerHTML=racerSvg(info.k);
+  $('#rtCard').style.border=`10px solid ${PC[p]}`;
+  $('#rtT').textContent=`Agora é a vez ${info.de} ${info.n}!`;$('#rtT').style.color=PC[p];
+  $('#rtS').textContent=`Rodada ${r+1} de ${race.rounds} · responda rápido: até ${TF} s vale +2 pontos`;
+  $('#rturn').classList.add('on');
+  say(`Agora é a vez ${info.de} ${info.n}!`);
+}
+function raceStartTurn(){
+  $('#rturn').classList.remove('on');
+  const {act}=rTurn(race.t);
+  race.el=0;clearInterval(race.tm);race.tm=setInterval(tick,250);
+  $('#game').classList.add('race');raceHead();open(act);
+}
+function raceWin(stars){
+  const p=race.cur,info=rinfo(race.pl[p].k);clearInterval(race.tm);
+  const secs=Math.round(race.el),bonus=attempts<=1?bonusFor(race.el):0,total=stars+bonus;race.pl[p].pts+=total;
+  sGood();rConf();
+  $('#rwT').textContent=`Muito bem, ${cap(info.n)}!`;
+  $('#rwP').textContent=`${stars} de acerto + ${bonus} de rapidez = +${total} ponto${total>1?'s':''} para ${info.a} ${info.n}`;
+  $('#rwTime').textContent=`Tempo de resposta: ${secs} segundo${secs===1?'':'s'}`;
+  $('#rwStars').innerHTML=[1,2,3].map(k=>starSvg(k<=stars,84).replace('<svg',k<=stars?'<svg class="in"':'<svg')).join('');
+  $('#rwNext').textContent=race.t>=race.rounds*2-1?'Ver o resultado':'Passar a vez ▶';
+  renderTrack($('#rwTrack'),true);
+  $('#rwin').classList.add('on');
+  say(`Muito bem! ${total} ponto${total>1?'s':''} para ${info.a} ${info.n}!`);
+}
+function raceNext(){
+  $('#rwin').classList.remove('on');race.t++;
+  if(race.t>=race.rounds*2)return raceEnd();
+  raceIntro();
+}
+function raceEnd(){
+  $('#game').classList.remove('race');race.cur=-1;
+  const [a0,a1]=race.pl,tie=a0.pts===a1.pts,w=a0.pts>a1.pts?0:1;
+  if(tie){
+    $('#reBig').innerHTML=racerSvg(a0.k)+racerSvg(a1.k);
+    $('#reT').textContent='Empate! Os dois são campeões!';$('#reT').style.color=B;
+    $('#reP').textContent=`${a0.pts} a ${a1.pts} pontos`;
+  }else{
+    const info=rinfo(race.pl[w].k);
+    $('#reBig').innerHTML=racerSvg(info.k);
+    $('#reT').textContent=`${cap(info.a)} ${info.n} venceu a corrida!`;$('#reT').style.color=PC[w];
+    $('#reP').textContent=`${race.pl[w].pts} a ${race.pl[1-w].pts} pontos`;
+  }
+  race.pl.forEach(p=>p.shown=p.pts);renderTrack($('#reTrack'),false);
+  $('#rend').classList.add('on');rConf();setTimeout(rConf,1200);
+  say(tie?'Empate! Os dois são campeões!':`${cap(rinfo(race.pl[w].k).a)} ${rinfo(race.pl[w].k).n} venceu a corrida! Parabéns!`);
+}
+function raceQuit(){
+  if(!confirm('Sair da corrida? A pontuação será perdida.'))return;
+  if(race)clearInterval(race.tm);
+  try{speechSynthesis.cancel()}catch(e){}
+  race=null;$('#game').classList.remove('race');open(-1);
+}
+$('#mbody').addEventListener('click',e=>{if(e.target.closest('#bRace')){sPop();raceSetup()}});
+$('#rsbody').addEventListener('click',e=>{
+  const an=e.target.closest('.ranim');if(an){setup.p[+an.dataset.p]=an.dataset.k;sPop();buildSetup();return}
+  const n=e.target.closest('.rn');if(n){setup.n=+n.dataset.n;sPop();buildSetup();return}
+  if(e.target.closest('#rsGo')){sPop();startRace(setup.p[0],setup.p[1],setup.n)}
+});
+$('#rsBack').onclick=()=>open(-1);
+$('#rtGo').onclick=raceStartTurn;
+$('#rwNext').onclick=raceNext;
+$('#reMenu').onclick=()=>{$('#rend').classList.remove('on');race=null;open(-1)};
+$('#reNew').onclick=()=>{$('#rend').classList.remove('on');race=null;raceSetup()};
+
+buildMenu();
+window.__game={race:{startRace,get state(){return race}},A,open,check,get feats(){return feats},get a(){return a},get cur(){return cur},S,
+  solveAndCheck:async()=>{feats.forEach(f=>f.solve&&f.solve());await check()}};
+})();
+</script>
+</body>
+</html>
