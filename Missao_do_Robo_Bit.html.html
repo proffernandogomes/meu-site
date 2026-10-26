@@ -919,7 +919,7 @@ $('btnWipe').addEventListener('click', function () { stars = []; try { localStor
 
 /* gancho para testes automáticos */
 window.BitGame = {
-  series: SERIES, setSerie: setSerie, getLevels: function () { return LEVELS; }, load: loadLevel, solve: loadSolution, run: play, setFast: function (v) { FAST = !!v; },
+  series: SERIES, setSerie: setSerie, getLevels: function () { return LEVELS; }, load: loadLevel, run: play, setFast: function (v) { FAST = !!v; },
   state: function () { return {level: cur, over: S ? S.over : false, pos: S ? S.pos : L.start, blocks: countBlocks(program), result: elResult.hidden ? '' : elResult.querySelector('h3').textContent}; }
 };
 
