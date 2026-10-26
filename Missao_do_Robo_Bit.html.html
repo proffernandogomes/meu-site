@@ -903,10 +903,6 @@ $('speed').addEventListener('click', function (e) {
   Array.prototype.forEach.call($('speed').children, function (x) { if (x.tagName === 'BUTTON') x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); });
   robot.style.transitionDuration = Math.round(DELAYS[speedIdx] * 0.7) + 'ms';
 });
-function loadSolution() {
-  program = L.sol.map(cloneNode); changed();
-}
-$('btnSol').addEventListener('click', function () { loadSolution(); say('Solução: ' + countBlocks(program) + ' blocos.'); });
 $('chkAll').checked = allLoops;
 $('chkAll').addEventListener('change', function (e) {
   allLoops = e.target.checked;
